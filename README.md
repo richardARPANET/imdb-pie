@@ -34,6 +34,11 @@ Python IMDB client using the IMDB json web service made available for their iOS 
 
     imdb.popular_shows() => [{:title => "Glee", :year => "2009", :imdb_id => "tt1327801"}, {:title => "Dexter", ...}]
 
+### Requirements
+
+    * Python3.3
+    * Python requests - python-requests.org
+
 ## Tests
 
     Test .py files can be found in /tests, run these to ensure ImdbPie is working 100%.
