@@ -34,7 +34,7 @@ Python IMDB client using the IMDB json web service made available for their iOS 
 
     imdb.popular_shows() => [{:title => "Glee", :year => "2009", :imdb_id => "tt1327801"}, {:title => "Dexter", ...}]
 
-### Requirements
+## Requirements
 
     1. Python3.3
     2. Python requests - python-requests.org
