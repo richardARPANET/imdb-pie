@@ -36,8 +36,8 @@ Python IMDB client using the IMDB json web service made available for their iOS 
 
 ### Requirements
 
-    * Python3.3
-    * Python requests - python-requests.org
+    1. Python3.3
+    2. Python requests - python-requests.org
 
 ## Tests
 
