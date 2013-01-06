@@ -11,7 +11,7 @@ Python IMDB client using the IMDB json web service made available for their iOS 
 
 ### Search for a movie by title
 
-    imdb.find_by_title("The Dark Knight") => [{:title => "The Dark Knight", :year => "2008", :imdb_id => "tt0468569"}, {:title => "Batman Unmasked", ...}]
+    imdb.find_by_title("The Dark Knight") => [{'title' : "The Dark Knight", 'year' :  "2008", 'imdb_id' : "tt0468569"}, {'title' : "Batman Unmasked", ...}]
 
 ### Find a movie by its imdb_id
 
@@ -28,11 +28,12 @@ Python IMDB client using the IMDB json web service made available for their iOS 
 
 ### Find the top 250 movies ever
 
-    imdb.top_250() => [{:title => "Shawshank Redemption", :year => "1994", :imdb_id => "tt0111161"}, {:title => "The Godfather", ...}]
+    imdb.top_250() => [{'title': 'The Shawshank Redemption', 'year': '1994', 'type': 'feature', 'rating': 9.3,...}, ...]
+
 
 ### Get the current popular shows
 
-    imdb.popular_shows() => [{:title => "Glee", :year => "2009", :imdb_id => "tt1327801"}, {:title => "Dexter", ...}]
+    imdb.popular_shows() => [{'title' : "Glee", 'year' : "2009", 'imdb_id' => "tt1327801"}, {'title' : "Dexter", ...}]
 
 ## Requirements
 
