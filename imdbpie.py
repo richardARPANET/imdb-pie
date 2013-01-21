@@ -4,6 +4,7 @@ import requests
 import urllib.parse
 import hashlib
 import re
+import itertools
 
 base_uri = 'app.imdb.com'
 api_key = '2wex6aeu6a8q9e49k7sfvufd6rhh0n'
@@ -11,12 +12,15 @@ sha1_key = hashlib.sha1(api_key.encode('utf-8')).hexdigest()
 
 class Imdb:
 
-    def __init__( self, options={} ):
+    def __init__( self, options=None ):
+        if options is None:
+            options = {}
+            
         self.options = options
 
-        if 'anonymize' in options and options['anonymize'] is True:
+        if options.get('anonymize') is True:
             global base_uri
-            base_uri = 'youtubeproxy.org/default.aspx?prx=https://' + base_uri
+            base_uri = 'youtubeproxy.org/default.aspx?prx=https://{0}'.format(base_uri)
 
 
     def build_url(self, path, params):
@@ -26,9 +30,10 @@ class Imdb:
 
         default_params = {"api" : "v1", "appid" : "iphone1_1", "apiPolicy" : "app1_1", "apiKey" : sha1_key, "locale" : "en_US", "timestamp" : int(time.time())}
 
-        query_params = dict(list(default_params.items()) + list(params.items()))
+        query_params = dict(itertools.chain(default_params.items(),
+                                            params.items()))
         query_params = urllib.parse.urlencode(query_params)
-        return 'https://' + base_uri + path + '?' + query_params
+        return 'https://{0}{1}?{2}'.format(base_uri, path, query_params)
 
 
     def find_movie_by_id(self, imdb_id):
@@ -39,20 +44,17 @@ class Imdb:
 
 
     def filter_out(self, string):
-        if string != "id" and string != "title":
-            return True
-        else:
-            return False
+        return string not in ('id', 'title')
 
 
     def find_by_title(self, title):
         default_find_by_title_params = {"json" : "1", "nr" : 1, "tt": "on", "q" : title}
         query_params = urllib.parse.urlencode(default_find_by_title_params)
-        results = self.get('http://www.imdb.com/xml/find?' + query_params)
+        results = self.get('http://www.imdb.com/xml/find?{0}'.format(query_params))
 
         keys = ["title_popular", "title_exact", "title_approx", "title_substring"]
         data = results
-        movie_results = dict()
+        movie_results = {}
 
         for i, key in enumerate(keys):
             if key in data:
@@ -82,13 +84,18 @@ class Imdb:
 
 
 class Person:
-    def __init__( self, options={}):
+    def __init__( self, options=None):
+        if options is None:
+            options = {}
+
         self.name = options["name"]["name"]
         self.imdb_id = options["name"]["nconst"]
         self.role = options["char"] if "char" in options else None
 
 class Movie:
-    def __init__( self, options={}):
+    def __init__( self, options=None):
+        if options is None:
+            options = {}
 
         #parse info
         self.imdb_id = options["tconst"]
