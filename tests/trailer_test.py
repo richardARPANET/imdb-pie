@@ -5,8 +5,6 @@ imdb = Imdb({'anonymize' : False})
 movie = imdb.find_movie_by_id("tt1210166")
 
 def run_tests():
-    global imdb
-
     print('have a trailer_url:')
     match = re.findall(r'http://ia.media-imdb.com/images/.*/', movie.trailer_url)[0]
     if match:

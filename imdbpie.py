@@ -24,10 +24,6 @@ class Imdb:
 
 
     def build_url(self, path, params):
-        global base_uri
-        global api_key
-        global sha1_key
-
         default_params = {"api" : "v1", "appid" : "iphone1_1", "apiPolicy" : "app1_1", "apiKey" : sha1_key, "locale" : "en_US", "timestamp" : int(time.time())}
 
         query_params = dict(itertools.chain(default_params.items(),

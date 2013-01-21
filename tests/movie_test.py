@@ -5,8 +5,6 @@ imdb = Imdb({'anonymize' : False})
 movie = imdb.find_movie_by_id("tt0382932")
 
 def run_tests():
-    global imdb
-
     print('have a title:')
     if movie.title == 'Ratatouille':
         print('passed')

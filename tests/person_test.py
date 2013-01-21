@@ -4,8 +4,6 @@ imdb = Imdb({'anonymize' : False})
 movie = imdb.find_movie_by_id("tt0382932")
 
 def run_tests():
-    global imdb
-
     print('actors have a name:')
     if movie.actors[0].name == 'Brad Garrett':
         print('passed')

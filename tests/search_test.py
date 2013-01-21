@@ -3,8 +3,6 @@ from imdbpie import Imdb
 imdb = Imdb({'anonymize' : False})
 
 def run_tests():
-    global imdb
-
     print('search for title:')
     results = imdb.find_by_title("batman")
     print('should have minimum 15 results: ')
