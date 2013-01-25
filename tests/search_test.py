@@ -8,7 +8,6 @@ def run_tests():
     print('should have minimum 15 results: ')
     print(len(results))
 
-
     print('search for title that has spaces:')
     results = imdb.find_by_title("the truman show")
     print('should have minimum 1 results: ')

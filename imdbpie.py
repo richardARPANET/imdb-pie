@@ -129,4 +129,3 @@ class Movie:
         if "trailer" in options and options["trailer"]["encodings"]:
             for k, v in options["trailer"]["encodings"].items():
                 self.trailers[v["format"]] = v["url"]
-
