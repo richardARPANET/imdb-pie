@@ -58,7 +58,7 @@ class Imdb:
                     year_match = re.findall(r'(\d{4})', r['title_description'])
                     year = year_match[0] if len(year_match) > 0 else None
 
-                    movie_results[j] = {'title' : r["title"], 'year' : year, 'imdb_id' : r["id"]}
+                    movie_results[i+j] = {'title' : r["title"], 'year' : year, 'imdb_id' : r["id"]}
         return movie_results
 
 
