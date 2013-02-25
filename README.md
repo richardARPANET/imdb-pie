@@ -35,6 +35,14 @@ Python IMDB client using the IMDB json web service made available for their iOS 
 
     imdb.popular_shows() => [{'title' : "Glee", 'year' : "2009", 'imdb_id' => "tt1327801"}, {'title' : "Dexter", ...}]
 
+### Check if a movie exists, by imdb id
+
+    imdb.movie_exists('tt1327801') => True
+
+### Check an imdb id is of valid format (tt0000000), and try to fix if not
+
+    imdb.validate_id('tt1000') => tt0001000
+
 ## Requirements
 
     1. Python3.3

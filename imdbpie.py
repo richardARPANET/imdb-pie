@@ -35,12 +35,43 @@ class Imdb:
     def find_movie_by_id(self, imdb_id):
         url = self.build_url('/title/maindetails', {'tconst' : imdb_id})
         result = self.get(url)
+        if 'error' in result:
+            return False
+
         movie = Movie(result["data"])
         return movie
 
 
     def filter_out(self, string):
         return string not in ('id', 'title')
+
+    def movie_exists(self, imdb_id):
+        '''
+        Check with imdb, does a movie exist
+        '''
+        imdb_id = self.validate_id(imdb_id)
+        if imdb_id:
+            results = self.find_movie_by_id(imdb_id)
+            if results:
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def validate_id(self, imdb_id):
+        '''
+        Check imdb id is a 7 digit number
+        '''
+        match = re.findall(r'tt(\d+)', imdb_id, re.IGNORECASE)
+        if match:
+            id_num = match[0]
+            if len(id_num) is not 7:
+                #pad id to 7 digits
+                id_num = id_num.zfill(7)
+            return 'tt'+id_num
+        else:
+            return False
 
 
     def find_by_title(self, title):
@@ -101,7 +132,7 @@ class Movie:
         self.rating = options["rating"] if "rating" in options else None
         self.poster_url = options["image"]["url"] if "image" in options else None
         self.release_date = options["release_date"]["normal"] if "release_date" in options and options["release_date"]["normal"] else None
-        self.certification = options["certificate"]["certificate"] if options["certificate"] and options["certificate"]["certificate"] else None
+        self.certification = options["certificate"]["certificate"] if "certificate" in options and options["certificate"]["certificate"] else None
         self.genres = options["genres"] or []
         self.trailer_url = options["trailer"]["slates"][0]["url"] if("trailer" in options and options["trailer"]["slates"] and options["trailer"]["slates"][0]) else None
 
