@@ -1,7 +1,8 @@
 from imdbpie import Imdb
 
-imdb = Imdb({'anonymize' : False})
+imdb = Imdb({'anonymize': False})
 movie = imdb.find_movie_by_id("tt0382932")
+
 
 def run_tests():
     print('actors have a name:')
@@ -27,7 +28,6 @@ def run_tests():
     print('writers do not have a role:')
     if movie.writers[0].role is None:
         print('passed')
-
 
 
 if __name__ == '__main__':

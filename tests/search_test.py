@@ -1,6 +1,7 @@
 from imdbpie import Imdb
 
-imdb = Imdb({'anonymize' : False})
+imdb = Imdb({'anonymize': False})
+
 
 def run_tests():
     print('search for title:')

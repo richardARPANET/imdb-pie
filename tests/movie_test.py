@@ -1,8 +1,11 @@
-from imdbpie import Imdb
 import re
 
-imdb = Imdb({'anonymize' : False})
+from imdbpie import Imdb
+
+
+imdb = Imdb({'anonymize': False})
 movie = imdb.find_movie_by_id("tt0382932")
+
 
 def run_tests():
     print('have a title:')
@@ -18,7 +21,8 @@ def run_tests():
         print('passed')
 
     print('have a plot:')
-    if movie.plot == "Remy is a young rat in the French countryside who arrives in Paris, only to find out that his cooking idol is dead. When he makes an unusual alliance with a restaurant's new garbage boy, the culinary and personal adventures begin despite Remy's family's skepticism and the rat-hating world of humans.":
+    if movie.plot == "With dreams of becoming a chef, a culinary genius in" \
+                     " the form of a rat, makes an unusual alliance with a young kitchen worker at a famed restaurant.":
         print('passed')
 
     print('have a runtime:')
