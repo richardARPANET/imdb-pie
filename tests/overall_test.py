@@ -12,10 +12,11 @@ def run_tests():
     print('genres', movie.genres)
     print('plot', movie.plot)
     print('runtime', movie.runtime)
-    print('writers', movie.writers)
+    print('writers summary', movie.writers_summary)
     print('creators', movie.creators)
-    print('actors', movie.actors)
+    print('cast summary', movie.cast_summary)
+    print('full cast', movie.cast)
 
 if __name__ == '__main__':
-    movie = imdb.find_movie_by_id('tt0000764')
+    movie = imdb.find_movie_by_id('tt0111161')
     run_tests()

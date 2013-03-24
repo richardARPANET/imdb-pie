@@ -40,9 +40,16 @@ class Imdb:
         result = self.get(url)
         if 'error' in result:
             return False
-        print(result["data"])
+        #get the full cast information
+        result["data"]["credits"] = self.get_credits(imdb_id)
         movie = Movie(**result["data"])
         return movie
+
+    def get_credits(self, imdb_id):
+        imdb_id = self.validate_id(imdb_id)
+        url = self.build_url('/title/fullcredits', {'tconst': imdb_id})
+        result = self.get(url)
+        return result["data"]["credits"]
 
     def filter_out(self, string):
         return string not in ('id', 'title')
@@ -132,6 +139,7 @@ class Person(object):
         self.name = p.get('name')
         self.imdb_id = p.get('nconst')
         self.role = kwargs.get('char')
+        self.job = kwargs.get('job')
 
     def __repr__(self):
         return '<Person: {0} ({1})>'.format(self.name.encode('utf-8'), self.imdb_id)
@@ -183,10 +191,10 @@ class Movie:
             self.trailer_img_url = self.data['trailer']['slates'][0]['url']
 
         # Directors
-        self.directors = []
+        self.directors_summary = []
         if self.data.get('directors_summary'):
             for director in self.data['directors_summary']:
-                self.directors.append(Person(**director))
+                self.directors_summary.append(Person(**director))
 
         # Creators
         self.creators = []
@@ -194,17 +202,29 @@ class Movie:
             for creator in self.data['creators']:
                 self.creators.append(Person(**creator))
 
-        # Actors
-        self.actors = []
+        # Cast summary
+        self.cast_summary = []
         if self.data.get('cast_summary'):
             for cast in self.data['cast_summary']:
-                self.actors.append(Person(**cast))
+                self.cast_summary.append(Person(**cast))
+
+        # Cast
+        self.cast = []
+        if self.data.get('credits'):
+            for cast in self.data['credits']:
+                """
+                Possible tokens
+                directors, cast, writers
+                """
+                if 'cast' in cast['token']:
+                    for member in cast['list']:
+                        self.cast.append(Person(**member))
 
         # Writers
-        self.writers = []
+        self.writers_summary = []
         if self.data.get('writers_summary'):
             for writer in self.data['writers_summary']:
-                self.writers.append(Person(**writer))
+                self.writers_summary.append(Person(**writer))
 
         # Trailers
         self.trailers = {}
