@@ -191,10 +191,10 @@ class Movie:
             self.trailer_img_url = self.data['trailer']['slates'][0]['url']
 
         # Directors
-        self.directors_summary = []
+        self.directors = []
         if self.data.get('directors_summary'):
             for director in self.data['directors_summary']:
-                self.directors_summary.append(Person(**director))
+                self.directors.append(Person(**director))
 
         # Creators
         self.creators = []
@@ -221,10 +221,10 @@ class Movie:
                         self.cast.append(Person(**member))
 
         # Writers
-        self.writers_summary = []
+        self.writers = []
         if self.data.get('writers_summary'):
             for writer in self.data['writers_summary']:
-                self.writers_summary.append(Person(**writer))
+                self.writers.append(Person(**writer))
 
         # Trailers
         self.trailers = {}
