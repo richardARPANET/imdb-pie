@@ -208,17 +208,17 @@ class Movie:
             for cast in self.data['cast_summary']:
                 self.cast_summary.append(Person(**cast))
 
-        # Cast
-        self.cast = []
+        # Credits
+        self.credits = []
         if self.data.get('credits'):
-            for cast in self.data['credits']:
+            for credit in self.data['credits']:
                 """
                 Possible tokens
                 directors, cast, writers
                 """
-                if 'cast' in cast['token']:
-                    for member in cast['list']:
-                        self.cast.append(Person(**member))
+                if 'cast' in credit['token']:
+                    for member in credit['list']:
+                        self.credits.append(Person(**member))
 
         # Writers
         self.writers = []
