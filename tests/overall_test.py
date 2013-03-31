@@ -1,6 +1,6 @@
 from imdbpie import Imdb
 
-imdb = Imdb({'anonymize': False})
+imdb = Imdb({'anonymize': False, 'locale': 'en_GB'})
 
 
 def run_tests():
@@ -9,6 +9,7 @@ def run_tests():
     print('type', movie.type)
     print('tagline', movie.tagline)
     print('rating', movie.rating)
+    print('certification', movie.certification)
     print('genres', movie.genres)
     print('plot', movie.plot)
     print('runtime', movie.runtime)

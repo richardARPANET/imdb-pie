@@ -13,21 +13,25 @@ sha1_key = hashlib.sha1(api_key.encode('utf-8')).hexdigest()
 class Imdb:
 
     def __init__(self, options=None):
+        self.locale = 'en_US'
+
         if options is None:
             options = {}
             
         self.options = options
-
         if options.get('anonymize') is True:
             global base_uri
             base_uri = 'youtubeproxy.org/default.aspx?prx=https://{0}'.format(base_uri)
+
+        if options.get('locale'):
+            self.locale = options.get('locale')
 
     def build_url(self, path, params):
         default_params = {"api": "v1",
                           "appid": "iphone1_1",
                           "apiPolicy": "app1_1",
                           "apiKey": sha1_key,
-                          "locale": "en_US",
+                          "locale": self.locale,
                           "timestamp": int(time.time())}
 
         query_params = dict(default_params.items() + params.items())
