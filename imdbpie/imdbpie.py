@@ -4,6 +4,7 @@ import requests
 from urllib import urlencode
 import hashlib
 import re
+import HTMLParser
 
 base_uri = 'app.imdb.com'
 api_key = '2wex6aeu6a8q9e49k7sfvufd6rhh0n'
@@ -101,6 +102,8 @@ class Imdb:
                 'title_substring']
         movie_results = []
 
+        html_unescape = HTMLParser.HTMLParser().unescape
+
         # Loop through all results and build a list with popular matches first
         for key in keys:
             if key in results:
@@ -111,7 +114,7 @@ class Imdb:
                         year = year_match.group(0)
 
                     movie_match = {
-                        'title': r['title'],
+                        'title': html_unescape(r['title']),
                         'year': year,
                         'imdb_id': r['id']
                     }
