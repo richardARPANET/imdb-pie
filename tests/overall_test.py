@@ -1,6 +1,8 @@
 from imdbpie import Imdb
 
-imdb = Imdb({'anonymize': False, 'locale': 'en_GB'})
+imdb = Imdb({'anonymize': False,
+             'locale': 'en_US',
+             'exclude_episodes': False})
 
 
 def run_tests():

@@ -24,6 +24,11 @@ class Imdb:
             global base_uri
             base_uri = 'youtubeproxy.org/default.aspx?prx=https://{0}'.format(base_uri)
 
+        if options.get('exclude_episodes') is True:
+            self.exclude_episodes = True
+        else:
+            self.exclude_episodes = False
+
         if options.get('locale'):
             self.locale = options.get('locale')
 
@@ -47,8 +52,12 @@ class Imdb:
             return False
         #get the full cast information
         result["data"]["credits"] = self.get_credits(imdb_id)
-        movie = Movie(**result["data"])
-        return movie
+
+        if self.exclude_episodes is True and 'series' in result["data"]:
+            return False
+        else:
+            movie = Movie(**result["data"])
+            return movie
 
     def get_credits(self, imdb_id):
         imdb_id = self.validate_id(imdb_id)
