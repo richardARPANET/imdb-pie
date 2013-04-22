@@ -22,5 +22,5 @@ def run_tests():
     print('full credits', movie.credits)
 
 if __name__ == '__main__':
-    movie = imdb.find_movie_by_id('tt0111161')
+    movie = imdb.find_movie_by_id('tt0705926')
     run_tests()
