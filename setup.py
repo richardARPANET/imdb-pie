@@ -39,6 +39,7 @@ setup(
     author_email='richard@richard.do',
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     long_description=open('README.md').read(),
+    install_requires=['requests'],
     classifiers=[
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
