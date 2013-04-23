@@ -1,70 +1,59 @@
+import unittest
 import re
-
 from imdbpie import Imdb
-
 
 imdb = Imdb({'anonymize': False})
 movie = imdb.find_movie_by_id("tt0382932")
 
 
-def run_tests():
-    print('have a title:')
-    if movie.title == 'Ratatouille':
-        print('passed')
+class TestTitle(unittest.TestCase):
 
-    print('have an imdb id:')
-    if movie.imdb_id == 'tt0382932':
-        print('passed')
+    @staticmethod
+    def valid_poster(poster_url):
+        match = re.findall(r'http://ia.media-imdb.com/images/.*/', poster_url)[0]
+        if match:
+            return True
+        else:
+            return False
 
-    print('have a tagline:')
-    if movie.tagline == 'Dinner is served... Summer 2007':
-        print('passed')
+    def test_title(self):
+        self.assertEqual(movie.title, 'Ratatouille')
 
-    print('have a plot:')
-    if movie.plot == "With dreams of becoming a chef, a culinary genius in" \
-                     " the form of a rat, makes an unusual alliance with a young kitchen worker at a famed restaurant.":
-        print('passed')
+    def test_imdb_id(self):
+        self.assertEqual(movie.imdb_id, 'tt0382932')
 
-    print('have a runtime:')
-    if movie.runtime == '111 min':
-        print('passed')
+    def test_tagline(self):
+        self.assertEqual(movie.tagline, 'Dinner is served... Summer 2007')
 
-    print('have a rating:')
-    if movie.rating == 8:
-        print('passed')
+    def test_plot(self):
+        self.assertIsNotNone(movie.plot)
 
-    print('have a poster url:')
-    match = re.findall(r'http://ia.media-imdb.com/images/.*/', movie.poster_url)[0]
-    if match:
-        print('passed')
+    def test_runtime(self):
+        self.assertIsNotNone(movie.runtime)
 
-    print('have a release date:')
-    if movie.release_date == '2007-06-29':
-        print('passed')
+    def test_rating(self):
+        self.assertTrue(str(movie.rating).isdigit())
 
-    print('have a certification')
-    if movie.certification == 'G':
-        print('passed')
+    def test_poster_url(self):
+        self.assertTrue(self.valid_poster(movie.poster_url))
 
-    print('have trailers:')
-    if movie.trailers is not None:
-        print('passed')
+    def test_release_date(self):
+        self.assertIsNotNone(movie.release_date)
 
-    print('have genres:')
-    if movie.genres is not None:
-        print('passed')
+    def test_certification(self):
+        self.assertIsNotNone(movie.certification)
 
-    print('have directors:')
-    if movie.directors is not None:
-        print('passed')
+    def test_trailers(self):
+        self.assertIsNotNone(movie.trailers)
 
-    print('have writers:')
-    if movie.writers is not None:
-        print('passed')
+    def test_genres(self):
+        self.assertIsNotNone(movie.genres)
 
-    print('have a title:')
-    if movie.title == 'Ratatouille':
-        print('passed')
+    def test_directors(self):
+        self.assertIsNotNone(movie.directors)
+
+    def test_writers(self):
+        self.assertIsNotNone(movie.writers)
 
 if __name__ == '__main__':
-    run_tests()
+    unittest.main()
