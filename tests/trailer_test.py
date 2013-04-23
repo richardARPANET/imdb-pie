@@ -1,18 +1,16 @@
-import re
-
 from imdbpie import Imdb
-
+import unittest
 
 imdb = Imdb({'anonymize': False})
-movie = imdb.find_movie_by_id("tt1210166")
+movie = imdb.find_movie_by_id("tt0382932")
 
 
-def run_tests():
-    print('have a trailer_url:')
-    match = re.findall(r'http://ia.media-imdb.com/images/.*/', movie.trailer_url)[0]
-    if match:
-        print('passed')
+class TestTrailer(unittest.TestCase):
+
+    def test_trailer_url(self):
+        print movie.trailers
+        self.assertIsNotNone(movie.trailers)
 
 
 if __name__ == '__main__':
-    run_tests()
+    unittest.main()

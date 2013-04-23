@@ -6,6 +6,10 @@ imdb = Imdb({'anonymize': False,
 
 
 def run_tests():
+    """
+    Overall tests not using unittests
+    for a simple visual results overview
+    """
     print(movie.title)
     print('year', movie.year)
     print('type', movie.type)

@@ -1,5 +1,5 @@
-import unittest
 from imdbpie import Imdb
+import unittest
 
 imdb = Imdb({'anonymize': False})
 movie = imdb.find_movie_by_id("tt0382932")

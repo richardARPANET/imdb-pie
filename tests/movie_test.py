@@ -1,6 +1,6 @@
+from imdbpie import Imdb
 import unittest
 import re
-from imdbpie import Imdb
 
 imdb = Imdb({'anonymize': False})
 movie = imdb.find_movie_by_id("tt0382932")
