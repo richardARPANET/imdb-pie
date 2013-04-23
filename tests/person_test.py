@@ -1,34 +1,29 @@
+import unittest
 from imdbpie import Imdb
 
 imdb = Imdb({'anonymize': False})
 movie = imdb.find_movie_by_id("tt0382932")
 
 
-def run_tests():
-    print('actors have a name:')
-    if movie.actors[0].name == 'Brad Garrett':
-        print('passed')
+class TestPerson(unittest.TestCase):
 
-    print('actors have a role:')
-    if movie.actors[0].role == 'Gusteau':
-        print('passed')
+    def test_name(self):
+        self.assertIsNotNone(movie.credits[0].name)
 
-    print('directors have a name:')
-    if movie.directors[0].name == 'Brad Bird':
-        print('passed')
+    def test_role(self):
+        self.assertIsNotNone(movie.credits[0].role)
 
-    print('directors do not have a role:')
-    if movie.directors[0].role is None:
-        print('passed')
+    def test_director(self):
+        self.assertEqual(movie.directors[0].name, 'Brad Bird')
 
-    print('writers have a name:')
-    if movie.writers[0].name == 'Brad Bird':
-        print('passed')
+    def test_director_role(self):
+        self.assertFalse(movie.directors[0].role)
 
-    print('writers do not have a role:')
-    if movie.writers[0].role is None:
-        print('passed')
+    def test_writers(self):
+        self.assertEqual(movie.writers[0].name, 'Brad Bird')
 
+    def test_writers_role(self):
+        self.assertFalse(movie.writers[0].role)
 
 if __name__ == '__main__':
-    run_tests()
+    unittest.main()
