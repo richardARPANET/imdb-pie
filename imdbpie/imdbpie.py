@@ -50,6 +50,10 @@ class Imdb:
         result = self.get(url)
         if 'error' in result:
             return False
+        # if the result is a re-dir, see imdb id tt0000021 for e.g...
+        if result["data"].get('tconst') != result["data"].get('news').get('channel'):
+            return False
+
         #get the full cast information
         result["data"]["credits"] = self.get_credits(imdb_id)
 
