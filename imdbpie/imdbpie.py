@@ -101,7 +101,7 @@ class Imdb:
                 id_num = id_num.zfill(7)
             return 'tt' + id_num
         else:
-            return False
+            return ValueError('Could not validate ID')
 
     def find_by_title(self, title):
         default_find_by_title_params = {'json': '1',
