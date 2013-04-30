@@ -44,7 +44,7 @@ class Imdb:
         query_params = urlencode(query_params)
         return 'https://{0}{1}?{2}'.format(base_uri, path, query_params)
 
-    def find_movie_by_id(self, imdb_id):
+    def find_movie_by_id(self, imdb_id, json=False):
         imdb_id = self.validate_id(imdb_id)
         url = self.build_url('/title/maindetails', {'tconst': imdb_id})
         result = self.get(url)
@@ -55,6 +55,8 @@ class Imdb:
 
         if self.exclude_episodes is True and result["data"].get('type') == 'tv_episode':
             return False
+        elif json is True:
+            return result["data"]
         else:
             movie = Movie(**result["data"])
             return movie

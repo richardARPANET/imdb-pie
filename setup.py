@@ -31,14 +31,14 @@ def get_package_data(package):
 
 setup(
     name='imdbpie',
-    version='1.2.3',
+    version='1.2.5',
     packages=get_packages('imdbpie'),
     package_data=get_package_data('imdbpie'),
     description='Python IMDB client using the IMDB json web service made available for their iOS app.',
     author='Richard O\'Dwyer',
     author_email='richard@richard.do',
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
-    long_description=open('README.md').read(),
+    long_description='https://github.com/richardasaurus/imdb-pie',
     install_requires=['requests'],
     classifiers=[
         'Intended Audience :: Developers',
