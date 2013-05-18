@@ -1,5 +1,6 @@
 # ImdbPie
 [![Build Status](https://travis-ci.org/richardasaurus/imdb-pie.png?branch=master)](https://travis-ci.org/richardasaurus/imdb-pie)
+[![Downloads](https://pypip.in/d/imdb-pie.py/badge.png)](https://crate.io/packages/imdb-pie.py/)
 
 Python IMDB client using the IMDB json web service made available for their iOS app.
 
