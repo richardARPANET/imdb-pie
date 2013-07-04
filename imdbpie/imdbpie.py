@@ -15,14 +15,14 @@ class Imdb:
 
     def __init__(self, options=None):
         self.locale = 'en_US'
+        self.base_uri = base_uri
 
         if options is None:
             options = {}
             
         self.options = options
         if options.get('anonymize') is True:
-            global base_uri
-            base_uri = 'youtubeproxy.org/default.aspx?prx=https://{0}'.format(base_uri)
+            self.base_uri = 'youtubeproxy.org/default.aspx?prx=https://{0}'.format(self.base_uri)
 
         if options.get('exclude_episodes') is True:
             self.exclude_episodes = True
@@ -42,7 +42,7 @@ class Imdb:
 
         query_params = dict(default_params.items() + params.items())
         query_params = urlencode(query_params)
-        return 'https://{0}{1}?{2}'.format(base_uri, path, query_params)
+        return 'https://{0}{1}?{2}'.format(self.base_uri, path, query_params)
 
     def find_movie_by_id(self, imdb_id, json=False):
         imdb_id = self.validate_id(imdb_id)

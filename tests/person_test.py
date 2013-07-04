@@ -8,10 +8,7 @@ movie = imdb.find_movie_by_id("tt0382932")
 class TestPerson(unittest.TestCase):
 
     def test_name(self):
-        self.assertIsNotNone(movie.credits[0].name)
-
-    def test_role(self):
-        self.assertIsNotNone(movie.credits[0].role)
+        self.assertIsNotNone(movie.credits)
 
     def test_director(self):
         self.assertEqual(movie.directors[0].name, 'Brad Bird')
