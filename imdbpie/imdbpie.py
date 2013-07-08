@@ -54,8 +54,8 @@ class Imdb:
         if result["data"].get('tconst') != result["data"].get('news').get('channel'):
             return False
 
-        #get the full cast information
-        result["data"]["credits"] = self.get_credits(imdb_id)
+        #get the full cast information, add key if not present
+        result["data"].setdefault('credits', self.get_credits(imdb_id))
 
         if self.exclude_episodes is True and result["data"].get('type') == 'tv_episode':
             return False
