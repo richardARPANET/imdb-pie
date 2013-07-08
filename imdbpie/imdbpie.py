@@ -55,7 +55,7 @@ class Imdb:
             return False
 
         #get the full cast information, add key if not present
-        result["data"].setdefault('credits', self.get_credits(imdb_id))
+        result["data"][unicode("credits")] = self.get_credits(imdb_id)
 
         if self.exclude_episodes is True and result["data"].get('type') == 'tv_episode':
             return False
@@ -69,7 +69,7 @@ class Imdb:
         imdb_id = self.validate_id(imdb_id)
         url = self.build_url('/title/fullcredits', {'tconst': imdb_id})
         result = self.get(url)
-        return result["data"]["credits"]
+        return result.get('data').get('credits')
 
     def filter_out(self, string):
         return string not in ('id', 'title')
