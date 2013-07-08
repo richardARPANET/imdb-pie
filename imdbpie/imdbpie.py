@@ -55,8 +55,7 @@ class Imdb:
             return False
 
         #get the full cast information
-        if 'credits' in result["data"]:
-            result["data"]["credits"] = self.get_credits(imdb_id)
+        result["data"]["credits"] = self.get_credits(imdb_id)
 
         if self.exclude_episodes is True and result["data"].get('type') == 'tv_episode':
             return False
