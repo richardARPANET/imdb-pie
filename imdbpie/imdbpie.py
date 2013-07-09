@@ -1,10 +1,10 @@
 import json
 import time
 import requests
-from urllib import urlencode
+from urllib.parse import urlencode
 import hashlib
 import re
-import HTMLParser
+import html.parser
 
 base_uri = 'app.imdb.com'
 api_key = '2wex6aeu6a8q9e49k7sfvufd6rhh0n'
@@ -40,7 +40,7 @@ class Imdb:
                           "locale": self.locale,
                           "timestamp": int(time.time())}
 
-        query_params = dict(default_params.items() + params.items())
+        query_params = dict(list(default_params.items()) + list(params.items()))
         query_params = urlencode(query_params)
         return 'https://{0}{1}?{2}'.format(self.base_uri, path, query_params)
 
@@ -55,7 +55,7 @@ class Imdb:
             return False
 
         #get the full cast information, add key if not present
-        result["data"][unicode("credits")] = self.get_credits(imdb_id)
+        result["data"][str("credits")] = self.get_credits(imdb_id)
 
         if self.exclude_episodes is True and result["data"].get('type') == 'tv_episode':
             return False
@@ -117,7 +117,7 @@ class Imdb:
                 'title_substring']
         movie_results = []
 
-        html_unescape = HTMLParser.HTMLParser().unescape
+        html_unescape = html.parser.HTMLParser().unescape
 
         # Loop through all results and build a list with popular matches first
         for key in keys:
@@ -251,5 +251,5 @@ class Movie:
         # Trailers
         self.trailers = {}
         if 'trailer' in self.data and 'encodings' in self.data['trailer']:
-            for k, v in self.data['trailer']['encodings'].items():
+            for k, v in list(self.data['trailer']['encodings'].items()):
                 self.trailers[v['format']] = v['url']
