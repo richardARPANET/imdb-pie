@@ -1,10 +1,16 @@
 import json
 import time
 import requests
-from urllib.parse import urlencode
 import hashlib
 import re
-import html.parser
+
+# handle python 2 and python 3 imports
+try:
+    from urllib.parse import urlencode
+    import html.parser as htmlparser
+except ImportError:
+    from urllib import urlencode
+    import HTMLParser as htmlparser
 
 base_uri = 'app.imdb.com'
 api_key = '2wex6aeu6a8q9e49k7sfvufd6rhh0n'
@@ -19,7 +25,7 @@ class Imdb:
 
         if options is None:
             options = {}
-            
+
         self.options = options
         if options.get('anonymize') is True:
             self.base_uri = 'youtubeproxy.org/default.aspx?prx=https://{0}'.format(self.base_uri)
@@ -117,7 +123,7 @@ class Imdb:
                 'title_substring']
         movie_results = []
 
-        html_unescape = html.parser.HTMLParser().unescape
+        html_unescape = htmlparser.HTMLParser().unescape
 
         # Loop through all results and build a list with popular matches first
         for key in keys:
@@ -253,3 +259,4 @@ class Movie:
         if 'trailer' in self.data and 'encodings' in self.data['trailer']:
             for k, v in list(self.data['trailer']['encodings'].items()):
                 self.trailers[v['format']] = v['url']
+
