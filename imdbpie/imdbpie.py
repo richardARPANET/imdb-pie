@@ -11,7 +11,7 @@ api_key = '2wex6aeu6a8q9e49k7sfvufd6rhh0n'
 sha1_key = hashlib.sha1(api_key.encode('utf-8')).hexdigest()
 
 
-class Imdb:
+class Imdb(object):
 
     def __init__(self, options=None):
         self.locale = 'en_US'
@@ -167,7 +167,7 @@ class Person(object):
         return '<Person: {0} ({1})>'.format(self.name.encode('utf-8'), self.imdb_id)
 
 
-class Movie:
+class Movie(object):
     def __init__(self, **kwargs):
         self.data = kwargs
 
