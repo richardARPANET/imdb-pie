@@ -31,7 +31,7 @@ def get_package_data(package):
 
 setup(
     name='imdbpie',
-    version='1.3.3',
+    version='1.4.0',
     packages=get_packages('imdbpie'),
     package_data=get_package_data('imdbpie'),
     description='Python IMDB client using the IMDB json web service made available for their iOS app.',
