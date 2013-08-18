@@ -11,16 +11,16 @@ class TestPerson(unittest.TestCase):
         self.assertIsNotNone(movie.credits)
 
     def test_director(self):
-        self.assertEqual(movie.directors[0].name, 'Brad Bird')
+        self.assertEqual(movie.directors_summary[0].name, 'Brad Bird')
 
     def test_director_role(self):
-        self.assertFalse(movie.directors[0].role)
+        self.assertFalse(movie.directors_summary[0].role)
 
     def test_writers(self):
-        self.assertEqual(movie.writers[0].name, 'Brad Bird')
+        self.assertEqual(movie.writers_summary[0].name, 'Brad Bird')
 
     def test_writers_role(self):
-        self.assertFalse(movie.writers[0].role)
+        self.assertFalse(movie.writers_summary[0].role)
 
 if __name__ == '__main__':
     unittest.main()

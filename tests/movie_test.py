@@ -50,10 +50,10 @@ class TestTitle(unittest.TestCase):
         self.assertIsNotNone(movie.genres)
 
     def test_directors(self):
-        self.assertIsNotNone(movie.directors)
+        self.assertIsNotNone(movie.directors_summary)
 
     def test_writers(self):
-        self.assertIsNotNone(movie.writers)
+        self.assertIsNotNone(movie.writers_summary)
 
 if __name__ == '__main__':
     unittest.main()

@@ -62,8 +62,8 @@ class Imdb(object):
         elif json is True:
             return result["data"]
         else:
-            movie = Movie(**result["data"])
-            return movie
+            title = Title(**result["data"])
+            return title
 
     def get_credits(self, imdb_id):
         imdb_id = self.validate_id(imdb_id)
@@ -115,7 +115,7 @@ class Imdb(object):
                 'title_exact',
                 'title_approx',
                 'title_substring']
-        movie_results = []
+        title_results = []
 
         html_unescape = HTMLParser.HTMLParser().unescape
 
@@ -128,14 +128,14 @@ class Imdb(object):
                     if year_match:
                         year = year_match.group(0)
 
-                    movie_match = {
+                    title_match = {
                         'title': html_unescape(r['title']),
                         'year': year,
                         'imdb_id': r['id']
                     }
-                    movie_results.append(movie_match)
+                    title_results.append(title_match)
 
-        return movie_results
+        return title_results
 
     def top_250(self):
         url = self.build_url('/chart/top', {})
@@ -155,19 +155,28 @@ class Imdb(object):
 
 
 class Person(object):
-    def __init__(self, **kwargs):
-        p = kwargs['name']
+    def __init__(self, **person):
+        p = person.get('name')
+        # token and label are the persons categorisation
+        # e.g token: writers label: Series writing credits
+        self.token = person.get('token')
+        self.label = person.get('label')
 
+        # attr is a note about this persons work
+        # e.g. (1990 - 1992 20 episodes)
+        self.attr = person.get('attr')
+
+        # other primary information about their part
         self.name = p.get('name')
         self.imdb_id = p.get('nconst')
-        self.role = kwargs.get('char')
-        self.job = kwargs.get('job')
+        self.role = person.get('char')
+        self.job = person.get('job')
 
     def __repr__(self):
         return '<Person: {0} ({1})>'.format(self.name.encode('utf-8'), self.imdb_id)
 
 
-class Movie(object):
+class Title(object):
     def __init__(self, **kwargs):
         self.data = kwargs
 
@@ -212,11 +221,11 @@ class Movie(object):
                 self.data['trailer']['slates']):
             self.trailer_img_url = self.data['trailer']['slates'][0]['url']
 
-        # Directors
-        self.directors = []
+        # Directors summary
+        self.directors_summary = []
         if self.data.get('directors_summary'):
             for director in self.data['directors_summary']:
-                self.directors.append(Person(**director))
+                self.directors_summary.append(Person(**director))
 
         # Creators
         self.creators = []
@@ -230,23 +239,29 @@ class Movie(object):
             for cast in self.data['cast_summary']:
                 self.cast_summary.append(Person(**cast))
 
+        # Writers summary
+        self.writers_summary = []
+        if self.data.get('writers_summary'):
+            for writer in self.data['writers_summary']:
+                self.writers_summary.append(Person(**writer))
+
         # Credits
         self.credits = []
         if self.data.get('credits'):
             for credit in self.data['credits']:
                 """
                 Possible tokens
-                directors, cast, writers
+                directors, cast, writers, producers and others
                 """
-                if 'cast' in credit['token']:
-                    for member in credit['list']:
-                        self.credits.append(Person(**member))
-
-        # Writers
-        self.writers = []
-        if self.data.get('writers_summary'):
-            for writer in self.data['writers_summary']:
-                self.writers.append(Person(**writer))
+                for person in credit['list']:
+                    person_extra = {'token': credit.get('token'),
+                                    'label': credit.get('label'),
+                                    'attr': person.get('attr')}
+                    person = dict(person_extra.items() + person.items())
+                    if 'name' in person:
+                        # some 'special' credits such as script rewrites have different formatting
+                        # check for 'name' is a temporary fix for this, we lose a minimal amount of data from this
+                        self.credits.append(Person(**person))
 
         # Trailers
         self.trailers = {}
