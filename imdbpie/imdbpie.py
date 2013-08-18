@@ -273,4 +273,3 @@ class Title(object):
         if 'trailer' in self.data and 'encodings' in self.data['trailer']:
             for k, v in list(self.data['trailer']['encodings'].items()):
                 self.trailers[v['format']] = v['url']
-
