@@ -175,7 +175,7 @@ class Person(object):
         # other primary information about their part
         self.name = p.get('name')
         self.imdb_id = p.get('nconst')
-        self.role = person.get('char')
+        self.role = person.get('char').split('/') if person.get('char') else None
         self.job = person.get('job')
 
     def __repr__(self):
