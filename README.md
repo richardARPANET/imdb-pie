@@ -45,9 +45,19 @@ Python IMDB client using the IMDB json web service made available for their iOS 
 
     imdb.validate_id('tt1000') => tt0001000
 
+### Get a title's credit information and check categorisation
+    movie = imdb.find_movie_by_id("tt1210166")
+    for person in movie.credits:
+        # check if they are a writer
+        if person.token == 'writers':
+            print person.name + ' is a writer'
+        else:
+            print person.name + ' is not a writer'
+
+
 ## Requirements
 
-    1. Python 2.7
+    1. Python 2.7+
     2. Python requests - python-requests.org
 
 ## Tests
