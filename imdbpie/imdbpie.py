@@ -250,8 +250,7 @@ class Title(object):
         if self.data.get('credits'):
             for credit in self.data['credits']:
                 """
-                Possible tokens
-                directors, cast, writers, producers and others
+                Possible tokens: directors, cast, writers, producers and others
                 """
                 for person in credit['list']:
                     person_extra = {'token': credit.get('token'),
