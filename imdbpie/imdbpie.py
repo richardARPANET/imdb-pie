@@ -261,8 +261,9 @@ class Title(object):
                 for person in credit['list']:
                     person_extra = {'token': credit.get('token'),
                                     'label': credit.get('label'),
-                                    'job': person.get('attr'),
+                                    'job': person.get('job'),
                                     'attr': person.get('attr')}
+                    person = dict(person_extra.items() + person.items())
                     if 'name' in person:
                         # some 'special' credits such as script rewrites have different formatting
                         # check for 'name' is a temporary fix for this, we lose a minimal amount of data from this
