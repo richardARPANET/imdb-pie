@@ -157,7 +157,7 @@ class Imdb(object):
         r = requests.get(url, headers={'User-Agent': '''Mozilla/5.0
         (iPhone; U; CPU iPhone OS 4_1 like Mac OS X; en-us)
         AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8B5097d Safari/6531.22.7'''})
-        return json.loads(r.content)
+        return json.loads(r.content.decode('utf-8'))
 
 
 class Person(object):
@@ -263,7 +263,7 @@ class Title(object):
                                     'label': credit.get('label'),
                                     'job': person.get('job'),
                                     'attr': person.get('attr')}
-                    person = dict(person_extra.items() + person.items())
+                    person = dict(list(person_extra.items()) + list(person.items()))
                     if 'name' in person:
                         # some 'special' credits such as script rewrites have different formatting
                         # check for 'name' is a temporary fix for this, we lose a minimal amount of data from this
