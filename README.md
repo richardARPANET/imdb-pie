@@ -38,12 +38,23 @@ Python IMDB client using the IMDB json web service made available for their iOS 
     imdb.popular_shows() => [{'title' : "Glee", 'year' : "2009", 'imdb_id' => "tt1327801"}, {'title' : "Dexter", ...}]
 
 ### Check if a movie exists, by imdb id
+Returns either True or False
 
     imdb.movie_exists('tt1327801') => True
 
 ### Check an imdb id is of valid format (tt0000000), and try to fix if not
 
     imdb.validate_id('tt1000') => tt0001000
+    
+### Get images for a person
+Returns a list of image objects with the following attributes (caption, url, width, height)
+
+    images = imdb.person_images("tt0468569")
+    
+### Get images for a movie or show
+Returns a list of image objects with the following attributes (caption, url, width, height)
+
+    images = imdb.title_images("tt0468569")
 
 ### Get a title's credit information and check categorisation
     movie = imdb.find_movie_by_id("tt1210166")

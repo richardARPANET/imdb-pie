@@ -153,6 +153,26 @@ class Imdb(object):
         result = self.get(url)
         return result["data"]["list"]
 
+    def get_images(self, result):
+        if 'error' in result:
+            return False
+
+        results = []
+        if 'photos' in result.get('data'):
+            for image in result.get('data').get('photos'):
+                results.append(Image(**image))
+        return results
+
+    def title_images(self, imdb_id):
+        url = self.build_url('/title/photos', {'tconst': imdb_id})
+        result = self.get(url)
+        return self.get_images(result)
+
+    def person_images(self, imdb_id):
+        url = self.build_url('/name/photos', {'nconst': imdb_id})
+        result = self.get(url)
+        return self.get_images(result)
+
     def get(self, url):
         r = requests.get(url, headers={'User-Agent': '''Mozilla/5.0
         (iPhone; U; CPU iPhone OS 4_1 like Mac OS X; en-us)
@@ -274,3 +294,14 @@ class Title(object):
         if 'trailer' in self.data and 'encodings' in self.data['trailer']:
             for k, v in list(self.data['trailer']['encodings'].items()):
                 self.trailers[v['format']] = v['url']
+
+
+class Image(object):
+    def __init__(self, **image):
+        self.caption = image.get('caption')
+        self.url = image.get('image').get('url')
+        self.width = image.get('image').get('width')
+        self.height = image.get('image').get('height')
+
+    def __repr__(self):
+        return '<Image: {0}>'.format(self.caption.encode('utf-8'))
