@@ -3,6 +3,7 @@ import unittest
 
 imdb = Imdb({'anonymize': False})
 
+
 class TestSearch(unittest.TestCase):
 
     def test_batman(self):
@@ -22,7 +23,7 @@ class TestSearch(unittest.TestCase):
         self.assertTrue(isinstance(self.movies[0], dict))
 
     def test_popular_shows(self):
-        self.shows = imdb.top_250()
+        self.shows = imdb.popular_shows()
         self.assertTrue(isinstance(self.shows[0], dict))
 
 
