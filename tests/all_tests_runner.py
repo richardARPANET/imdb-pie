@@ -1,5 +1,6 @@
 import unittest
 
+
 def load_tests(loader, tests, pattern):
     """
     Find and load all tests in dir
