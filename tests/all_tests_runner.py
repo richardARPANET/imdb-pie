@@ -6,8 +6,10 @@ def load_tests(loader, tests, pattern):
     Find and load all tests in dir
     """
     suite = unittest.TestSuite()
-    for all_tests in unittest.defaultTestLoader.discover('./', pattern='*_test.py'):
-        for test in all_tests:
+    for tests in unittest.defaultTestLoader.discover(
+        './', pattern='*_test.py'
+    ):
+        for test in tests:
             suite.addTests(test)
     return suite
 

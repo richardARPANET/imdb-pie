@@ -1,40 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*
 
-from distutils.core import setup
+from __future__ import absolute_import
+
 import os
 
+from setuptools import find_packages, setup
 
-def get_packages(package):
-    """
-    Return root package & all sub-packages.
-    """
-    return [dirpath
-            for dirpath, dirnames, filenames in os.walk(package)
-            if os.path.exists(os.path.join(dirpath, '__init__.py'))]
+# allow setup.py to be run from any path
+os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
-
-def get_package_data(package):
-    """
-    Return all files under the root package, that are not in a
-    package themselves.
-    """
-    walk = [(dirpath.replace(package + os.sep, '', 1), filenames)
-            for dirpath, dirnames, filenames in os.walk(package)
-            if not os.path.exists(os.path.join(dirpath, '__init__.py'))]
-
-    filepaths = []
-    for base, filenames in walk:
-        filepaths.extend([os.path.join(base, filename)
-                          for filename in filenames])
-    return {package: filepaths}
 
 setup(
     name='imdbpie',
-    version='1.4.4',
-    packages=get_packages('imdbpie'),
-    package_data=get_package_data('imdbpie'),
-    description='Python IMDB client using the IMDB json web service made available for their iOS app.',
+    version='1.5.0',
+    packages=find_packages('imdbpie', exclude=('tests',)),
+    package_dir={'': 'imdbpie'},
+    include_package_data=True,
+    zip_safe=True,
+    description=(
+        'Python IMDB client using the IMDB json web service made '
+        'available for their iOS app.'
+    ),
     author='Richard O\'Dwyer',
     author_email='richard@richard.do',
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
@@ -44,6 +31,11 @@ setup(
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Topic :: Internet :: WWW/HTTP'
     ]
 )

@@ -1,9 +1,13 @@
-import json
-import time
-import requests
-import hashlib
-import re
+from __future__ import absolute_import
 
+import datetime
+import hashlib
+import json
+import logging
+import os
+import random
+import re
+import time
 # handle python 2 and python 3 imports
 try:
     from urllib.parse import urlencode
@@ -11,24 +15,57 @@ try:
 except ImportError:
     from urllib import urlencode
     import HTMLParser as htmlparser
+import requests
 
-base_uri = 'app.imdb.com'
-api_key = '2wex6aeu6a8q9e49k7sfvufd6rhh0n'
-sha1_key = hashlib.sha1(api_key.encode('utf-8')).hexdigest()
+logger = logging.getLogger(__name__)
+
+BASE_URI = 'app.imdb.com'
+API_KEY = '2wex6aeu6a8q9e49k7sfvufd6rhh0n'
+SHA1_KEY = hashlib.sha1(API_KEY.encode('utf-8')).hexdigest()
+USER_AGENTS = (
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0_1 like Mac OS X) '
+    'AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9A405',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0_1 like Mac OS X) '
+    'AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9A406',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0_1 like Mac OS X) '
+    'AppleWebKit/534.46 (KHTML, like Gecko) Ver sion/5.1 Mobile/9A405 '
+    'Safari/7534.48.3',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0_1 like Mac OS X) '
+    'AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A405 '
+    'Safari/7534.48.3',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0_1 like Mac OS X) '
+    'AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A406 '
+    'Safari/7534.48.3',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) '
+    'AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9A334',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) '
+    'AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 '
+    'Safari/7534.48.3',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 5_1 like Mac OS X) '
+    'AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9B179 '
+    'Safari/7534.48.3',
+    'Mozilla/5.0(iPhone; U; CPU iPhone OS 4_1 like Mac OS X; en-us)'
+    'AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8B5097d '
+    'Safari/6531.22.7',
+)
 
 
 class Imdb(object):
 
     def __init__(self, options=None):
         self.locale = 'en_US'
-        self.base_uri = base_uri
+        self.base_uri = BASE_URI
+        self.timestamp = time.mktime(datetime.date.today().timetuple())
+        self.user_agent = random.choice(USER_AGENTS)
 
         if options is None:
             options = {}
 
         self.options = options
         if options.get('anonymize') is True:
-            self.base_uri = 'youtubeproxy.org/default.aspx?prx=https://{0}'.format(self.base_uri)
+            self.base_uri = (
+                'aniscartujo.com/webproxy/default.aspx?prx=https://{0}'
+            ).format(self.base_uri)
 
         if options.get('exclude_episodes') is True:
             self.exclude_episodes = True
@@ -36,19 +73,27 @@ class Imdb(object):
             self.exclude_episodes = False
 
         if options.get('locale'):
-            self.locale = options.get('locale')
+            self.locale = options['locale']
+
+        self.caching_enabled = True if options.get('cache') is True else False
+        self.cache_dir = options.get('cache_dir') or '/tmp/imdbpiecache'
 
     def build_url(self, path, params):
-        default_params = {"api": "v1",
-                          "appid": "iphone1_1",
-                          "apiPolicy": "app1_1",
-                          "apiKey": sha1_key,
-                          "locale": self.locale,
-                          "timestamp": int(time.time())}
+        default_params = {
+            "api": "v1",
+            "appid": "iphone1_1",
+            "apiPolicy": "app1_1",
+            "apiKey": SHA1_KEY,
+            "locale": self.locale,
+            "timestamp": self.timestamp
+        }
 
-        query_params = dict(list(default_params.items()) + list(params.items()))
+        query_params = dict(
+            list(default_params.items()) + list(params.items())
+        )
         query_params = urlencode(query_params)
-        return 'https://{0}{1}?{2}'.format(self.base_uri, path, query_params)
+        url = 'https://{0}{1}?{2}'.format(self.base_uri, path, query_params)
+        return url
 
     def find_movie_by_id(self, imdb_id, json=False):
         imdb_id = self.validate_id(imdb_id)
@@ -57,13 +102,19 @@ class Imdb(object):
         if 'error' in result:
             return False
         # if the result is a re-dir, see imdb id tt0000021 for e.g...
-        if result["data"].get('tconst') != result["data"].get('news').get('channel'):
+        if (
+            result["data"].get('tconst') !=
+            result["data"].get('news').get('channel')
+        ):
             return False
 
-        #get the full cast information, add key if not present
+        # get the full cast information, add key if not present
         result["data"][str("credits")] = self.get_credits(imdb_id)
 
-        if self.exclude_episodes is True and result["data"].get('type') == 'tv_episode':
+        if (
+            self.exclude_episodes is True and
+            result["data"].get('type') == 'tv_episode'
+        ):
             return False
         elif json is True:
             return result["data"]
@@ -87,12 +138,8 @@ class Imdb(object):
         imdb_id = self.validate_id(imdb_id)
         if imdb_id:
             results = self.find_movie_by_id(imdb_id)
-            if results:
-                return True
-            else:
-                return False
-        else:
-            return False
+            return True if results else False
+        return False
 
     def validate_id(self, imdb_id):
         """
@@ -102,28 +149,33 @@ class Imdb(object):
         if match:
             id_num = match[0]
             if len(id_num) is not 7:
-                #pad id to 7 digits
+                # pad id to 7 digits
                 id_num = id_num.zfill(7)
             return 'tt' + id_num
         else:
             return False
 
     def find_by_title(self, title):
-        default_find_by_title_params = {'json': '1',
-                                        'nr': 1,
-                                        'tt': 'on',
-                                        'q': title}
+        default_find_by_title_params = {
+            'json': '1',
+            'nr': 1,
+            'tt': 'on',
+            'q': title
+        }
         query_params = urlencode(default_find_by_title_params)
-        results = self.get(('http://www.imdb.com/'
-                            'xml/find?{0}').format(query_params))
+        results = self.get(
+            ('http://www.imdb.com/xml/find?{0}').format(query_params)
+        )
 
-        keys = ['title_popular',
-                'title_exact',
-                'title_approx',
-                'title_substring']
+        keys = (
+            'title_popular',
+            'title_exact',
+            'title_approx',
+            'title_substring'
+        )
         title_results = []
 
-        html_unescape = htmlparser.HTMLParser().unescape
+        html_unescaped = htmlparser.HTMLParser().unescape
 
         # Loop through all results and build a list with popular matches first
         for key in keys:
@@ -135,7 +187,7 @@ class Imdb(object):
                         year = year_match.group(0)
 
                     title_match = {
-                        'title': html_unescape(r['title']),
+                        'title': html_unescaped(r['title']),
                         'year': year,
                         'imdb_id': r['id']
                     }
@@ -173,14 +225,58 @@ class Imdb(object):
         result = self.get(url)
         return self.get_images(result)
 
+    def _get_cache_item_path(self, url):
+        """
+        Generates a cache location for a given api call.
+        Returns a file path
+        """
+        cache_dir = self.cache_dir
+        m = hashlib.md5()
+        m.update(url)
+        cache_key = m.hexdigest()
+
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
+        return os.path.join(cache_dir, cache_key + '.cache')
+
+    def _get_cached_response(self, file_path):
+        """ Retrieves response from cache """
+        if os.path.exists(file_path):
+            logger.info('retrieving from cache: %s', file_path)
+
+            with open(file_path, 'r+') as resp_data:
+                cached_resp = json.load(resp_data)
+
+            if cached_resp.get('exp') > self.timestamp:
+                return cached_resp
+
+            logger.info('cached expired, removing: %s', file_path)
+            os.remove(file_path)
+        return None
+
+    @staticmethod
+    def _cache_response(file_path, resp):
+        with open(file_path, 'w+') as f:
+            json.dump(resp, f)
+
     def get(self, url):
-        r = requests.get(url, headers={'User-Agent': '''Mozilla/5.0
-        (iPhone; U; CPU iPhone OS 4_1 like Mac OS X; en-us)
-        AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8B5097d Safari/6531.22.7'''})
-        return json.loads(r.content.decode('utf-8'))
+        if self.caching_enabled:
+            cached_item_path = self._get_cache_item_path(url)
+            cached_resp = self._get_cached_response(cached_item_path)
+            if cached_resp:
+                return cached_resp
+
+        r = requests.get(url, headers={'User-Agent': self.user_agent})
+        response = json.loads(r.content.decode('utf-8'))
+
+        if self.caching_enabled:
+            self._cache_response(cached_item_path, response)
+
+        return response
 
 
 class Person(object):
+
     def __init__(self, **person):
         p = person.get('name')
         # token and label are the persons categorisation
@@ -195,14 +291,18 @@ class Person(object):
         # other primary information about their part
         self.name = p.get('name')
         self.imdb_id = p.get('nconst')
-        self.role = person.get('char').split('/') if person.get('char') else None
+        self.role = (
+            person.get('char').split('/') if person.get('char') else None
+        )
         self.job = person.get('job')
 
     def __repr__(self):
-        return '<Person: {0} ({1})>'.format(self.name.encode('utf-8'), self.imdb_id)
+        repr = '<Person: {0} ({1})>'
+        return repr.format(self.name.encode('utf-8'), self.imdb_id)
 
 
 class Title(object):
+
     def __init__(self, **kwargs):
         self.data = kwargs
 
@@ -223,7 +323,7 @@ class Title(object):
 
         self.runtime = None
         if 'runtime' in self.data:
-            #mins
+            # mins
             self.runtime = str(int((self.data['runtime']['time'] / 60)))
 
         self.poster_url = None
@@ -232,19 +332,30 @@ class Title(object):
 
         self.cover_url = None
         if 'image' in self.data and 'url' in self.data['image']:
-            self.cover_url = '{}_SX214_.jpg'.format(self.data['image']['url'].replace('.jpg', ''))
+            self.cover_url = '{}_SX214_.jpg'.format(
+                self.data['image']['url'].replace('.jpg', '')
+            )
 
         self.release_date = None
-        if 'release_date' in self.data and 'normal' in self.data['release_date']:
+        if (
+            'release_date' in self.data and
+            'normal' in self.data['release_date']
+        ):
             self.release_date = self.data['release_date']['normal']
 
         self.certification = None
-        if 'certificate' in self.data and 'certificate' in self.data['certificate']:
+        if (
+            'certificate' in self.data and
+            'certificate' in self.data['certificate']
+        ):
             self.certification = self.data['certificate']['certificate']
 
         self.trailer_img_url = None
-        if ('trailer' in self.data and 'slates' in self.data['trailer'] and
-                self.data['trailer']['slates']):
+        if (
+            'trailer' in self.data and
+            'slates' in self.data['trailer'] and
+            self.data['trailer']['slates']
+        ):
             self.trailer_img_url = self.data['trailer']['slates'][0]['url']
 
         # Directors summary
@@ -279,14 +390,20 @@ class Title(object):
                 Possible tokens: directors, cast, writers, producers and others
                 """
                 for person in credit['list']:
-                    person_extra = {'token': credit.get('token'),
-                                    'label': credit.get('label'),
-                                    'job': person.get('job'),
-                                    'attr': person.get('attr')}
-                    person = dict(list(person_extra.items()) + list(person.items()))
+                    person_extra = {
+                        'token': credit.get('token'),
+                        'label': credit.get('label'),
+                        'job': person.get('job'),
+                        'attr': person.get('attr')
+                    }
+                    person = dict(
+                        list(person_extra.items()) + list(person.items())
+                    )
                     if 'name' in person:
-                        # some 'special' credits such as script rewrites have different formatting
-                        # check for 'name' is a temporary fix for this, we lose a minimal amount of data from this
+                        # some 'special' credits such as script
+                        # rewrites have different formatting
+                        # check for 'name' is a temporary fix for this,
+                        # we lose a minimal amount of data from this
                         self.credits.append(Person(**person))
 
         # Trailers
@@ -297,6 +414,7 @@ class Title(object):
 
 
 class Image(object):
+
     def __init__(self, **image):
         self.caption = image.get('caption')
         self.url = image.get('image').get('url')

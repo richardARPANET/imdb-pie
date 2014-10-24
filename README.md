@@ -4,12 +4,26 @@
 
 Python IMDB client using the IMDB json web service made available for their iOS app.
 
+## Installation
+
+To install imdbpie, simply:
+```bash
+pip install imdbpie
+```
+
 ## How To Use
 
 ### Create an instance of ImdbPie
 
     imdb = Imdb()
     imdb = Imdb({'anonymize' : True}) # to proxy requests
+
+    # Creating an instance with caching enabled
+    # Note that the cached responses expire every 2 hours or so.
+    # The API response itself dictates the expiry time)
+    imdb = Imdb({'cache': True})
+    # Specify optional cache directory, the default is '/tmp/imdbpiecache'
+    imdb = Imdb({'cache': True, 'cache_dir': '/tmp/imdbpie-cache-here'})
 
 ### Search for a movie by title
 
@@ -45,12 +59,12 @@ Returns either True or False
 ### Check an imdb id is of valid format (tt0000000), and try to fix if not
 
     imdb.validate_id('tt1000') => tt0001000
-    
+
 ### Get images for a person
 Returns a list of image objects with the following attributes (caption, url, width, height)
 
     images = imdb.person_images("tt0468569")
-    
+
 ### Get images for a movie or show
 Returns a list of image objects with the following attributes (caption, url, width, height)
 
@@ -68,7 +82,7 @@ Returns a list of image objects with the following attributes (caption, url, wid
 
 ## Requirements
 
-    1. Python 2.7+
+    1. Python 2 or 3
     2. Python requests - python-requests.org
 
 ## Tests
