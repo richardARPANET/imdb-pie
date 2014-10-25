@@ -309,7 +309,7 @@ class Title(object):
         self.imdb_id = self.data.get('tconst')
         self.title = self.data.get('title')
         self.type = self.data.get('type')
-        self.year = int(self.data.get('year'))
+        self.year = self._extract_year(self.data)
         self.tagline = self.data.get('tagline')
         self.plot = self.data.get('plot')
         self.runtime = self.data.get('runtime')
@@ -411,6 +411,13 @@ class Title(object):
         if 'trailer' in self.data and 'encodings' in self.data['trailer']:
             for k, v in list(self.data['trailer']['encodings'].items()):
                 self.trailers[v['format']] = v['url']
+
+    @staticmethod
+    def _extract_year(data):
+        year = data.get('year')
+        if year == '????':  # if there's no year the API returns this...
+            return None
+        return int(year)
 
 
 class Image(object):
