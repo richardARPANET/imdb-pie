@@ -232,7 +232,7 @@ class Imdb(object):
         """
         cache_dir = self.cache_dir
         m = hashlib.md5()
-        m.update(url)
+        m.update(url.encode('utf-8'))
         cache_key = m.hexdigest()
 
         if not os.path.exists(cache_dir):
