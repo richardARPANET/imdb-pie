@@ -1,7 +1,10 @@
 from __future__ import absolute_import
 import os
 import shutil
-import unittest
+try:
+    import unittest2 as unittest  # for Python <= 2.6
+except ImportError:
+    import unittest
 from imdbpie import Imdb
 
 

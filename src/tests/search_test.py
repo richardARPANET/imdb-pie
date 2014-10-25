@@ -1,5 +1,8 @@
 from imdbpie import Imdb
-import unittest
+try:
+    import unittest2 as unittest  # for Python <= 2.6
+except ImportError:
+    import unittest
 
 imdb = Imdb({'anonymize': False})
 
