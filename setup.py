@@ -13,9 +13,9 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='imdbpie',
-    version='1.5.1',
-    packages=find_packages('imdbpie', exclude=('tests',)),
-    package_dir={'': 'imdbpie'},
+    version='1.5.3',
+    packages=find_packages('src', exclude=('tests',)),
+    package_dir={'': 'src'},
     include_package_data=True,
     zip_safe=True,
     description=(
