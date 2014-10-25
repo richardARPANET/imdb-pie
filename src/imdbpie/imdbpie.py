@@ -332,7 +332,7 @@ class Title(object):
 
         self.cover_url = None
         if 'image' in self.data and 'url' in self.data['image']:
-            self.cover_url = '{}_SX214_.jpg'.format(
+            self.cover_url = '{0}_SX214_.jpg'.format(
                 self.data['image']['url'].replace('.jpg', '')
             )
 
