@@ -21,7 +21,7 @@ class TestCache(unittest.TestCase):
         cache = os.path.exists(self.imdb.cache_dir)
         if not cache:
             return 0
-        _, _, cache_files = os.walk(self.imdb.cache_dir).next()
+        _, _, cache_files = next(os.walk(self.imdb.cache_dir))
         return len(cache_files)
 
     def test_cache_populated(self):
