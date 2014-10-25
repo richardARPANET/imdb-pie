@@ -4,5 +4,5 @@ python:
   - "2.7"
   - "3.3"
   - "3.4"
-install: pip install -r requirements.txt
-script: python tests/all_tests_runner.py
+install: pip install tox
+script: tox

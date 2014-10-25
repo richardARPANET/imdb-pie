@@ -91,8 +91,12 @@ for person in movie.credits:
     1. Python 2 or 3
     2. Python requests - python-requests.org
 
-## Tests
+## Running the tests
 
-    Test .py files can be found in /tests, run these to ensure ImdbPie is working 100%.
+Run:
+
+```bash
+nosetests
+```
 
 

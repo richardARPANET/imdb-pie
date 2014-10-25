@@ -3,6 +3,7 @@ from imdbpie import Imdb
 imdb = Imdb({'anonymize': False,
              'locale': 'en_US',
              'exclude_episodes': False})
+movie = imdb.find_movie_by_id('tt0705926')
 
 
 def run_tests():
@@ -26,5 +27,4 @@ def run_tests():
     print(('full credits', movie.credits))
 
 if __name__ == '__main__':
-    movie = imdb.find_movie_by_id('tt0705926')
     run_tests()
