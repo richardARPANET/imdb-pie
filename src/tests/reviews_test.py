@@ -42,5 +42,9 @@ class TestTitleReviews(unittest.TestCase):
             self.assertIsNotNone(reviews[idx].user_location)
             self.assertIsNotNone(reviews[idx].date)
 
+    def test_title_reviews_no_results(self):
+        results = imdb.title_reviews(imdb_id="tt0000224", limit=3)
+        self.assertIsNone(results)
+
 if __name__ == '__main__':
     unittest.main()

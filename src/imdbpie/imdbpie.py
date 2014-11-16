@@ -233,6 +233,11 @@ class Imdb(object):
             return None
 
         title_reviews = []
+        user_comments = result.get('data').get('user_comments')
+
+        if not user_comments:
+            return None
+
         for review_data in result['data']['user_comments']:
             title_reviews.append(Review(review_data))
         return title_reviews
