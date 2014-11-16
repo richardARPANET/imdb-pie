@@ -15,6 +15,7 @@ pip install imdbpie
 
 ### Create an instance of ImdbPie
 ```python
+from imdbpie import Imdb
 imdb = Imdb()
 imdb = Imdb({'anonymize' : True}) # to proxy requests
 
