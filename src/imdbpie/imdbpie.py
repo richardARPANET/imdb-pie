@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 BASE_URI = 'app.imdb.com'
 API_KEY = '2wex6aeu6a8q9e49k7sfvufd6rhh0n'
-SHA1_KEY = hashlib.sha1(API_KEY).hexdigest()
+SHA1_KEY = hashlib.sha1(API_KEY.encode('utf8')).hexdigest()
 USER_AGENTS = (
     'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0_1 like Mac OS X) '
     'AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9A405',
