@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 BASE_URI = 'app.imdb.com'
 API_KEY = '2wex6aeu6a8q9e49k7sfvufd6rhh0n'
-SHA1_KEY = hashlib.sha1(API_KEY.encode('utf-8')).hexdigest()
+SHA1_KEY = hashlib.sha1(API_KEY).hexdigest()
 USER_AGENTS = (
     'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0_1 like Mac OS X) '
     'AppleWebKit/534.46 (KHTML, like Gecko) Mobile/9A405',
@@ -219,6 +219,23 @@ class Imdb(object):
         url = self.build_url('/title/photos', {'tconst': imdb_id})
         result = self.get(url)
         return self.get_images(result)
+
+    def title_reviews(self, imdb_id, limit=10):
+        """
+        Retrieves reviews for a title ordered by 'Best' descending
+        """
+        url = self.build_url(
+            '/title/usercomments',
+            {'tconst': imdb_id, 'limit': limit}
+        )
+        result = self.get(url)
+        if 'error' in result:
+            return None
+
+        title_reviews = []
+        for review_data in result['data']['user_comments']:
+            title_reviews.append(Review(review_data))
+        return title_reviews
 
     def person_images(self, imdb_id):
         url = self.build_url('/name/photos', {'nconst': imdb_id})
@@ -430,3 +447,20 @@ class Image(object):
 
     def __repr__(self):
         return '<Image: {0}>'.format(self.caption.encode('utf-8'))
+
+
+class Review(object):
+
+    def __init__(self, review):
+        self.username = review['user_name']
+        self.text = review['text']
+        self.date = review['date']
+        self.rating = review.get('user_rating')
+        self.summary = review.get('summary')
+        self.status = review.get('status')
+        self.user_location = review.get('user_location')
+        self.user_score = review.get('user_score')
+        self.user_score_count = review.get('user_score_count')
+
+    def __repr__(self):
+        return '<Review: {0}>'.format(self.text[:20])

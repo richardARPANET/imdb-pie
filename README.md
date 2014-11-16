@@ -74,6 +74,11 @@ Returns a list of image objects with the following attributes (caption, url, wid
 ```python
 images = imdb.title_images("tt0468569")
 ```
+### Get reviews for a movie or show
+Returns a list of Review objects with the following attributes (username, text, date, rating, summary, status, user_location, user_score, user_score_count)
+```python
+reviews = imdb.title_reviews("tt0468569")
+```
 
 ### Get a title's credit information and check categorisation
 ```python
