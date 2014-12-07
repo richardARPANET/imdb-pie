@@ -457,9 +457,9 @@ class Image(object):
 class Review(object):
 
     def __init__(self, review):
-        self.username = review['user_name']
-        self.text = review['text']
-        self.date = review['date']
+        self.username = review.get('user_name')
+        self.text = review.get('text')
+        self.date = review.get('date')
         self.rating = review.get('user_rating')
         self.summary = review.get('summary')
         self.status = review.get('status')
