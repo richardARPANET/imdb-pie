@@ -117,6 +117,7 @@ class Imdb(object):
 
         # get the full cast information, add key if not present
         result["data"][str("credits")] = self.get_credits(imdb_id)
+        result['data']['plot_full'] = self.get_plots(imdb_id)[0]
 
         if (
             self.exclude_episodes is True and
@@ -128,6 +129,21 @@ class Imdb(object):
         else:
             title = Title(**result["data"])
             return title
+
+    def get_plots(self, imdb_id):
+        url = self.build_url('/title/plot', {'tconst': imdb_id})
+        result = self.get(url)
+
+        if result.get('error'):
+            logger.warn('Failed to get plot for imdb_id: %s. Code: %s',
+                        imdb_id, result.get('error').get('code'))
+            return []
+
+        if result['data']['tconst'] != imdb_id:
+            return []
+
+        plots = result['data'].get('plots', [])
+        return [plot.get('text') for plot in plots]
 
     def get_credits(self, imdb_id):
         imdb_id = self.validate_id(imdb_id)
@@ -340,7 +356,7 @@ class Title(object):
         self.type = self.data.get('type')
         self.year = self._extract_year(self.data)
         self.tagline = self.data.get('tagline')
-        self.plot = self.data.get('plot')
+        self.plot = self.data.get('plot_full')
         self.runtime = self.data.get('runtime')
         self.rating = self.data.get('rating')
         self.genres = self.data.get('genres')
