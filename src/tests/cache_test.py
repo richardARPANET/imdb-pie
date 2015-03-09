@@ -33,8 +33,8 @@ class TestCache(unittest.TestCase):
         # Make a 2nd call to ensure no duplicate cache items created
         self.imdb.find_movie_by_id("tt0382932")
 
-        # find makes 2 api calls
-        self.assertEqual(self._get_cache_size(), 2)
+        # find makes 3 api calls
+        self.assertEqual(self._get_cache_size(), 3)
         self.assertEqual(movie.title, 'Ratatouille')
 
     def test_cache_not_populated_when_disabled(self):

@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
 
 import datetime
 import hashlib
@@ -117,7 +117,7 @@ class Imdb(object):
 
         # get the full cast information, add key if not present
         result["data"][str("credits")] = self.get_credits(imdb_id)
-        result['data']['plot_full'] = self.get_plots(imdb_id)[0]
+        result['data']['plots'] = self.get_plots(imdb_id)
 
         if (
             self.exclude_episodes is True and
@@ -130,6 +130,8 @@ class Imdb(object):
             title = Title(**result["data"])
             return title
 
+    # TODO: tests for get plots, pull in pull requests.
+    # being refactoring improvements for release 2.x.x
     def get_plots(self, imdb_id):
         url = self.build_url('/title/plot', {'tconst': imdb_id})
         result = self.get(url)
@@ -336,7 +338,7 @@ class Person(object):
         # other primary information about their part
         self.name = p.get('name')
         self.imdb_id = p.get('nconst')
-        self.role = (
+        self.roles = (
             person.get('char').split('/') if person.get('char') else None
         )
         self.job = person.get('job')
@@ -354,115 +356,87 @@ class Title(object):
         self.imdb_id = self.data.get('tconst')
         self.title = self.data.get('title')
         self.type = self.data.get('type')
-        self.year = self._extract_year(self.data)
+        self.year = self._extract_year()
         self.tagline = self.data.get('tagline')
-        self.plot = self.data.get('plot_full')
+        self.plots = self.data.get('plots')
         self.runtime = self.data.get('runtime')
         self.rating = self.data.get('rating')
         self.genres = self.data.get('genres')
         self.votes = self.data.get('num_votes')
-
-        self.plot_outline = None
-        if 'plot' in self.data and 'outline' in self.data['plot']:
-            self.plot_outline = self.data['plot']['outline']
-
-        self.runtime = None
-        if 'runtime' in self.data:
-            # mins
-            self.runtime = str(int((self.data['runtime']['time'] / 60)))
-
-        self.poster_url = None
-        if 'image' in self.data and 'url' in self.data['image']:
-            self.poster_url = self.data['image']['url']
-
-        self.cover_url = None
-        if 'image' in self.data and 'url' in self.data['image']:
-            self.cover_url = '{0}_SX214_.jpg'.format(
-                self.data['image']['url'].replace('.jpg', '')
-            )
-
-        self.release_date = None
-        if (
-            'release_date' in self.data and
-            'normal' in self.data['release_date']
-        ):
-            self.release_date = self.data['release_date']['normal']
-
-        self.certification = None
-        if (
-            'certificate' in self.data and
-            'certificate' in self.data['certificate']
-        ):
-            self.certification = self.data['certificate']['certificate']
-
+        self.runtime = self.data.get('runtime', {}).get('time')
+        self.poster_url = self.data.get('image', {}).get('url')
+        self.cover_url = self._extract_cover_url()
+        self.release_date = self.data.get('release_date', {}).get('normal')
+        self.certification = self.data.get('certificate', {}).get(
+            'certificate')
         self.trailer_img_url = None
-        if (
-            'trailer' in self.data and
-            'slates' in self.data['trailer'] and
-            self.data['trailer']['slates']
-        ):
-            self.trailer_img_url = self.data['trailer']['slates'][0]['url']
+        self.trailer_image_urls = self._extract_trailer_image_urls()
+        self.directors_summary = self._extract_directors_summary()
+        self.creators = self._extract_creators()
+        self.cast_summary = self._extract_cast_summary()
+        self.writers_summary = self._extract_writers_summary()
+        self.credits = self._extract_credits()
+        self.trailers = self._extract_trailers()
 
-        # Directors summary
-        self.directors_summary = []
-        if self.data.get('directors_summary'):
-            for director in self.data['directors_summary']:
-                self.directors_summary.append(Person(**director))
+    def _extract_directors_summary(self):
+        return [Person(**p) for p in self.data.get('directors_summary', [])]
 
-        # Creators
-        self.creators = []
-        if self.data.get('creators'):
-            for creator in self.data['creators']:
-                self.creators.append(Person(**creator))
+    def _extract_creators(self):
+        return [Person(**p) for p in self.data.get('creators', [])]
 
-        # Cast summary
-        self.cast_summary = []
-        if self.data.get('cast_summary'):
-            for cast in self.data['cast_summary']:
-                self.cast_summary.append(Person(**cast))
+    def _extract_trailers(self):
+        def build_dict(val):
+            return {'url': val['url'], 'format': val['format']}
 
-        # Writers summary
-        self.writers_summary = []
-        if self.data.get('writers_summary'):
-            for writer in self.data['writers_summary']:
-                self.writers_summary.append(Person(**writer))
+        trailers = self.data.get('trailer', {}).get('encodings', {}).values()
+        return [build_dict(trailer) for trailer in trailers]
 
-        # Credits
-        self.credits = []
-        if self.data.get('credits'):
-            for credit in self.data['credits']:
-                """
-                Possible tokens: directors, cast, writers, producers and others
-                """
-                for person in credit['list']:
-                    person_extra = {
-                        'token': credit.get('token'),
-                        'label': credit.get('label'),
-                        'job': person.get('job'),
-                        'attr': person.get('attr')
-                    }
-                    person = dict(
-                        list(person_extra.items()) + list(person.items())
-                    )
-                    if 'name' in person:
-                        # some 'special' credits such as script
-                        # rewrites have different formatting
-                        # check for 'name' is a temporary fix for this,
-                        # we lose a minimal amount of data from this
-                        self.credits.append(Person(**person))
+    def _extract_writers_summary(self):
+        return [Person(**p) for p in self.data.get('writers_summary', [])]
 
-        # Trailers
-        self.trailers = {}
-        if 'trailer' in self.data and 'encodings' in self.data['trailer']:
-            for k, v in list(self.data['trailer']['encodings'].items()):
-                self.trailers[v['format']] = v['url']
+    def _extract_cast_summary(self):
+        return [Person(**p) for p in self.data.get('cast_summary', [])]
 
-    @staticmethod
-    def _extract_year(data):
-        year = data.get('year')
-        if year == '????':  # if there's no year the API returns this...
+    def _extract_credits(self):
+        credits = []
+
+        if not self.data.get('credits'):
+            return []
+
+        for credit_group in self.data['credits']:
+            """
+            Possible tokens: directors, cast, writers, producers and others
+            """
+            for person in credit_group['list']:
+                person_extra = {
+                    'token': credit_group.get('token'),
+                    'label': credit_group.get('label'),
+                    'job': person.get('job'),
+                    'attr': person.get('attr')
+                }
+                person_data = dict(person_extra.items() + person.items())
+                if 'name' in person_data.keys():
+                    # some 'special' credits such as script
+                    # rewrites have different formatting
+                    # check for 'name' is a temporary fix for this,
+                    # we lose a minimal amount of data from this
+                    credits.append(Person(**person_data))
+        return credits
+
+    def _extract_year(self):
+        year = self.data.get('year')
+        # if there's no year the API returns ????...
+        if not year or year == '????':
             return None
         return int(year)
+
+    def _extract_cover_url(self):
+        if self.poster_url is not None:
+            return '{0}_SX214_.jpg'.format(self.poster_url.replace('.jpg', ''))
+
+    def _extract_trailer_image_urls(self):
+        slates = self.data.get('trailer', {}).get('slates', [])
+        return [s['url'] for s in slates]
 
 
 class Image(object):

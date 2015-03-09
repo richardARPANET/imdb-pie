@@ -5,11 +5,12 @@ except ImportError:
     import unittest
 import re
 
-imdb = Imdb({'anonymize': False})
-movie = imdb.find_movie_by_id("tt0382932")
-
 
 class TestTitle(unittest.TestCase):
+
+    def setUp(self):
+        self.imdb = Imdb({'anonymize': False})
+        self.movie = self.imdb.find_movie_by_id("tt0382932")
 
     @staticmethod
     def valid_poster(poster_url):
@@ -17,49 +18,59 @@ class TestTitle(unittest.TestCase):
             r'http://ia.media-imdb.com/images/.*/',
             poster_url
         )[0]
-        if match:
-            return True
-        else:
-            return False
+        return True if match else False
 
     def test_title(self):
-        self.assertEqual(movie.title, 'Ratatouille')
+        self.assertEqual(self.movie.title, 'Ratatouille')
 
     def test_imdb_id(self):
-        self.assertEqual(movie.imdb_id, 'tt0382932')
+        self.assertEqual(self.movie.imdb_id, 'tt0382932')
 
     def test_tagline(self):
-        self.assertEqual(movie.tagline, 'Dinner is served... Summer 2007')
+        self.assertEqual(self.movie.tagline, 'Dinner is served... Summer 2007')
 
     def test_plot(self):
-        self.assertIsNotNone(movie.plot)
+        self.assertIsNotNone(self.movie.plots)
 
     def test_runtime(self):
-        self.assertIsNotNone(movie.runtime)
+        self.assertIsNotNone(self.movie.runtime)
 
     def test_rating(self):
-        self.assertTrue(str(movie.rating).isdigit())
+        self.assertTrue(str(self.movie.rating).isdigit())
 
     def test_poster_url(self):
-        self.assertTrue(self.valid_poster(movie.poster_url))
+        self.assertTrue(self.valid_poster(self.movie.poster_url))
 
     def test_release_date(self):
-        self.assertIsNotNone(movie.release_date)
+        self.assertIsNotNone(self.movie.release_date)
 
     def test_certification(self):
-        self.assertIsNotNone(movie.certification)
+        self.assertIsNotNone(self.movie.certification)
 
     def test_trailers(self):
-        self.assertIsNotNone(movie.trailers)
+        self.assertIsNotNone(self.movie.trailers)
 
     def test_genres(self):
-        self.assertIsNotNone(movie.genres)
+        self.assertIsNotNone(self.movie.genres)
 
     def test_directors(self):
-        self.assertIsNotNone(movie.directors_summary)
+        self.assertIsNotNone(self.movie.directors_summary)
 
     def test_writers(self):
-        self.assertIsNotNone(movie.writers_summary)
+        self.assertIsNotNone(self.movie.writers_summary)
+
+    def test_plot_and_plot_outline(self):
+        title = self.imdb.find_movie_by_id('tt1588875')
+
+        expected_plots = [(
+            'A polar station on a desolate island in the Arctic Ocean. Sergei,'
+            ' a seasoned meteorologist, and Pavel, a recent college graduate, '
+            'are spending months in complete isolation on the once strategic '
+            'research base. Pavel receives an important radio message and is '
+            'still trying to find the right moment to tell Sergei, when fear, '
+            'lies and suspicions start poisoning the atmosphere...'
+        )]
+        self.assertEqual(expected_plots, title.plots)
 
 if __name__ == '__main__':
     unittest.main()
