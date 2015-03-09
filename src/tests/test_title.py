@@ -1,17 +1,20 @@
-from __future__ import absolute_import
-from __future__ import absolute_import
-import json
+from __future__ import absolute_import, unicode_literals
+
 import os
+import json
+from operator import itemgetter
+
 import pytest
 
 from imdbpie.imdbpie import Title
+
 from tests.utils import load_test_data
 
 
 @pytest.fixture
 def set_up():
     data = load_test_data('title_maindetails.json')
-    title = Title(**data)
+    title = Title(data=data)
 
     return {
         'title_data': data,
@@ -48,7 +51,10 @@ def test_extract_trailers(set_up):
         }
     ]
 
-    assert sorted(expected_trailers) == sorted(trailers)
+    assert (
+        sorted(expected_trailers, key=itemgetter('format')) ==
+        sorted(trailers, key=itemgetter('format'))
+    )
 
 
 def test_extract_trailer_image_urls(set_up):
@@ -117,7 +123,7 @@ def test_extract_year(set_up):
 
 def test_extract_year_no_year():
     data = {'year': '????'}
-    title = Title(**data)
+    title = Title(data=data)
     assert title._extract_year() is None
 
 
@@ -138,13 +144,13 @@ def test_extract_credits():
     credits_data = load_test_data('title_maindetails.json')['credits']
     data = {'credits': credits_data[0:3]}
 
-    title = Title(**data)
+    title = Title(data=data)
 
     people = title._extract_credits()
 
     assert 6 == len(people)
 
-    assert people[0].roles is None
+    assert people[0].roles == []
     assert people[0].label == 'Directed by'
     assert people[0].token == 'directors'
     assert people[0].name == 'Aleksey Popogrebskiy'

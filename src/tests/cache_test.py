@@ -1,11 +1,14 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, unicode_literals
+
 import os
 import shutil
+
+from imdbpie import Imdb
+
 try:
     import unittest2 as unittest  # for Python <= 2.6
 except ImportError:
     import unittest
-from imdbpie import Imdb
 
 
 class TestCache(unittest.TestCase):

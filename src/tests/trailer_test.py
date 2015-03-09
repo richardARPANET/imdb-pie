@@ -1,18 +1,10 @@
+from __future__ import absolute_import, unicode_literals
+
 from imdbpie import Imdb
-try:
-    import unittest2 as unittest  # for Python <= 2.6
-except ImportError:
-    import unittest
 
 imdb = Imdb({'anonymize': False})
 movie = imdb.find_movie_by_id("tt0382932")
 
 
-class TestTrailer(unittest.TestCase):
-
-    def test_trailer_url(self):
-        self.assertIsNotNone(movie.trailers)
-
-
-if __name__ == '__main__':
-    unittest.main()
+def test_trailer_url():
+    movie.trailers is not None

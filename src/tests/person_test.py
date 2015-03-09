@@ -1,4 +1,7 @@
+from __future__ import absolute_import, unicode_literals
+
 from imdbpie import Imdb
+
 try:
     import unittest2 as unittest  # for Python <= 2.6
 except ImportError:
@@ -17,13 +20,13 @@ class TestPerson(unittest.TestCase):
         self.assertEqual(movie.directors_summary[0].name, 'Brad Bird')
 
     def test_director_role(self):
-        self.assertIsNone(movie.directors_summary[0].roles)
+        self.assertEqual([], movie.directors_summary[0].roles)
 
     def test_writers(self):
         self.assertEqual(movie.writers_summary[0].name, 'Brad Bird')
 
     def test_writers_role(self):
-        self.assertIsNone(movie.writers_summary[0].roles)
+        self.assertEqual([], movie.writers_summary[0].roles)
 
 if __name__ == '__main__':
     unittest.main()

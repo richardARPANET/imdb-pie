@@ -1,8 +1,12 @@
+from __future__ import absolute_import, unicode_literals
+
 from imdbpie import Imdb
+
 try:
     import unittest2 as unittest  # for Python <= 2.6
 except ImportError:
     import unittest
+
 
 imdb = Imdb({'anonymize': False})
 reviews = imdb.title_reviews(imdb_id="tt0468569", limit=3)

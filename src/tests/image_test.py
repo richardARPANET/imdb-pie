@@ -1,4 +1,7 @@
+from __future__ import absolute_import, unicode_literals
+
 from imdbpie import Imdb
+
 try:
     import unittest2 as unittest  # for Python <= 2.6
 except ImportError:
