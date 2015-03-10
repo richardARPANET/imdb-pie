@@ -1,8 +1,11 @@
+from __future__ import absolute_import, unicode_literals
+
 import pytest
 
-from tests.utils import load_test_data
-from imdbpie.objects import Review
 from imdbpie import Imdb
+from imdbpie.objects import Review
+
+from tests.utils import load_test_data
 
 
 @pytest.fixture

@@ -1,11 +1,15 @@
+from __future__ import absolute_import, unicode_literals
+
 import cgi
 import time
 import datetime
 
-from six.moves.urllib_parse import urlparse
 import pytest
+from six.moves.urllib_parse import urlparse
+
 from imdbpie import Imdb
-from imdbpie.objects import Person, Review, Image
+from imdbpie.objects import Image, Person, Review
+
 from tests.utils import load_test_data, assert_urls_match
 
 
