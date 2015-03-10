@@ -37,7 +37,7 @@ class Imdb(object):
             True if self.options.get('exclude_episodes') is True else False)
         self.caching_enabled = (
             True if self.options.get('cache') is True else False)
-        self.cache_dir = self.options.get('cache_dir') or '/tmp/imdbpiecache'
+        self.cache_dir = self.options.get('cache_dir', '/tmp/imdbpiecache')
 
     def build_url(self, path, params):
         default_params = {

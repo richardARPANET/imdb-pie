@@ -3,49 +3,40 @@ from __future__ import absolute_import, unicode_literals
 import os
 import shutil
 
+import pytest
 from imdbpie import Imdb
 
-try:
-    import unittest2 as unittest  # for Python <= 2.6
-except ImportError:
-    import unittest
+
+def setup_function(function):
+    shutil.rmtree(Imdb().cache_dir, ignore_errors=True)
 
 
-class TestCache(unittest.TestCase):
-
-    def setUp(self):
-        self.imdb = Imdb()
-
-    def tearDown(self):
-        shutil.rmtree(self.imdb.cache_dir, ignore_errors=True)
-
-    def _get_cache_size(self):
-        """ Returns a count of the items in the cache """
-        cache = os.path.exists(self.imdb.cache_dir)
-        if not cache:
-            return 0
-        _, _, cache_files = next(os.walk(self.imdb.cache_dir))
-        return len(cache_files)
-
-    def test_cache_populated(self):
-        """ Tests the cache is populated correctly """
-        self.imdb = Imdb({'cache': True, 'cache_dir': '/tmp/imdbpie-test'})
-
-        self.assertEqual(self._get_cache_size(), 0)
-        movie = self.imdb.find_movie_by_id("tt0382932")
-        # Make a 2nd call to ensure no duplicate cache items created
-        self.imdb.find_movie_by_id("tt0382932")
-
-        # find makes 3 api calls
-        self.assertEqual(self._get_cache_size(), 3)
-        self.assertEqual(movie.title, 'Ratatouille')
-
-    def test_cache_not_populated_when_disabled(self):
-        """ Tests the cache is not populated when disabled (default) """
-        self.assertEqual(self._get_cache_size(), 0)
-        self.imdb.find_movie_by_id("tt0382932")
-        self.assertEqual(self._get_cache_size(), 0)
+def _get_cache_size(cache_dir):
+    """ Returns a count of the items in the cache """
+    cache = os.path.exists(cache_dir)
+    if not cache:
+        return 0
+    _, _, cache_files = next(os.walk(cache_dir))
+    return len(cache_files)
 
 
-if __name__ == '__main__':
-    unittest.main()
+def test_cache_populated():
+    """ Tests the cache is populated correctly """
+    imdb = Imdb({'cache': True})
+
+    assert _get_cache_size(imdb.cache_dir) == 0
+    movie = imdb.find_movie_by_id("tt0382932")
+    # Make a 2nd call to ensure no duplicate cache items created
+    imdb.find_movie_by_id("tt0382932")
+
+    # find makes 3 api calls
+    assert _get_cache_size(imdb.cache_dir) == 3
+    assert movie.title == 'Ratatouille'
+
+
+def test_cache_not_populated_when_disabled():
+    """ Tests the cache is not populated when disabled (default) """
+    imdb = Imdb()
+    assert _get_cache_size(imdb.cache_dir) == 0
+    imdb.find_movie_by_id("tt0382932")
+    assert _get_cache_size(imdb.cache_dir) == 0
