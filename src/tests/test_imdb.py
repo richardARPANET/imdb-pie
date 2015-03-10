@@ -5,7 +5,7 @@ import datetime
 from six.moves.urllib_parse import urlparse
 import pytest
 from imdbpie import Imdb
-from imdbpie.objects import Person
+from imdbpie.objects import Person, Review, Image
 from tests.utils import load_test_data, assert_urls_match
 
 
@@ -79,9 +79,13 @@ class TestImdb(object):
         expected_credits = load_test_data('get_credits_tt0111161.json')
         assert expected_credits == credits
 
+    def test_get_credits_non_existant_title(self):
+        credits = self.imdb._get_credits('tt-non-existant-id')
+        assert credits is None
+
     def test_get_reviews(self):
         reviews = self.imdb._get_reviews('tt0111161')
-        assert 10 == len(reviews)
+        assert len(reviews) == 10
 
         expected_review_keys = [
             'status',
@@ -98,6 +102,17 @@ class TestImdb(object):
         for review in reviews:
             for key in expected_review_keys:
                 assert key in review.keys()
+
+    def test_title_reviews(self):
+        reviews = self.imdb.title_reviews('tt0111161')
+        assert 10 == len(reviews)
+
+        assert reviews[0].username == 'carflo'
+        assert reviews[0].date == '2003-11-26'
+        assert reviews[0].summary == 'Tied for the best movie I have ever seen'
+
+    def test_title_reviews_non_existant_title(self):
+        assert self.imdb.title_reviews('tt-non-existant-id') is None
 
     def test_title_exists(self):
         result = self.imdb.title_exists('tt2322441')
@@ -235,3 +250,11 @@ class TestImdb(object):
             'kFtZTcwMTg0MzgyOQ@@._V1_.jpg')
         assert person_images[0].width == 1308
         assert person_images[0].height == 2048
+
+    def test_title_images(self):
+        title_images = self.imdb.title_images('tt0111161')
+
+        assert len(title_images) == 33
+
+        for image in title_images:
+            assert isinstance(image, Image) is True

@@ -94,11 +94,19 @@ class Imdb(object):
     def _get_credits(self, imdb_id):
         url = self.build_url('/title/fullcredits', {'tconst': imdb_id})
         response = self.get(url)
+
+        if response is None:
+            return None
+
         return response.get('data').get('credits')
 
     def _get_reviews(self, imdb_id):
         url = self.build_url('/title/usercomments', {'tconst': imdb_id})
         response = self.get(url)
+
+        if response is None:
+            return None
+
         return response.get('data').get('user_comments')
 
     def title_exists(self, imdb_id):
@@ -131,10 +139,8 @@ class Imdb(object):
         for key in keys:
             if key in results:
                 for r in results[key]:
-                    year = None
                     year_match = re.search(r'(\d{4})', r['title_description'])
-                    if year_match:
-                        year = year_match.group(0)
+                    year = year_match.group(0) if year_match else None
 
                     title_match = {
                         'title': html_unescaped(r['title']),
@@ -155,44 +161,38 @@ class Imdb(object):
         response = self.get(url)
         return response["data"]["list"]
 
-    def get_images(self, response):
+    def _get_images(self, response):
         images = []
 
-        if 'photos' in response.get('data').keys():
-            for image_data in response.get('data').get('photos'):
-                images.append(Image(image_data))
+        for image_data in response.get('data').get('photos', []):
+            images.append(Image(image_data))
 
         return images
 
     def title_images(self, imdb_id):
         url = self.build_url('/title/photos', {'tconst': imdb_id})
         response = self.get(url)
-        return self.get_images(response)
+        return self._get_images(response)
 
-    def title_reviews(self, imdb_id, limit=10):
+    def title_reviews(self, imdb_id):
         """
         Retrieves reviews for a title ordered by 'Best' descending
         """
-        url = self.build_url(
-            '/title/usercomments',
-            {'tconst': imdb_id, 'limit': limit}
-        )
-        response = self.get(url)
-
-        title_reviews = []
-        user_comments = response.get('data').get('user_comments')
+        user_comments = self._get_reviews(imdb_id)
 
         if not user_comments:
             return None
 
-        for review_data in response['data']['user_comments']:
+        title_reviews = []
+
+        for review_data in user_comments:
             title_reviews.append(Review(review_data))
         return title_reviews
 
     def person_images(self, imdb_id):
         url = self.build_url('/name/photos', {'nconst': imdb_id})
         response = self.get(url)
-        return self.get_images(response)
+        return self._get_images(response)
 
     def _get_cache_item_path(self, url):
         """
