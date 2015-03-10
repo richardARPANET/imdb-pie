@@ -19,7 +19,7 @@ local.properties
 .settings/
 .loadpath
 .idea
-
+htmlcov/
 # External tool builders
 .externalToolBuilders/
 

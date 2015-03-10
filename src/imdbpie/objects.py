@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from __future__ import unicode_literals
 
 
 class Person(object):
@@ -22,9 +23,9 @@ class Person(object):
         )
         self.job = data.get('job')
 
-    def __repr__(self):
-        repr = '<Person: {0} ({1})>'
-        return repr.format(self.name.encode('utf-8'), self.imdb_id)
+    def __unicode__(self):
+        return '<Person: {0} ({1})>'.format(self.name.encode('utf-8'),
+                                            self.imdb_id)
 
 
 class Title(object):
@@ -38,7 +39,6 @@ class Title(object):
         self.year = self._extract_year()
         self.tagline = self.data.get('tagline')
         self.plots = self.data.get('plots')
-        self.runtime = self.data.get('runtime')
         self.rating = self.data.get('rating')
         self.genres = self.data.get('genres')
         self.votes = self.data.get('num_votes')
@@ -126,7 +126,7 @@ class Image(object):
         self.width = data.get('image', {}).get('width')
         self.height = data.get('image', {}).get('height')
 
-    def __repr__(self):
+    def __unicode__(self):
         return '<Image: {0}>'.format(self.caption.encode('utf-8'))
 
 
@@ -143,5 +143,5 @@ class Review(object):
         self.user_score = data.get('user_score')
         self.user_score_count = data.get('user_score_count')
 
-    def __repr__(self):
-        return '<Review: {0}>'.format(self.text[:20])
+    def __unicode__(self):
+        return '<Review: {0}>'.format(self.text[:20].encode('utf-8'))

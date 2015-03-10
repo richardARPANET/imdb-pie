@@ -22,30 +22,22 @@ logger = logging.getLogger(__name__)
 class Imdb(object):
 
     def __init__(self, options=None):
-        self.locale = 'en_US'
-        self.base_uri = BASE_URI
+        self.options = options if options is not None else {}
         self.timestamp = time.mktime(datetime.date.today().timetuple())
         self.user_agent = random.choice(USER_AGENTS)
-
-        if options is None:
-            options = {}
-
-        self.options = options
-        if options.get('anonymize') is True:
-            self.base_uri = (
-                'aniscartujo.com/webproxy/default.aspx?prx=https://{0}'
-            ).format(self.base_uri)
-
-        if options.get('exclude_episodes') is True:
-            self.exclude_episodes = True
-        else:
-            self.exclude_episodes = False
-
-        if options.get('locale'):
-            self.locale = options['locale']
-
-        self.caching_enabled = True if options.get('cache') is True else False
-        self.cache_dir = options.get('cache_dir') or '/tmp/imdbpiecache'
+        self.locale = self.options.get('locale', 'en_US')
+        base_uri_proxy = (
+            'aniscartujo.com/webproxy/default.aspx?prx=https://{0}'.format(
+                BASE_URI)
+        )
+        self.base_uri = (
+            base_uri_proxy if self.options.get('anonymize') is True
+            else BASE_URI)
+        self.exclude_episodes = (
+            True if self.options.get('exclude_episodes') is True else False)
+        self.caching_enabled = (
+            True if self.options.get('cache') is True else False)
+        self.cache_dir = self.options.get('cache_dir') or '/tmp/imdbpiecache'
 
     def build_url(self, path, params):
         default_params = {
@@ -67,15 +59,18 @@ class Imdb(object):
     def find_movie_by_id(self, imdb_id):
         url = self.build_url('/title/maindetails', {'tconst': imdb_id})
         response = self.get(url)
+        if response is None:
+            return None
+
         # if the response is a re-dir, see imdb id tt0000021 for e.g...
         if (
             response["data"].get('tconst') !=
-            response["data"].get('news').get('channel')
+            response["data"].get('news', {}).get('channel')
         ):
             return None
 
         # get the full cast information, add key if not present
-        response["data"][str("credits")] = self.get_credits(imdb_id)
+        response["data"][str("credits")] = self._get_credits(imdb_id)
         response['data']['plots'] = self.get_plots(imdb_id)
 
         if (
@@ -83,29 +78,30 @@ class Imdb(object):
             response["data"].get('type') == 'tv_episode'
         ):
             return None
-        else:
-            title = Title(data=response["data"])
-            return title
+        title = Title(data=response["data"])
+        return title
 
     def get_plots(self, imdb_id):
         url = self.build_url('/title/plot', {'tconst': imdb_id})
         response = self.get(url)
 
-        if response['data']['tconst'] != imdb_id:
+        if response['data']['tconst'] != imdb_id:  # pragma: no cover
             return []
 
         plots = response['data'].get('plots', [])
         return [plot.get('text') for plot in plots]
 
-    def get_credits(self, imdb_id):
+    def _get_credits(self, imdb_id):
         url = self.build_url('/title/fullcredits', {'tconst': imdb_id})
         response = self.get(url)
         return response.get('data').get('credits')
 
-    def filter_out(self, string):
-        return string not in ('id', 'title')
+    def _get_reviews(self, imdb_id):
+        url = self.build_url('/title/usercomments', {'tconst': imdb_id})
+        response = self.get(url)
+        return response.get('data').get('user_comments')
 
-    def movie_exists(self, imdb_id):
+    def title_exists(self, imdb_id):
         titles = self.find_movie_by_id(imdb_id)
         return True if titles else False
 
@@ -222,9 +218,9 @@ class Imdb(object):
 
             if cached_resp.get('exp') > self.timestamp:
                 return cached_resp
-
-            logger.info('cached expired, removing: %s', file_path)
-            os.remove(file_path)
+            else:  # pragma: no cover
+                logger.info('cached expired, removing: %s', file_path)
+                os.remove(file_path)
         return None
 
     @staticmethod

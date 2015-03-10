@@ -61,10 +61,6 @@ Returns either True or False
 imdb.movie_exists('tt1327801') => True
 ```
 
-### Check an imdb id is of valid format (tt0000000), and try to fix if not
-```python
-imdb.validate_id('tt1000') => tt0001000
-```
 ### Get images for a person
 Returns a list of image objects with the following attributes (caption, url, width, height)
 ```python
