@@ -6,6 +6,7 @@ import datetime
 from operator import itemgetter
 
 import pytest
+from mock import patch
 from six.moves.urllib_parse import urlparse
 
 from imdbpie import Imdb
@@ -22,7 +23,7 @@ class TestImdb(object):
         imdb_fr = Imdb(locale='en_FR', cache=False)
         imdb_fr.timestamp = time.mktime(datetime.date.today().timetuple())
 
-        url = imdb_fr.build_url(
+        url = imdb_fr._build_url(
             path='/title/maindetails', params={'tconst': 'tt1111111'})
 
         expected_url = (
@@ -37,8 +38,8 @@ class TestImdb(object):
 
         assert_urls_match(expected_url, url)
 
-    def test_get_plots(self):
-        plots = self.imdb.get_plots('tt0111161')
+    def test_get_title_plots(self):
+        plots = self.imdb.get_title_plots('tt0111161')
 
         expected_plot0 = ('Andy Dufresne is a young and successful banker '
                           'whose life changes drastically when he is convicted'
@@ -73,17 +74,17 @@ class TestImdb(object):
         assert expected_plot3 == plots[3]
         assert expected_plot4 == plots[4]
 
-    def test_get_credits(self):
-        credits = self.imdb._get_credits('tt0111161')
+    def test_get_credits_data(self):
+        credits = self.imdb._get_credits_data('tt0111161')
         expected_credits = load_test_data('get_credits_tt0111161.json')
         assert expected_credits == credits
 
     def test_get_credits_non_existant_title(self):
-        credits = self.imdb._get_credits('tt-non-existant-id')
+        credits = self.imdb._get_credits_data('tt-non-existant-id')
         assert credits is None
 
-    def test_get_reviews(self):
-        reviews = self.imdb._get_reviews('tt0111161')
+    def test_get_reviews_data(self):
+        reviews = self.imdb._get_reviews_data('tt0111161')
         assert len(reviews) == 10
 
         expected_review_keys = [
@@ -102,8 +103,8 @@ class TestImdb(object):
             for key in expected_review_keys:
                 assert key in review.keys()
 
-    def test_title_reviews(self):
-        reviews = self.imdb.title_reviews('tt0111161')
+    def test_get_title_reviews(self):
+        reviews = self.imdb.get_title_reviews('tt0111161')
         assert 10 == len(reviews)
 
         assert reviews[0].username == 'carflo'
@@ -111,7 +112,7 @@ class TestImdb(object):
         assert reviews[0].summary == 'Tied for the best movie I have ever seen'
 
     def test_title_reviews_non_existant_title(self):
-        assert self.imdb.title_reviews('tt-non-existant-id') is None
+        assert self.imdb.get_title_reviews('tt-non-existant-id') is None
 
     def test_title_exists(self):
         result = self.imdb.title_exists('tt2322441')
@@ -162,7 +163,8 @@ class TestImdb(object):
             {'imdb_id': 'nm1736569', 'name': 'Brad Potts'},
             {'imdb_id': 'nm2703988', 'name': 'Brad Pitt vom Mahdenwald'}
         ]
-        assert expected_results == results
+        assert (sorted(expected_results, key=itemgetter('imdb_id')) ==
+                sorted(results, key=itemgetter('imdb_id')))
 
     def test_search_for_title_no_results(self):
         results = self.imdb.search_for_title('898582da396c93d5589e0')
@@ -203,6 +205,11 @@ class TestImdb(object):
         # results are changeable so check on data structure
         for result in results:
             assert sorted(expected_keys) == sorted(result.keys())
+
+    @patch('imdbpie.imdbpie.Imdb._get')
+    def test_get_title_by_id_returns_none_when_no_resp(self, mock_get):
+        mock_get.return_value = None
+        assert self.imdb.get_title_by_id('tt0111161') is None
 
     def test_get_title_by_id(self):
         title = self.imdb.get_title_by_id('tt0111161')
@@ -264,8 +271,8 @@ class TestImdb(object):
 
         assert title is None
 
-    def test_person_images(self):
-        person_images = self.imdb.person_images('nm0000033')
+    def test_get_person_images(self):
+        person_images = self.imdb.get_person_images('nm0000033')
 
         assert len(person_images) == 280
         assert person_images[0].caption == 'Alfred Hitchcock'
@@ -275,8 +282,8 @@ class TestImdb(object):
         assert person_images[0].width == 1308
         assert person_images[0].height == 2048
 
-    def test_title_images(self):
-        title_images = self.imdb.title_images('tt0111161')
+    def test_get_title_images(self):
+        title_images = self.imdb.get_title_images('tt0111161')
 
         assert len(title_images) == 33
 

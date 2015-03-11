@@ -35,76 +35,37 @@ class Imdb(object):
         self.caching_enabled = True if cache is True else False
         self.cache_dir = cache_dir or '/tmp/imdbpiecache'
 
-    def build_url(self, path, params):
-        default_params = {
-            "api": "v1",
-            "appid": "iphone1_1",
-            "apiPolicy": "app1_1",
-            "apiKey": SHA1_KEY,
-            "locale": self.locale,
-            "timestamp": self.timestamp
-        }
-
-        query_params = dict(
-            list(default_params.items()) + list(params.items())
-        )
-        query_params = urlencode(query_params)
-        url = 'https://{0}{1}?{2}'.format(self.base_uri, path, query_params)
-        return url
-
     def get_title_by_id(self, imdb_id):
-        url = self.build_url('/title/maindetails', {'tconst': imdb_id})
-        response = self.get(url)
+        url = self._build_url('/title/maindetails', {'tconst': imdb_id})
+        response = self._get(url)
         if response is None:
             return None
 
-        # if the response is a re-dir, see imdb id tt0000021 for e.g...
-        if (
-            response["data"].get('tconst') !=
-            response["data"].get('news', {}).get('channel')
-        ):
+        if self._is_redirection_result(response):
             return None
 
         # get the full cast information, add key if not present
-        response["data"]['credits'] = self._get_credits(imdb_id)
-        response['data']['plots'] = self.get_plots(imdb_id)
+        response['data']['credits'] = self._get_credits_data(imdb_id)
+        response['data']['plots'] = self.get_title_plots(imdb_id)
 
         if (
             self.exclude_episodes is True and
-            response["data"].get('type') == 'tv_episode'
+            response['data'].get('type') == 'tv_episode'
         ):
             return None
 
-        title = Title(data=response["data"])
+        title = Title(data=response['data'])
         return title
 
-    def get_plots(self, imdb_id):
-        url = self.build_url('/title/plot', {'tconst': imdb_id})
-        response = self.get(url)
+    def get_title_plots(self, imdb_id):
+        url = self._build_url('/title/plot', {'tconst': imdb_id})
+        response = self._get(url)
 
         if response['data']['tconst'] != imdb_id:  # pragma: no cover
             return []
 
         plots = response['data'].get('plots', [])
         return [plot.get('text') for plot in plots]
-
-    def _get_credits(self, imdb_id):
-        url = self.build_url('/title/fullcredits', {'tconst': imdb_id})
-        response = self.get(url)
-
-        if response is None:
-            return None
-
-        return response.get('data').get('credits')
-
-    def _get_reviews(self, imdb_id):
-        url = self.build_url('/title/usercomments', {'tconst': imdb_id})
-        response = self.get(url)
-
-        if response is None:
-            return None
-
-        return response.get('data').get('user_comments')
 
     def title_exists(self, imdb_id):
         titles = self.get_title_by_id(imdb_id)
@@ -118,7 +79,7 @@ class Imdb(object):
             'q': name
         }
         query_params = urlencode(search_params)
-        search_results = self.get(
+        search_results = self._get(
             'http://www.imdb.com/xml/find?{0}'.format(query_params))
 
         target_result_keys = (
@@ -150,7 +111,7 @@ class Imdb(object):
             'q': title
         }
         query_params = urlencode(default_search_for_title_params)
-        search_results = self.get(
+        search_results = self._get(
             'http://www.imdb.com/xml/find?{0}'.format(query_params)
         )
 
@@ -181,33 +142,25 @@ class Imdb(object):
         return title_results
 
     def top_250(self):
-        url = self.build_url('/chart/top', {})
-        response = self.get(url)
-        return response["data"]["list"]["list"]
+        url = self._build_url('/chart/top', {})
+        response = self._get(url)
+        return response['data']['list']['list']
 
     def popular_shows(self):
-        url = self.build_url('/chart/tv', {})
-        response = self.get(url)
-        return response["data"]["list"]
+        url = self._build_url('/chart/tv', {})
+        response = self._get(url)
+        return response['data']['list']
 
-    def _get_images(self, response):
-        images = []
-
-        for image_data in response.get('data').get('photos', []):
-            images.append(Image(image_data))
-
-        return images
-
-    def title_images(self, imdb_id):
-        url = self.build_url('/title/photos', {'tconst': imdb_id})
-        response = self.get(url)
+    def get_title_images(self, imdb_id):
+        url = self._build_url('/title/photos', {'tconst': imdb_id})
+        response = self._get(url)
         return self._get_images(response)
 
-    def title_reviews(self, imdb_id):
+    def get_title_reviews(self, imdb_id):
         """
         Retrieves reviews for a title ordered by 'Best' descending
         """
-        user_comments = self._get_reviews(imdb_id)
+        user_comments = self._get_reviews_data(imdb_id)
 
         if not user_comments:
             return None
@@ -218,10 +171,36 @@ class Imdb(object):
             title_reviews.append(Review(review_data))
         return title_reviews
 
-    def person_images(self, imdb_id):
-        url = self.build_url('/name/photos', {'nconst': imdb_id})
-        response = self.get(url)
+    def get_person_images(self, imdb_id):
+        url = self._build_url('/name/photos', {'nconst': imdb_id})
+        response = self._get(url)
         return self._get_images(response)
+
+    def _get_credits_data(self, imdb_id):
+        url = self._build_url('/title/fullcredits', {'tconst': imdb_id})
+        response = self._get(url)
+
+        if response is None:
+            return None
+
+        return response.get('data').get('credits')
+
+    def _get_reviews_data(self, imdb_id):
+        url = self._build_url('/title/usercomments', {'tconst': imdb_id})
+        response = self._get(url)
+
+        if response is None:
+            return None
+
+        return response.get('data').get('user_comments')
+
+    def _get_images(self, response):
+        images = []
+
+        for image_data in response.get('data').get('photos', []):
+            images.append(Image(image_data))
+
+        return images
 
     def _get_cache_item_path(self, url):
         """
@@ -257,7 +236,7 @@ class Imdb(object):
         with open(file_path, 'w+') as f:
             json.dump(resp, f)
 
-    def get(self, url):
+    def _get(self, url):
         if self.caching_enabled:
             cached_item_path = self._get_cache_item_path(url)
             cached_resp = self._get_cached_response(cached_item_path)
@@ -274,3 +253,31 @@ class Imdb(object):
             return None
 
         return response
+
+    def _build_url(self, path, params):
+        default_params = {
+            'api': 'v1',
+            'appid': 'iphone1_1',
+            'apiPolicy': 'app1_1',
+            'apiKey': SHA1_KEY,
+            'locale': self.locale,
+            'timestamp': self.timestamp
+        }
+
+        query_params = dict(
+            list(default_params.items()) + list(params.items())
+        )
+        query_params = urlencode(query_params)
+        url = 'https://{0}{1}?{2}'.format(self.base_uri, path, query_params)
+        return url
+
+    @staticmethod
+    def _is_redirection_result(response):
+        """
+        Returns True if response is that of a redirection else False
+        Redirection results have no information of use.
+        """
+        imdb_id = response['data'].get('tconst')
+        if imdb_id != response['data'].get('news', {}).get('channel'):
+            return True
+        return False

@@ -64,17 +64,17 @@ imdb.movie_exists('tt1327801') => True
 ### Get images for a person
 Returns a list of image objects with the following attributes (caption, url, width, height)
 ```python
-images = imdb.person_images("tt0468569")
+images = imdb.get_person_images("tt0468569")
 ```
 ### Get images for a movie or show
 Returns a list of image objects with the following attributes (caption, url, width, height)
 ```python
-images = imdb.title_images("tt0468569")
+images = imdb.get_title_images("tt0468569")
 ```
 ### Get reviews for a movie or show
 Returns a list of Review objects with the following attributes (username, text, date, rating, summary, status, user_location, user_score, user_score_count)
 ```python
-reviews = imdb.title_reviews("tt0468569")
+reviews = imdb.get_title_reviews("tt0468569")
 ```
 
 ### Get a title's credit information and check categorisation
