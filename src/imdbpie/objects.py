@@ -47,7 +47,6 @@ class Title(object):
         self.release_date = self.data.get('release_date', {}).get('normal')
         self.certification = self.data.get('certificate', {}).get(
             'certificate')
-        self.trailer_img_url = None
         self.trailer_image_urls = self._extract_trailer_image_urls()
         self.directors_summary = self._extract_directors_summary()
         self.creators = self._extract_creators()
