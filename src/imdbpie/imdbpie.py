@@ -35,13 +35,21 @@ class Imdb(object):
         self.caching_enabled = True if cache is True else False
         self.cache_dir = cache_dir or '/tmp/imdbpiecache'
 
+    def get_person_by_id(self, imdb_id):
+        url = self._build_url('/name/maindetails', {'nconst': imdb_id})
+        response = self._get(url)
+
+        if response is None or self._is_redirection_result(response):
+            return None
+
+        person = Person(response["data"])
+        return person
+
     def get_title_by_id(self, imdb_id):
         url = self._build_url('/title/maindetails', {'tconst': imdb_id})
         response = self._get(url)
-        if response is None:
-            return None
 
-        if self._is_redirection_result(response):
+        if response is None or self._is_redirection_result(response):
             return None
 
         # get the full cast information, add key if not present
@@ -251,7 +259,7 @@ class Imdb(object):
 
         if response.get('error'):
             return None
-
+        print(url)
         return response
 
     def _build_url(self, path, params):
@@ -278,6 +286,9 @@ class Imdb(object):
         Redirection results have no information of use.
         """
         imdb_id = response['data'].get('tconst')
-        if imdb_id != response['data'].get('news', {}).get('channel'):
+        if (
+            imdb_id and
+            imdb_id != response['data'].get('news', {}).get('channel')
+        ):
             return True
         return False

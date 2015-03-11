@@ -6,9 +6,9 @@ import datetime
 from operator import itemgetter
 
 import pytest
-from mock import patch
 from six.moves.urllib_parse import urlparse
 
+from mock import patch
 from imdbpie import Imdb
 from imdbpie.objects import Image, Person, Review
 
@@ -210,6 +210,17 @@ class TestImdb(object):
     def test_get_title_by_id_returns_none_when_no_resp(self, mock_get):
         mock_get.return_value = None
         assert self.imdb.get_title_by_id('tt0111161') is None
+
+    def test_get_person_by_id(self):
+        person = self.imdb.get_person_by_id('nm0000151')
+
+        assert person.name == 'Morgan Freeman'
+        assert person.imdb_id == 'nm0000151'
+
+    @patch('imdbpie.imdbpie.Imdb._get')
+    def test_get_person_by_id_returns_none_when_no_resp(self, mock_get):
+        mock_get.return_value = None
+        assert self.imdb.get_person_by_id('nm0000151') is None
 
     def test_get_title_by_id(self):
         title = self.imdb.get_title_by_id('tt0111161')

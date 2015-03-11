@@ -39,6 +39,13 @@ title.title => "The Dark Knight"
 title.rating => 8.1
 title.certification => "PG-13"
 ```
+### Find a person by their imdb_id
+```python
+person = imdb.get_person_by_id("nm0000151")
+
+person.name => "Morgan Freeman"
+person.imdb_id => "nm0000151"
+```
 
 ### Find a title trailer poster
 ```python

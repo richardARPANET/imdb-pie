@@ -4,23 +4,43 @@ from __future__ import absolute_import, unicode_literals
 class Person(object):
 
     def __init__(self, data):
-        name_data = data.get('name')
+        # primary attributes that should be set in all cases
+
+        self.name = self._extract_name(data)
+        self.imdb_id = self._extract_imdb_id(data)
+
+        # secondary attribs, will only get data when called via get_title_by_id
+
         # token and label are the persons categorisation
         # e.g token: writers label: Series writing credits
         self.token = data.get('token')
         self.label = data.get('label')
-
         # attr is a note about this persons work
         # e.g. (1990 - 1992 20 episodes)
         self.attr = data.get('attr')
-
         # other primary information about their part
-        self.name = name_data.get('name')
-        self.imdb_id = name_data.get('nconst')
         self.roles = (
             data.get('char').split('/') if data.get('char') else []
         )
         self.job = data.get('job')
+
+    @staticmethod
+    def _extract_name(data):
+        # Person object can given response of get_title_by_id
+        # or get_person_by_id call.
+        # This function covers the slight data structure differences
+        # to extract the name
+        name = data.get('name')
+        if isinstance(name, dict):
+            return name.get('name')
+        return name
+
+    @staticmethod
+    def _extract_imdb_id(data):
+        name = data.get('name')
+        if isinstance(name, dict):
+            return name.get('nconst')
+        return data.get('nconst')
 
     def __unicode__(self):
         return '<Person: {0} ({1})>'.format(self.name.encode('utf-8'),
