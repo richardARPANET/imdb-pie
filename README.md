@@ -27,23 +27,23 @@ imdb = Imdb(cache=True)
 imdb = Imdb(cache=True, cache_dir='/tmp/imdbpie-cache-here')
 ```
 
-### Search for a movie by title
+### Search for a title by its title
 ```python
 imdb.search_for_title("The Dark Knight") => [{'title' : "The Dark Knight", 'year' :  "2008", 'imdb_id' : "tt0468569"}, {'title' : "Batman Unmasked", ...}]
 ```
-### Find a movie by its imdb_id
+### Find a title by its imdb_id
 ```python
-movie = imdb.get_title_by_id("tt0468569")
+title = imdb.get_title_by_id("tt0468569")
 
-movie.title => "The Dark Knight"
-movie.rating => 8.1
-movie.certification => "PG-13"
+title.title => "The Dark Knight"
+title.rating => 8.1
+title.certification => "PG-13"
 ```
 
-### Find a movie trailer poster
+### Find a title trailer poster
 ```python
-movie = imdb.get_title_by_id("tt1210166")
-movie.trailer_url => "http://ia.media-imdb.com/images/M/MV5BODM1NDMxMTI3M15BMl5BanBnXkFtZTcwMDAzODY1Ng@@._V1_.jpg"
+title = imdb.get_title_by_id("tt1210166")
+title.trailer_image_urls => ["http://ia.media-imdb.com/images/M/MV5BODM1NDMxMTI3M15BMl5BanBnXkFtZTcwMDAzODY1Ng@@._V1_.jpg",...]
 ```
 
 ### Find the top 250 movies ever
@@ -58,7 +58,7 @@ imdb.popular_shows() => [{'title' : "Glee", 'year' : "2009", 'imdb_id' => "tt132
 ### Check if a movie exists, by imdb id
 Returns either True or False
 ```python
-imdb.movie_exists('tt1327801') => True
+imdb.title_exists('tt1327801') => True
 ```
 
 ### Get images for a person
@@ -66,12 +66,12 @@ Returns a list of image objects with the following attributes (caption, url, wid
 ```python
 images = imdb.get_person_images("tt0468569")
 ```
-### Get images for a movie or show
+### Get images for a title
 Returns a list of image objects with the following attributes (caption, url, width, height)
 ```python
 images = imdb.get_title_images("tt0468569")
 ```
-### Get reviews for a movie or show
+### Get reviews for a title
 Returns a list of Review objects with the following attributes (username, text, date, rating, summary, status, user_location, user_score, user_score_count)
 ```python
 reviews = imdb.get_title_reviews("tt0468569")
@@ -79,26 +79,27 @@ reviews = imdb.get_title_reviews("tt0468569")
 
 ### Get a title's credit information and check categorisation
 ```python
-movie = imdb.get_title_by_id("tt1210166")
-for person in movie.credits:
+title = imdb.get_title_by_id("tt1210166")
+for person in title.credits:
     # check if they are a writer
     if person.token == 'writers':
-        print person.name + ' is a writer'
+        print(person.name + ' is a writer')
     else:
-        print person.name + ' is not a writer'
+        print(person.name + ' is not a writer')
 ```
 
 ## Requirements
 
     1. Python 2 or 3
-    2. Python requests - python-requests.org
+    2. See requirements.txt
 
 ## Running the tests
 
 Run:
 
 ```bash
-nosetests
+pip install -r test_requirements.txt
+py.test src/tests
 ```
 
 

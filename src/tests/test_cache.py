@@ -24,13 +24,13 @@ def test_cache_populated():
     imdb = Imdb(cache=True)
 
     assert _get_cache_size(imdb.cache_dir) == 0
-    movie = imdb.get_title_by_id('tt0382932')
+    title = imdb.get_title_by_id('tt0382932')
     # Make a 2nd call to ensure no duplicate cache items created
     imdb.get_title_by_id('tt0382932')
 
     # find makes 3 api calls
     assert _get_cache_size(imdb.cache_dir) == 3
-    assert movie.title == 'Ratatouille'
+    assert title.title == 'Ratatouille'
 
 
 def test_cache_not_populated_when_disabled():
