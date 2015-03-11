@@ -21,19 +21,20 @@ logger = logging.getLogger(__name__)
 
 class Imdb(object):
 
-    def __init__(self, locale=None, anonymize=None, exclude_episodes=None,
-                 user_agent=None, cache=None, cache_dir=None):
+    def __init__(self, api_key=None, locale=None, anonymize=None,
+                 exclude_episodes=None, user_agent=None, cache=None,
+                 cache_dir=None, proxy_uri=None):
+        self.api_key = api_key or SHA1_KEY
         self.timestamp = time.mktime(datetime.date.today().timetuple())
         self.user_agent = user_agent or random.choice(USER_AGENTS)
         self.locale = locale or 'en_US'
-        base_uri_proxy = (
-            'aniscartujo.com/webproxy/default.aspx?prx=https://{0}'.format(
-                BASE_URI)
-        )
-        self.base_uri = base_uri_proxy if anonymize is True else BASE_URI
         self.exclude_episodes = True if exclude_episodes is True else False
         self.caching_enabled = True if cache is True else False
         self.cache_dir = cache_dir or '/tmp/imdbpiecache'
+        proxy_uri = proxy_uri or ('aniscartujo.com/webproxy/default.aspx?'
+                                  'prx=https://{0}')
+        base_uri_proxied = proxy_uri.format(BASE_URI)
+        self.base_uri = base_uri_proxied if anonymize is True else BASE_URI
 
     def get_person_by_id(self, imdb_id):
         url = self._build_url('/name/maindetails', {'nconst': imdb_id})
@@ -267,7 +268,7 @@ class Imdb(object):
             'api': 'v1',
             'appid': 'iphone1_1',
             'apiPolicy': 'app1_1',
-            'apiKey': SHA1_KEY,
+            'apiKey': self.api_key,
             'locale': self.locale,
             'timestamp': self.timestamp
         }
