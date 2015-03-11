@@ -5,6 +5,7 @@ branch = True
 omit =
     *tests*
     setup.py
+    .tox/*
 exclude_lines =
     pragma: no cover
     def __repr__
