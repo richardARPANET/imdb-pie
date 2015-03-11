@@ -17,14 +17,14 @@ pip install imdbpie
 ```python
 from imdbpie import Imdb
 imdb = Imdb()
-imdb = Imdb({'anonymize' : True}) # to proxy requests
+imdb = Imdb(anonymize=True) # to proxy requests
 
 # Creating an instance with caching enabled
 # Note that the cached responses expire every 2 hours or so.
 # The API response itself dictates the expiry time)
-imdb = Imdb({'cache': True})
+imdb = Imdb(cache=True)
 # Specify optional cache directory, the default is '/tmp/imdbpiecache'
-imdb = Imdb({'cache': True, 'cache_dir': '/tmp/imdbpie-cache-here'})
+imdb = Imdb(cache=True, cache_dir='/tmp/imdbpie-cache-here')
 ```
 
 ### Search for a movie by title

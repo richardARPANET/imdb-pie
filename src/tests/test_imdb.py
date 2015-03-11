@@ -15,16 +15,10 @@ from tests.utils import load_test_data, assert_urls_match
 
 class TestImdb(object):
 
-    imdb = Imdb({
-        'locale': 'en_US',
-        'cache': False
-    })
+    imdb = Imdb(locale='en_US', cache=False)
 
     def test_build_url(self):
-        imdb_fr = Imdb({
-            'locale': 'en_FR',
-            'cache': False
-        })
+        imdb_fr = Imdb(locale='en_FR', cache=False)
         imdb_fr.timestamp = time.mktime(datetime.date.today().timetuple())
 
         url = imdb_fr.build_url(
@@ -239,7 +233,7 @@ class TestImdb(object):
     def test_find_movie_by_id_excludes_episodes(self):
         assert self.imdb.find_movie_by_id('tt3181538') is not None
 
-        imdb = Imdb({'exclude_episodes': True})
+        imdb = Imdb(exclude_episodes=True)
         title = imdb.find_movie_by_id('tt3181538')
 
         assert title is None

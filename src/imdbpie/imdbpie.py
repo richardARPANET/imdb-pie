@@ -21,23 +21,19 @@ logger = logging.getLogger(__name__)
 
 class Imdb(object):
 
-    def __init__(self, options=None):
-        self.options = options if options is not None else {}
+    def __init__(self, locale=None, anonymize=None, exclude_episodes=None,
+                 user_agent=None, cache=None, cache_dir=None):
         self.timestamp = time.mktime(datetime.date.today().timetuple())
-        self.user_agent = random.choice(USER_AGENTS)
-        self.locale = self.options.get('locale', 'en_US')
+        self.user_agent = user_agent or random.choice(USER_AGENTS)
+        self.locale = locale or 'en_US'
         base_uri_proxy = (
             'aniscartujo.com/webproxy/default.aspx?prx=https://{0}'.format(
                 BASE_URI)
         )
-        self.base_uri = (
-            base_uri_proxy if self.options.get('anonymize') is True
-            else BASE_URI)
-        self.exclude_episodes = (
-            True if self.options.get('exclude_episodes') is True else False)
-        self.caching_enabled = (
-            True if self.options.get('cache') is True else False)
-        self.cache_dir = self.options.get('cache_dir', '/tmp/imdbpiecache')
+        self.base_uri = base_uri_proxy if anonymize is True else BASE_URI
+        self.exclude_episodes = True if exclude_episodes is True else False
+        self.caching_enabled = True if cache is True else False
+        self.cache_dir = cache_dir or '/tmp/imdbpiecache'
 
     def build_url(self, path, params):
         default_params = {

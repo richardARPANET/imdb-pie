@@ -14,10 +14,7 @@ def set_up():
 
 
 def test_review(set_up):
-    imdb = Imdb({
-        'locale': 'en_US',
-        'cache': False
-    })
+    imdb = Imdb(locale='en_US', cache=False)
 
     reviews_data = imdb._get_reviews('tt0111161')
     review = Review(data=reviews_data[0])

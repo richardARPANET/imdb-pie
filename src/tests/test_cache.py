@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 import os
 import shutil
 
-import pytest
 from imdbpie import Imdb
 
 
@@ -22,7 +21,7 @@ def _get_cache_size(cache_dir):
 
 def test_cache_populated():
     """ Tests the cache is populated correctly """
-    imdb = Imdb({'cache': True})
+    imdb = Imdb(cache=True)
 
     assert _get_cache_size(imdb.cache_dir) == 0
     movie = imdb.find_movie_by_id("tt0382932")
