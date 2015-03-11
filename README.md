@@ -29,11 +29,11 @@ imdb = Imdb(cache=True, cache_dir='/tmp/imdbpie-cache-here')
 
 ### Search for a movie by title
 ```python
-imdb.find_by_title("The Dark Knight") => [{'title' : "The Dark Knight", 'year' :  "2008", 'imdb_id' : "tt0468569"}, {'title' : "Batman Unmasked", ...}]
+imdb.search_for_title("The Dark Knight") => [{'title' : "The Dark Knight", 'year' :  "2008", 'imdb_id' : "tt0468569"}, {'title' : "Batman Unmasked", ...}]
 ```
 ### Find a movie by its imdb_id
 ```python
-movie = imdb.find_movie_by_id("tt0468569")
+movie = imdb.get_title_by_id("tt0468569")
 
 movie.title => "The Dark Knight"
 movie.rating => 8.1
@@ -42,7 +42,7 @@ movie.certification => "PG-13"
 
 ### Find a movie trailer poster
 ```python
-movie = imdb.find_movie_by_id("tt1210166")
+movie = imdb.get_title_by_id("tt1210166")
 movie.trailer_url => "http://ia.media-imdb.com/images/M/MV5BODM1NDMxMTI3M15BMl5BanBnXkFtZTcwMDAzODY1Ng@@._V1_.jpg"
 ```
 
@@ -79,7 +79,7 @@ reviews = imdb.title_reviews("tt0468569")
 
 ### Get a title's credit information and check categorisation
 ```python
-movie = imdb.find_movie_by_id("tt1210166")
+movie = imdb.get_title_by_id("tt1210166")
 for person in movie.credits:
     # check if they are a writer
     if person.token == 'writers':

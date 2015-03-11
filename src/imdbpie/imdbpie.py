@@ -52,7 +52,7 @@ class Imdb(object):
         url = 'https://{0}{1}?{2}'.format(self.base_uri, path, query_params)
         return url
 
-    def find_movie_by_id(self, imdb_id):
+    def get_title_by_id(self, imdb_id):
         url = self.build_url('/title/maindetails', {'tconst': imdb_id})
         response = self.get(url)
         if response is None:
@@ -66,7 +66,7 @@ class Imdb(object):
             return None
 
         # get the full cast information, add key if not present
-        response["data"][str("credits")] = self._get_credits(imdb_id)
+        response["data"]['credits'] = self._get_credits(imdb_id)
         response['data']['plots'] = self.get_plots(imdb_id)
 
         if (
@@ -74,6 +74,7 @@ class Imdb(object):
             response["data"].get('type') == 'tv_episode'
         ):
             return None
+
         title = Title(data=response["data"])
         return title
 
@@ -106,44 +107,76 @@ class Imdb(object):
         return response.get('data').get('user_comments')
 
     def title_exists(self, imdb_id):
-        titles = self.find_movie_by_id(imdb_id)
+        titles = self.get_title_by_id(imdb_id)
         return True if titles else False
 
-    def find_by_title(self, title):
-        default_find_by_title_params = {
+    def search_for_person(self, name):
+        search_params = {
+            'json': '1',
+            'nr': 1,
+            'nn': 'on',
+            'q': name
+        }
+        query_params = urlencode(search_params)
+        search_results = self.get(
+            'http://www.imdb.com/xml/find?{0}'.format(query_params))
+
+        target_result_keys = (
+            'name_popular', 'name_exact', 'name_approx', 'name_substring')
+        person_results = []
+
+        html_unescaped = html_parser.HTMLParser().unescape
+
+        # Loop through all search_results and build a list
+        # with popular matches first
+        for key in target_result_keys:
+
+            if key not in search_results.keys():
+                continue
+
+            for result in search_results[key]:
+                result_item = {
+                    'name': html_unescaped(result['name']),
+                    'imdb_id': result['id']
+                }
+                person_results.append(result_item)
+        return person_results
+
+    def search_for_title(self, title):
+        default_search_for_title_params = {
             'json': '1',
             'nr': 1,
             'tt': 'on',
             'q': title
         }
-        query_params = urlencode(default_find_by_title_params)
-        results = self.get(
-            ('http://www.imdb.com/xml/find?{0}').format(query_params)
+        query_params = urlencode(default_search_for_title_params)
+        search_results = self.get(
+            'http://www.imdb.com/xml/find?{0}'.format(query_params)
         )
 
-        keys = (
-            'title_popular',
-            'title_exact',
-            'title_approx',
-            'title_substring'
-        )
+        target_result_keys = (
+            'title_popular', 'title_exact', 'title_approx', 'title_substring')
         title_results = []
 
         html_unescaped = html_parser.HTMLParser().unescape
 
-        # Loop through all results and build a list with popular matches first
-        for key in keys:
-            if key in results:
-                for r in results[key]:
-                    year_match = re.search(r'(\d{4})', r['title_description'])
-                    year = year_match.group(0) if year_match else None
+        # Loop through all search_results and build a list
+        # with popular matches first
+        for key in target_result_keys:
 
-                    title_match = {
-                        'title': html_unescaped(r['title']),
-                        'year': year,
-                        'imdb_id': r['id']
-                    }
-                    title_results.append(title_match)
+            if key not in search_results.keys():
+                continue
+
+            for result in search_results[key]:
+                year_match = re.search(r'(\d{4})', result['title_description'])
+                year = year_match.group(0) if year_match else None
+
+                result_item = {
+                    'title': html_unescaped(result['title']),
+                    'year': year,
+                    'imdb_id': result['id']
+                }
+                title_results.append(result_item)
 
         return title_results
 

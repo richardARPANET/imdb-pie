@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 import cgi
 import time
 import datetime
+from operator import itemgetter
 
 import pytest
 from six.moves.urllib_parse import urlparse
@@ -120,8 +121,8 @@ class TestImdb(object):
         result = self.imdb.title_exists('tt-non-existant-id')
         assert False is result
 
-    def test_find_by_title(self):
-        results = self.imdb.find_by_title('Shawshank redemption')
+    def test_search_for_title_searching_title(self):
+        results = self.imdb.search_for_title('Shawshank redemption')
         expected_top_results = [
             {
                 'imdb_id': 'tt0111161',
@@ -138,8 +139,33 @@ class TestImdb(object):
         assert 12 == len(results)
         assert expected_top_results == results[:2]
 
-    def test_find_by_title_no_results(self):
-        results = self.imdb.find_by_title('898582da396c93d5589e0')
+    def test_search_for_person(self):
+        results = self.imdb.search_for_person('Brad Pitt')
+
+        assert 17 == len(results)
+        expected_results = [
+            {'imdb_id': 'nm0000093', 'name': 'Brad Pitt'},
+            {'imdb_id': 'nm6221785', 'name': 'Brad Pittance'},
+            {'imdb_id': 'nm2876601', 'name': 'Brad Spitt'},
+            {'imdb_id': 'nm2542384', 'name': 'Brad Witt'},
+            {'imdb_id': 'nm7062918', 'name': 'Brad Pitz'},
+            {'imdb_id': 'nm3258729', 'name': 'Bradd Spitt'},
+            {'imdb_id': 'nm6173397', 'name': 'Brad Fitt'},
+            {'imdb_id': 'nm1694695', 'name': 'Prad Pitt'},
+            {'imdb_id': 'nm1784745', 'name': 'Brad Patton'},
+            {'imdb_id': 'nm2296458', 'name': 'Brad Pattison'},
+            {'imdb_id': 'nm6275510', 'name': 'Brad Sitton'},
+            {'imdb_id': 'nm1583570', 'name': 'Brad Pitre'},
+            {'imdb_id': 'nm4463090', 'name': 'Brad Patterson'},
+            {'imdb_id': 'nm1899342', 'name': 'Brad Pattullo'},
+            {'imdb_id': 'nm5741181', 'name': 'Brad Little'},
+            {'imdb_id': 'nm1736569', 'name': 'Brad Potts'},
+            {'imdb_id': 'nm2703988', 'name': 'Brad Pitt vom Mahdenwald'}
+        ]
+        assert expected_results == results
+
+    def test_search_for_title_no_results(self):
+        results = self.imdb.search_for_title('898582da396c93d5589e0')
         assert [] == results
 
     def test_top_250(self):
@@ -178,8 +204,8 @@ class TestImdb(object):
         for result in results:
             assert sorted(expected_keys) == sorted(result.keys())
 
-    def test_find_movie_by_id(self):
-        title = self.imdb.find_movie_by_id('tt0111161')
+    def test_get_title_by_id(self):
+        title = self.imdb.get_title_by_id('tt0111161')
 
         assert title.title == 'The Shawshank Redemption'
         assert title.year == 1994
@@ -227,14 +253,14 @@ class TestImdb(object):
 
         assert len(title.trailers) == 3
 
-    def test_find_movie_by_id_redirection_result(self):
-        assert self.imdb.find_movie_by_id('tt0000021') is None
+    def test_get_title_by_id_redirection_result(self):
+        assert self.imdb.get_title_by_id('tt0000021') is None
 
-    def test_find_movie_by_id_excludes_episodes(self):
-        assert self.imdb.find_movie_by_id('tt3181538') is not None
+    def test_get_title_by_id_excludes_episodes(self):
+        assert self.imdb.get_title_by_id('tt3181538') is not None
 
         imdb = Imdb(exclude_episodes=True)
-        title = imdb.find_movie_by_id('tt3181538')
+        title = imdb.get_title_by_id('tt3181538')
 
         assert title is None
 
