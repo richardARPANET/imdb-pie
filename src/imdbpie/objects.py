@@ -42,6 +42,10 @@ class Person(object):
             return name.get('nconst')
         return data.get('nconst')
 
+    def __repr__(self):
+        return '<Person: {0} ({1})>'.format(repr(self.name),
+                                            repr(self.imdb_id))
+
     def __unicode__(self):
         return '<Person: {0} ({1})>'.format(self.name.encode('utf-8'),
                                             self.imdb_id)
@@ -135,6 +139,13 @@ class Title(object):
         slates = self.data.get('trailer', {}).get('slates', [])
         return [s['url'] for s in slates]
 
+    def __repr__(self):
+        return '<Title: {0} - {1}>'.format(repr(self.title),
+                                           repr(self.imdb_id))
+
+    def __unicode__(self):
+        return '<Title: {0} - {1}>'.format(self.title, self.imdb_id)
+
 
 class Image(object):
 
@@ -143,6 +154,9 @@ class Image(object):
         self.url = data.get('image', {}).get('url')
         self.width = data.get('image', {}).get('width')
         self.height = data.get('image', {}).get('height')
+
+    def __repr__(self):
+        return '<Image: {0}>'.format(repr(self.caption))
 
     def __unicode__(self):
         return '<Image: {0}>'.format(self.caption.encode('utf-8'))
@@ -160,6 +174,9 @@ class Review(object):
         self.user_location = data.get('user_location')
         self.user_score = data.get('user_score')
         self.user_score_count = data.get('user_score_count')
+
+    def __repr__(self):
+        return '<Review: {0}>'.format(repr(self.text[:20]))
 
     def __unicode__(self):
         return '<Review: {0}>'.format(self.text[:20].encode('utf-8'))
