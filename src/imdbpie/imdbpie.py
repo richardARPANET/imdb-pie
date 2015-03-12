@@ -260,7 +260,7 @@ class Imdb(object):
 
         if response.get('error'):
             return None
-        print(url)
+
         return response
 
     def _build_url(self, path, params):
