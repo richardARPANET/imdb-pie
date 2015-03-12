@@ -206,6 +206,10 @@ class TestImdb(object):
         for result in results:
             assert sorted(expected_keys) == sorted(result.keys())
 
+    def test_get_title_by_id_returns_none_when_is_episode(self):
+        imdb = Imdb(exclude_episodes=True)
+        assert imdb.get_title_by_id('tt0615090') is None
+
     @patch('imdbpie.imdbpie.Imdb._get')
     def test_get_title_by_id_returns_none_when_no_resp(self, mock_get):
         mock_get.return_value = None
