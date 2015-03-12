@@ -35,7 +35,6 @@ imdb = Imdb(cache=True, cache_dir='/tmp/imdbpie-cache-here')
 ### Find a title by its imdb_id
 ```python
 >>> title = imdb.get_title_by_id("tt0468569")
-
 >>> title.title
 "The Dark Knight"
 >>> title.rating
@@ -45,8 +44,7 @@ imdb = Imdb(cache=True, cache_dir='/tmp/imdbpie-cache-here')
 ```
 ### Find a person by their imdb_id
 ```python
-person = imdb.get_person_by_id("nm0000151")
-
+>>> person = imdb.get_person_by_id("nm0000151")
 >>> person.name
 "Morgan Freeman"
 >>> person.imdb_id
@@ -55,7 +53,7 @@ person = imdb.get_person_by_id("nm0000151")
 
 ### Find a title trailer poster
 ```python
-title = imdb.get_title_by_id("tt1210166")
+>>> title = imdb.get_title_by_id("tt1210166")
 >>> title.trailer_image_urls
 ["http://ia.media-imdb.com/images/M/MV5BODM1NDMxMTI3M15BMl5BanBnXkFtZTcwMDAzODY1Ng@@._V1_.jpg",...]
 ```
@@ -71,8 +69,8 @@ title = imdb.get_title_by_id("tt1210166")
 >>> imdb.popular_shows()
 [{'title': 'Glee', 'year': "2009", 'imdb_id': 'tt1327801'}, {'title': "Dexter", ...}]
 ```
-### Check if a movie exists, by imdb id
-Returns either True or False
+
+### Check if a title exists
 ```python
 >>> imdb.title_exists('tt1327801')
 True
@@ -84,12 +82,14 @@ Returns a list of image objects with the following attributes (caption, url, wid
 >>> imdb.get_person_images("nm0000033")
 [<Image: u'Alfred Hitchcock'>, <Image: u'"Psycho" Dir. Alfred Hitchcock 1960 Paramount'>,...]
 ```
+
 ### Get images for a title
 Returns a list of image objects with the following attributes (caption, url, width, height)
 ```python
 >>> imdb.get_title_images("tt0468569")
 [<Image: u'Morgan Freeman and Frank Darabont in The Shawshank Redemption'>,...]
 ```
+
 ### Get reviews for a title
 Returns a list of Review objects with the following attributes (username, text, date, rating, summary, status, user_location, user_score, user_score_count)
 ```python
