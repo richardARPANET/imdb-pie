@@ -77,7 +77,13 @@ class TestImdb(object):
     def test_get_credits_data(self):
         credits = self.imdb._get_credits_data('tt0111161')
         expected_credits = load_test_data('get_credits_tt0111161.json')
-        assert expected_credits == credits
+
+        assert len(expected_credits) == len(credits)
+        for index, credit_item in enumerate(expected_credits):
+            assert (
+                sorted(credit_item, key=itemgetter(1)) ==
+                sorted(credits[index], key=itemgetter(1))
+            )
 
     def test_get_credits_non_existant_title(self):
         credits = self.imdb._get_credits_data('tt-non-existant-id')
@@ -254,6 +260,12 @@ class TestImdb(object):
             'http://ia.media-imdb.com/images/M/MV5BMzAzMDI1MTE0MF5BMl5BanBnX'
             'kFtZTgwNjMxNTMzMzE@._V1_.jpg'
         ]
+        expected_plot_outline = (
+            'Two imprisoned men bond over a number '
+            'of years, finding solace and eventual redemption through acts '
+            'of common decency.'
+        )
+        assert title.plot_outline == expected_plot_outline
 
         assert isinstance(title.directors_summary[0], Person)
         assert len(title.directors_summary) == 1

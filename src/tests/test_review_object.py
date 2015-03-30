@@ -27,5 +27,5 @@ def test_review(set_up):
     assert 'Tied for the best movie I have ever seen' == review.summary
     assert 'G' == review.status
     assert 'Texas' == review.user_location
-    assert 1902 == review.user_score
-    assert 2207 == review.user_score_count
+    assert 1902 <= review.user_score
+    assert 2207 <= review.user_score_count

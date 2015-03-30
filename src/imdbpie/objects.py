@@ -62,6 +62,7 @@ class Title(object):
         self.year = self._extract_year()
         self.tagline = self.data.get('tagline')
         self.plots = self.data.get('plots')
+        self.plot_outline = self.data.get('plot', {}).get('outline')
         self.rating = self.data.get('rating')
         self.genres = self.data.get('genres')
         self.votes = self.data.get('num_votes')

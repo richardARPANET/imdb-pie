@@ -5,8 +5,9 @@ Release History
 
 2.0.1 (unreleased)
 ++++++++++++++++++
+**Added**
 
-- Nothing changed yet.
+- ``Title.plot_outline`` has been added. It returns a string.
 
 
 2.0.0 (2015-03-12)
