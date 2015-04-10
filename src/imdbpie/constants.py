@@ -36,4 +36,4 @@ USER_AGENTS = (
     'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.4'
     ' (KHTML, like Gecko) Version/8.0 Mobile/12A366 Safari/600.1.4',
 )
-DEFAULT_PROXY_URI = 'http://openwebproxy.pw/browse.php?u=https://{0}'
+DEFAULT_PROXY_URI = 'http://openwebproxy.pw/browse.php?u={0}'
