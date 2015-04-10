@@ -11,10 +11,12 @@ import datetime
 
 import requests
 from six.moves import html_parser
-from six.moves.urllib.parse import urlencode
+from six.moves.urllib.parse import urlencode, quote
 
 from imdbpie.objects import Image, Title, Person, Review
-from imdbpie.constants import BASE_URI, SHA1_KEY, USER_AGENTS
+from imdbpie.constants import (
+    BASE_URI, SHA1_KEY, USER_AGENTS, DEFAULT_PROXY_URI
+)
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +25,7 @@ class Imdb(object):
 
     def __init__(self, api_key=None, locale=None, anonymize=None,
                  exclude_episodes=None, user_agent=None, cache=None,
-                 cache_dir=None, proxy_uri=None):
+                 cache_dir=None, proxy_uri=None, verify_ssl=None):
         self.api_key = api_key or SHA1_KEY
         self.timestamp = time.mktime(datetime.date.today().timetuple())
         self.user_agent = user_agent or random.choice(USER_AGENTS)
@@ -31,10 +33,9 @@ class Imdb(object):
         self.exclude_episodes = True if exclude_episodes is True else False
         self.caching_enabled = True if cache is True else False
         self.cache_dir = cache_dir or '/tmp/imdbpiecache'
-        proxy_uri = proxy_uri or ('aniscartujo.com/webproxy/default.aspx?'
-                                  'prx=https://{0}')
-        base_uri_proxied = proxy_uri.format(BASE_URI)
-        self.base_uri = base_uri_proxied if anonymize is True else BASE_URI
+        self.proxy_uri = proxy_uri or DEFAULT_PROXY_URI
+        self.anonymize = False or anonymize
+        self.verify_ssl = True or verify_ssl
 
     def get_person_by_id(self, imdb_id):
         url = self._build_url('/name/maindetails', {'nconst': imdb_id})
@@ -252,7 +253,8 @@ class Imdb(object):
             if cached_resp:
                 return cached_resp
 
-        r = requests.get(url, headers={'User-Agent': self.user_agent})
+        r = requests.get(url, headers={'User-Agent': self.user_agent},
+                         verify=self.verify_ssl)
         response = json.loads(r.content.decode('utf-8'))
 
         if self.caching_enabled:
@@ -277,7 +279,11 @@ class Imdb(object):
             list(default_params.items()) + list(params.items())
         )
         query_params = urlencode(query_params)
-        url = 'https://{0}{1}?{2}'.format(self.base_uri, path, query_params)
+        url = '{base}{path}?{params}'.format(base=BASE_URI,
+                                             path=path, params=query_params)
+
+        if self.anonymize is True:
+            return self.proxy_uri.format(quote(url))
         return url
 
     @staticmethod

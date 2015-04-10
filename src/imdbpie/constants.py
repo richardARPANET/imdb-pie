@@ -1,7 +1,8 @@
 from __future__ import absolute_import, unicode_literals
+
 import hashlib
 
-BASE_URI = 'app.imdb.com'
+BASE_URI = 'https://app.imdb.com'
 API_KEY = '2wex6aeu6a8q9e49k7sfvufd6rhh0n'
 SHA1_KEY = hashlib.sha1(API_KEY.encode('utf8')).hexdigest()
 USER_AGENTS = (
@@ -35,3 +36,4 @@ USER_AGENTS = (
     'Mozilla/5.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/600.1.4'
     ' (KHTML, like Gecko) Version/8.0 Mobile/12A366 Safari/600.1.4',
 )
+DEFAULT_PROXY_URI = 'http://openwebproxy.pw/browse.php?u=https://{0}'

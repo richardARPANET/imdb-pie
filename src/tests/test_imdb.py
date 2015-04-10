@@ -6,7 +6,7 @@ import datetime
 from operator import itemgetter
 
 import pytest
-from six.moves.urllib_parse import urlparse
+from six.moves.urllib_parse import urlparse, quote
 
 from mock import patch
 from imdbpie import Imdb
@@ -37,6 +37,24 @@ class TestImdb(object):
         ).format(timestamp=imdb_fr.timestamp)
 
         assert_urls_match(expected_url, url)
+
+    def test_build_url_proxied(self):
+        imdb_fr = Imdb(
+            locale='en_FR',
+            cache=False,
+            anonymize=True,
+            proxy_uri='http://someproxywebsite.co.uk?url={0}'
+        )
+        imdb_fr.timestamp = time.mktime(datetime.date.today().timetuple())
+
+        url = imdb_fr._build_url(
+            path='/title/maindetails', params={'tconst': 'tt1111111'})
+
+        expected_url = (
+            'http://someproxywebsite.co.uk?url=' +
+            quote('https://app.imdb.com/title/maindetails')
+        )
+        assert url.startswith(expected_url) is True
 
     def test_get_title_plots(self):
         plots = self.imdb.get_title_plots('tt0111161')
