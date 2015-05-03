@@ -3,6 +3,12 @@
 Release History
 ---------------
 
+2.1.1 (unreleased)
+++++++++++++++++++
+
+- Nothing changed yet.
+
+
 2.1.0 (2015-05-03)
 ++++++++++++++++++
 **Added**
