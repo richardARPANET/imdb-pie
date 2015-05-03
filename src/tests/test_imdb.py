@@ -300,7 +300,11 @@ class TestImdb(object):
         for name in expected_writers:
             assert name in [p.name for p in title.writers_summary]
 
-        assert len(title.credits) == 324
+        assert len(title.credits) == 325
+        assert (
+            sorted(load_test_data('expected_credits.json')) ==
+            sorted([p.imdb_id for p in title.credits])
+        )
         assert isinstance(title.credits[10], Person)
 
         assert len(title.trailers) == 3

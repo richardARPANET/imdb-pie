@@ -5,8 +5,8 @@ Release History
 
 2.0.2 (unreleased)
 ++++++++++++++++++
-
-- Nothing changed yet.
+**Added**
+- Added verify_ssl kwarg option to ``Imdb`` object. Allows for controlling of ssl cert verification on all requests made.
 
 
 2.0.1 (2015-03-30)
