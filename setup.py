@@ -17,7 +17,7 @@ setup(
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
     include_package_data=True,
-    zip_safe=True,
+    zip_safe=False,
     description=(
         'Python IMDB client using the IMDB json web service made '
         'available for their iOS app.'
