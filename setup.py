@@ -26,7 +26,7 @@ setup(
     author_email='richard@richard.do',
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     long_description='https://github.com/richardasaurus/imdb-pie',
-    install_requires=['requests', 'six'],
+    install_requires=['requests', 'six', 'wheel'],
     classifiers=[
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
