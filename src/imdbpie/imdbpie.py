@@ -13,6 +13,7 @@ import requests
 from six.moves import html_parser
 from six.moves.urllib.parse import urlencode, quote
 
+from imdbpie.exceptions import HTTPError
 from imdbpie.objects import Image, Title, Person, Review
 from imdbpie.constants import (
     BASE_URI, SHA1_KEY, USER_AGENTS, DEFAULT_PROXY_URI
@@ -78,7 +79,11 @@ class Imdb(object):
         return [plot.get('text') for plot in plots]
 
     def title_exists(self, imdb_id):
-        titles = self.get_title_by_id(imdb_id)
+        titles = None
+        try:
+            titles = self.get_title_by_id(imdb_id)
+        except HTTPError:
+            return False
         return True if titles else False
 
     def search_for_person(self, name):
@@ -166,11 +171,14 @@ class Imdb(object):
         response = self._get(url)
         return self._get_images(response)
 
-    def get_title_reviews(self, imdb_id):
+    def get_title_reviews(self, imdb_id, max_results=None):
         """
         Retrieves reviews for a title ordered by 'Best' descending
         """
-        user_comments = self._get_reviews_data(imdb_id)
+        user_comments = self._get_reviews_data(
+            imdb_id,
+            max_results=max_results
+        )
 
         if not user_comments:
             return None
@@ -195,8 +203,11 @@ class Imdb(object):
 
         return response.get('data').get('credits')
 
-    def _get_reviews_data(self, imdb_id):
-        url = self._build_url('/title/usercomments', {'tconst': imdb_id})
+    def _get_reviews_data(self, imdb_id, max_results=None):
+        params = {'tconst': imdb_id}
+        if max_results:
+            params['limit'] = max_results
+        url = self._build_url('/title/usercomments', params)
         response = self._get(url)
 
         if response is None:
@@ -253,17 +264,19 @@ class Imdb(object):
             if cached_resp:
                 return cached_resp
 
-        r = requests.get(url, headers={'User-Agent': self.user_agent},
-                         verify=self.verify_ssl)
-        response = json.loads(r.content.decode('utf-8'))
+        resp = requests.get(url, headers={'User-Agent': self.user_agent},
+                            verify=self.verify_ssl)
+        resp.raise_for_status()
+
+        resp_dict = json.loads(resp.content.decode('utf-8'))
 
         if self.caching_enabled:
-            self._cache_response(cached_item_path, response)
+            self._cache_response(cached_item_path, resp_dict)
 
-        if response.get('error'):
+        if resp_dict.get('error'):
             return None
 
-        return response
+        return resp_dict
 
     def _build_url(self, path, params):
         default_params = {

@@ -93,7 +93,7 @@ Returns a list of image objects with the following attributes (caption, url, wid
 ### Get reviews for a title
 Returns a list of Review objects with the following attributes (username, text, date, rating, summary, status, user_location, user_score, user_score_count)
 ```python
->>> imdb.get_title_reviews("tt0468569")
+>>> imdb.get_title_reviews("tt0468569", max_results=15)
 [<Review: u'Why do I want to wri'>, <Review: u'Can Hollywood, usua'>,...]
 ```
 

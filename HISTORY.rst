@@ -3,10 +3,13 @@
 Release History
 ---------------
 
-2.1.1 (unreleased)
+3.0.0 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+**Changed**
+
+- All methods on ``Imdb`` will raise ``imdbpie.exceptions.HTTPError`` if a bad request to the API or resource is not found ("Errors should never pass silently").
+- ``Imdb.get_title_reviews`` now has param `max_results` to limit number of reviews returned.
 
 
 2.1.0 (2015-05-03)

@@ -11,6 +11,7 @@ from six.moves.urllib_parse import urlparse, quote
 from mock import patch
 from imdbpie import Imdb
 from imdbpie.objects import Image, Person, Review
+from imdbpie.exceptions import HTTPError
 
 from tests.utils import load_test_data, assert_urls_match
 
@@ -62,7 +63,7 @@ class TestImdb(object):
         expected_plot0 = ('Andy Dufresne is a young and successful banker '
                           'whose life changes drastically when he is convicted'
                           ' and sentenced to life imprisonment for the murder '
-                          'of his wife and her lover. Set in the 1940\'s, the '
+                          'of his wife and her lover. Set in the 1940s, the '
                           'film shows how Andy, with the help of his friend '
                           'Red, the prison entrepreneur, turns out to be a '
                           'most unconventional prisoner.')
@@ -104,8 +105,9 @@ class TestImdb(object):
             )
 
     def test_get_credits_non_existant_title(self):
-        credits = self.imdb._get_credits_data('tt-non-existant-id')
-        assert credits is None
+
+        with pytest.raises(HTTPError):
+            self.imdb._get_credits_data('tt-non-existant-id')
 
     def test_get_reviews_data(self):
         reviews = self.imdb._get_reviews_data('tt0111161')
@@ -135,8 +137,17 @@ class TestImdb(object):
         assert reviews[0].date == '2003-11-26'
         assert reviews[0].summary == 'Tied for the best movie I have ever seen'
 
+    def test_get_title_reviews_limit(self):
+        reviews = self.imdb.get_title_reviews('tt2294629', max_results=20)
+        assert 20 == len(reviews)
+
+        reviews = self.imdb.get_title_reviews('tt2294629', max_results=31)
+        assert 31 == len(reviews)
+
     def test_title_reviews_non_existant_title(self):
-        assert self.imdb.get_title_reviews('tt-non-existant-id') is None
+
+        with pytest.raises(HTTPError):
+            self.imdb.get_title_reviews('tt-non-existant-id')
 
     def test_title_exists(self):
         result = self.imdb.title_exists('tt2322441')
@@ -338,3 +349,8 @@ class TestImdb(object):
 
         for image in title_images:
             assert isinstance(image, Image) is True
+
+    def test_get_title_by_id_raises_not_found(self):
+
+        with pytest.raises(HTTPError):
+            self.imdb.get_title_by_id('tt9999999')
