@@ -189,13 +189,13 @@ class TestImdb(object):
             {'imdb_id': 'nm6173397', 'name': 'Brad Fitt'},
             {'imdb_id': 'nm1694695', 'name': 'Prad Pitt'},
             {'imdb_id': 'nm1784745', 'name': 'Brad Patton'},
-            {'imdb_id': 'nm2296458', 'name': 'Brad Pattison'},
             {'imdb_id': 'nm6275510', 'name': 'Brad Sitton'},
+            {'imdb_id': 'nm2296458', 'name': 'Brad Pattison'},
             {'imdb_id': 'nm1583570', 'name': 'Brad Pitre'},
+            {'imdb_id': 'nm3768356', 'name': 'Brad Bittner'},
             {'imdb_id': 'nm4463090', 'name': 'Brad Patterson'},
             {'imdb_id': 'nm1899342', 'name': 'Brad Pattullo'},
             {'imdb_id': 'nm5741181', 'name': 'Brad Little'},
-            {'imdb_id': 'nm1736569', 'name': 'Brad Potts'},
             {'imdb_id': 'nm2703988', 'name': 'Brad Pitt vom Mahdenwald'}
         ]
         assert (sorted(expected_results, key=itemgetter('imdb_id')) ==
@@ -318,6 +318,23 @@ class TestImdb(object):
         )
         assert isinstance(title.credits[10], Person)
 
+        assert len(title.trailers) == 3
+
+    def test_get_title_by_id_using_proxy(self):
+        imdb = Imdb(locale='en_US', cache=False, anonymize=True)
+        title = imdb.get_title_by_id('tt0111161')
+
+        assert title.title == 'The Shawshank Redemption'
+        assert title.year == 1994
+        assert title.type == 'feature'
+        assert title.tagline == ('Fear can hold you prisoner. '
+                                 'Hope can set you free.')
+        assert isinstance(title.plots, list) is True
+        assert len(title.plots) == 5
+        assert isinstance(title.rating, float) is True
+        assert sorted(title.genres) == sorted(['Crime', 'Drama'])
+        assert isinstance(title.votes, int) is True
+        assert title.runtime == 8520
         assert len(title.trailers) == 3
 
     def test_get_title_by_id_redirection_result(self):
