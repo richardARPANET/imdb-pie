@@ -6,10 +6,12 @@ import json
 import time
 import random
 import hashlib
+import httplib
 import logging
 import datetime
 
 import requests
+import requests_cache
 from six.moves import html_parser
 from six.moves.urllib.parse import urlencode, quote
 
@@ -26,17 +28,19 @@ class Imdb(object):
 
     def __init__(self, api_key=None, locale=None, anonymize=None,
                  exclude_episodes=None, user_agent=None, cache=None,
-                 cache_dir=None, proxy_uri=None, verify_ssl=None):
+                 proxy_uri=None, verify_ssl=None):
         self.api_key = api_key or SHA1_KEY
         self.timestamp = time.mktime(datetime.date.today().timetuple())
         self.user_agent = user_agent or random.choice(USER_AGENTS)
         self.locale = locale or 'en_US'
         self.exclude_episodes = True if exclude_episodes is True else False
         self.caching_enabled = True if cache is True else False
-        self.cache_dir = cache_dir or '/tmp/imdbpiecache'
         self.proxy_uri = proxy_uri or DEFAULT_PROXY_URI
         self.anonymize = False or anonymize
         self.verify_ssl = True or verify_ssl
+
+        if self.caching_enabled:
+            requests_cache.install_cache('imdbpie_cache')
 
     def get_person_by_id(self, imdb_id):
         url = self._build_url('/name/maindetails', {'nconst': imdb_id})
@@ -79,12 +83,22 @@ class Imdb(object):
         return [plot.get('text') for plot in plots]
 
     def title_exists(self, imdb_id):
-        titles = None
-        try:
-            titles = self.get_title_by_id(imdb_id)
-        except HTTPError:
+        page_url = 'http://www.imdb.com/title/{}/'.format(imdb_id)
+
+        if self.anonymize is True:
+            page_url = self.proxy_uri.format(quote(page_url))
+
+        response = requests.head(page_url)
+
+        if response.status_code == httplib.OK:
+            return True
+        elif response.status_code == httplib.NOT_FOUND:
             return False
-        return True if titles else False
+        elif response.status_code == httplib.MOVED_PERMANENTLY:
+            # redirection result
+            return False
+        else:
+            response.raise_for_status()
 
     def search_for_person(self, name):
         search_params = {
@@ -223,55 +237,28 @@ class Imdb(object):
 
         return images
 
-    def _get_cache_item_path(self, url):
-        """
-        Generates a cache location for a given api call.
-        Returns a file path
-        """
-        cache_dir = self.cache_dir
-        m = hashlib.md5()
-        m.update(url.encode('utf-8'))
-        cache_key = m.hexdigest()
-
-        if not os.path.exists(cache_dir):
-            os.makedirs(cache_dir)
-        return os.path.join(cache_dir, cache_key + '.cache')
-
-    def _get_cached_response(self, file_path):
-        """ Retrieves response from cache """
-        if os.path.exists(file_path):
-            logger.info('retrieving from cache: %s', file_path)
-
-            with open(file_path, 'r+') as resp_data:
-                cached_resp = json.load(resp_data)
-
-            if cached_resp.get('exp') > self.timestamp:
-                return cached_resp
-            else:  # pragma: no cover
-                logger.info('cached expired, removing: %s', file_path)
-                os.remove(file_path)
-        return None
-
     @staticmethod
     def _cache_response(file_path, resp):
         with open(file_path, 'w+') as f:
             json.dump(resp, f)
 
     def _get(self, url):
-        if self.caching_enabled:
-            cached_item_path = self._get_cache_item_path(url)
-            cached_resp = self._get_cached_response(cached_item_path)
-            if cached_resp:
-                return cached_resp
+        if self.caching_enabled is True:
+            cache_state = requests_cache.enabled
+        elif self.caching_enabled is False:
+            cache_state = requests_cache.disabled
+        else:
+            raise ValueError('caching_enabled must of type bool')
 
-        resp = requests.get(url, headers={'User-Agent': self.user_agent},
-                            verify=self.verify_ssl)
+        with cache_state():
+            resp = requests.get(
+                url,
+                headers={'User-Agent': self.user_agent},
+                verify=self.verify_ssl)
+
         resp.raise_for_status()
 
         resp_dict = json.loads(resp.content.decode('utf-8'))
-
-        if self.caching_enabled:
-            self._cache_response(cached_item_path, resp_dict)
 
         if resp_dict.get('error'):
             return None

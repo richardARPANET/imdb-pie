@@ -6,7 +6,16 @@ Release History
 3.0.1 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+**Added**
+- Added ``cache_expiry`` parameter to ``Imdb`` class, to specify cache expiry in seconds.
+
+**Changes**
+
+- Internal caching changed you use 3rd party package ``requests-cache``.
+
+**Removed**
+
+- ``Imdb`` class no longer takes a ``cache_dir`` parameter.
 
 
 3.0.0 (2015-06-12)

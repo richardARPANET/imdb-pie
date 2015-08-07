@@ -154,7 +154,7 @@ class TestImdb(object):
         assert True is result
 
     def test_title_exists_non_existant_title(self):
-        result = self.imdb.title_exists('tt-non-existant-id')
+        result = self.imdb.title_exists('tt0000000')
         assert False is result
 
     def test_search_for_title_searching_title(self):
@@ -232,14 +232,14 @@ class TestImdb(object):
         expected_keys = [
             'tconst',
             'title',
-            'image',
+            # 'image',  # optional key
             'year',
             'principals',
             'type'
         ]
         # results are changeable so check on data structure
-        for result in results:
-            assert sorted(expected_keys) == sorted(result.keys())
+        for index, result in enumerate(results):
+            assert set(expected_keys).issubset(set(result.keys())) is True
 
     def test_get_title_by_id_returns_none_when_is_episode(self):
         imdb = Imdb(exclude_episodes=True)
@@ -311,7 +311,7 @@ class TestImdb(object):
         for name in expected_writers:
             assert name in [p.name for p in title.writers_summary]
 
-        assert len(title.credits) == 325
+        assert len(title.credits) == 326
         assert (
             sorted(load_test_data('expected_credits.json')) ==
             sorted([p.imdb_id for p in title.credits])
