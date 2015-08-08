@@ -83,7 +83,7 @@ class Imdb(object):
         return [plot.get('text') for plot in plots]
 
     def title_exists(self, imdb_id):
-        page_url = 'http://www.imdb.com/title/{}/'.format(imdb_id)
+        page_url = 'http://www.imdb.com/title/{0}/'.format(imdb_id)
 
         if self.anonymize is True:
             page_url = self.proxy_uri.format(quote(page_url))
