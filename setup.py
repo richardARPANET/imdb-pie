@@ -10,10 +10,12 @@ from setuptools import find_packages, setup
 # allow setup.py to be run from any path
 os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
+with open('requirements.txt') as f:
+    install_requires = f.read().splitlines()
 
 setup(
     name='imdbpie',
-    version='3.0.1.dev0',
+    version='4.0.0.dev0',
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
     include_package_data=True,
@@ -26,7 +28,7 @@ setup(
     author_email='richard@richard.do',
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
     long_description='https://github.com/richardasaurus/imdb-pie',
-    install_requires=['requests', 'six', 'wheel'],
+    install_requires=install_requires,
     classifiers=[
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
