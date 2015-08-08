@@ -12,7 +12,7 @@ Release History
 4.0.1 (2015-08-08)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Compatibility fixes (Python 2.6 and 3+)
 
 
 4.0.0 (2015-08-08)
