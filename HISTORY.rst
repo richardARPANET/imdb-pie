@@ -3,18 +3,6 @@
 Release History
 ---------------
 
-4.0.2 (unreleased)
-++++++++++++++++++
-
-- Nothing changed yet.
-
-
-4.0.1 (2015-08-08)
-++++++++++++++++++
-
-- Compatibility fixes (Python 2.6 and 3+)
-
-
 4.0.0 (2015-08-08)
 ++++++++++++++++++
 
@@ -23,7 +11,7 @@ Release History
 
 **Changes**
 
-- Internal caching changed you use 3rd party package ``requests-cache``.
+- Internal caching changed you use 3rd party package ``cachecontrol``.
 
 **Removed**
 
