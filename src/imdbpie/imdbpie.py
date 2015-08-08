@@ -1,21 +1,18 @@
 from __future__ import absolute_import, unicode_literals
 
-import os
 import re
 import json
 import time
 import random
-import hashlib
-import httplib
 import logging
 import datetime
 
 import requests
 import requests_cache
 from six.moves import html_parser
+from six.moves import http_client as httplib
 from six.moves.urllib.parse import urlencode, quote
 
-from imdbpie.exceptions import HTTPError
 from imdbpie.objects import Image, Title, Person, Review
 from imdbpie.constants import (
     BASE_URI, SHA1_KEY, USER_AGENTS, DEFAULT_PROXY_URI
