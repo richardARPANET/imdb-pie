@@ -8,7 +8,8 @@ import logging
 import datetime
 
 import requests
-import requests_cache
+from cachecontrol import CacheControl
+from cachecontrol.caches import FileCache
 from six.moves import html_parser
 from six.moves import http_client as httplib
 from six.moves.urllib.parse import urlencode, quote
@@ -35,9 +36,12 @@ class Imdb(object):
         self.proxy_uri = proxy_uri or DEFAULT_PROXY_URI
         self.anonymize = False or anonymize
         self.verify_ssl = True or verify_ssl
+        self.session = requests
 
         if self.caching_enabled:
-            requests_cache.install_cache('imdbpie_cache')
+            self.session = CacheControl(
+                requests.Session(), cache=FileCache('.imdbpie_cache')
+            )
 
     def get_person_by_id(self, imdb_id):
         url = self._build_url('/name/maindetails', {'nconst': imdb_id})
@@ -85,7 +89,7 @@ class Imdb(object):
         if self.anonymize is True:
             page_url = self.proxy_uri.format(quote(page_url))
 
-        response = requests.head(page_url)
+        response = self.session.head(page_url)
 
         if response.status_code == httplib.OK:
             return True
@@ -240,18 +244,10 @@ class Imdb(object):
             json.dump(resp, f)
 
     def _get(self, url):
-        if self.caching_enabled is True:
-            cache_state = requests_cache.enabled
-        elif self.caching_enabled is False:
-            cache_state = requests_cache.disabled
-        else:
-            raise ValueError('caching_enabled must of type bool')
-
-        with cache_state():
-            resp = requests.get(
-                url,
-                headers={'User-Agent': self.user_agent},
-                verify=self.verify_ssl)
+        resp = self.session.get(
+            url,
+            headers={'User-Agent': self.user_agent},
+            verify=self.verify_ssl)
 
         resp.raise_for_status()
 
