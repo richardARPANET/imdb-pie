@@ -22,8 +22,6 @@ imdb = Imdb(anonymize=True) # to proxy requests
 # Note that the cached responses expire every 2 hours or so.
 # The API response itself dictates the expiry time)
 imdb = Imdb(cache=True)
-# Specify optional cache directory, the default is '/tmp/imdbpiecache'
-imdb = Imdb(cache=True, cache_dir='/tmp/imdbpie-cache-here')
 ```
 
 ### Search for a title by its title
