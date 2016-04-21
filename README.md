@@ -29,6 +29,11 @@ imdb = Imdb(cache=True)
 >>> imdb.search_for_title("The Dark Knight")
 [{'title': "The Dark Knight", 'year':  "2008", 'imdb_id': "tt0468569"},{'title' : "Batman Unmasked", ...}]
 ```
+### Search for person by their name
+```python
+>>> imdb.search_for_person("Christian Bale")
+[{'imdb_id': 'nm0000288', 'name': 'Christian Bale'},{'imdb_id': 'nm7635250', ...}]
+```
 ### Find a title by its imdb_id
 ```python
 >>> title = imdb.get_title_by_id("tt0468569")
