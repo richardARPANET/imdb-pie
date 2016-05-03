@@ -1,0 +1,148 @@
+{
+    "exp": 1462301082,
+    "@meta": {
+        "serverTimeMs": 44,
+        "requestId": "0AJ5M479NV5YMWM9MZNG"
+    },
+    "data": {
+        "tconst": "tt0303461",
+        "seasons": [
+            {
+                "label": "Season 1",
+                "token": "1",
+                "list": [
+                    {
+                        "tconst": "tt0579539",
+                        "release_date": {
+                            "normal": "2002-09-20"
+                        },
+                        "type": "tv_episode",
+                        "title": "The Train Job",
+                        "year": "2002"
+                    },
+                    {
+                        "tconst": "tt0579528",
+                        "release_date": {
+                            "normal": "2002-09-27"
+                        },
+                        "type": "tv_episode",
+                        "title": "Bushwhacked",
+                        "year": "2002"
+                    },
+                    {
+                        "tconst": "tt0579532",
+                        "release_date": {
+                            "normal": "2002-10-04"
+                        },
+                        "type": "tv_episode",
+                        "title": "Our Mrs. Reynolds",
+                        "year": "2002"
+                    },
+                    {
+                        "tconst": "tt0579530",
+                        "release_date": {
+                            "normal": "2002-10-18"
+                        },
+                        "type": "tv_episode",
+                        "title": "Jaynestown",
+                        "year": "2002"
+                    },
+                    {
+                        "tconst": "tt0579533",
+                        "release_date": {
+                            "normal": "2002-10-25"
+                        },
+                        "type": "tv_episode",
+                        "title": "Out of Gas",
+                        "year": "2002"
+                    },
+                    {
+                        "tconst": "tt0579537",
+                        "release_date": {
+                            "normal": "2002-11-01"
+                        },
+                        "type": "tv_episode",
+                        "title": "Shindig",
+                        "year": "2002"
+                    },
+                    {
+                        "tconst": "tt0579534",
+                        "release_date": {
+                            "normal": "2002-11-08"
+                        },
+                        "type": "tv_episode",
+                        "title": "Safe",
+                        "year": "2002"
+                    },
+                    {
+                        "tconst": "tt0579527",
+                        "release_date": {
+                            "normal": "2002-11-15"
+                        },
+                        "type": "tv_episode",
+                        "title": "Ariel",
+                        "year": "2002"
+                    },
+                    {
+                        "tconst": "tt0579541",
+                        "release_date": {
+                            "normal": "2002-12-06"
+                        },
+                        "type": "tv_episode",
+                        "title": "War Stories",
+                        "year": "2002"
+                    },
+                    {
+                        "tconst": "tt0579531",
+                        "release_date": {
+                            "normal": "2002-12-13"
+                        },
+                        "type": "tv_episode",
+                        "title": "Objects in Space",
+                        "year": "2002"
+                    },
+                    {
+                        "tconst": "tt0579535",
+                        "release_date": {
+                            "normal": "2002-12-20"
+                        },
+                        "type": "tv_episode",
+                        "title": "Serenity",
+                        "year": "2002"
+                    },
+                    {
+                        "tconst": "tt0579529",
+                        "release_date": {
+                            "normal": "2003-08-04"
+                        },
+                        "type": "tv_episode",
+                        "title": "Heart of Gold",
+                        "year": "2003"
+                    },
+                    {
+                        "tconst": "tt0579540",
+                        "release_date": {
+                            "normal": "2003-07-21"
+                        },
+                        "type": "tv_episode",
+                        "title": "Trash",
+                        "year": "2003"
+                    },
+                    {
+                        "tconst": "tt0579538",
+                        "release_date": {
+                            "normal": "2003-07-28"
+                        },
+                        "type": "tv_episode",
+                        "title": "The Message",
+                        "year": "2003"
+                    }
+                ]
+            }
+        ],
+        "type": "tv_series",
+        "title": "Firefly",
+        "year": "2002"
+    },
+    "copyright": "For use only by clients authorized in writing by IMDb.  Authors and users of unauthorized clients accept full legal exposure/liability for their actions."
+}

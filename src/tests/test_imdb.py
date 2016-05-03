@@ -348,6 +348,23 @@ class TestImdb(object):
 
         assert title is None
 
+    def test_get_episodes(self):
+        assert self.imdb.get_title_by_id('tt0303461') is not None
+
+        imdb = Imdb()
+        title = imdb.get_title_by_id('tt0303461')
+
+        episodes = imdb.get_episodes(title)
+        assert episodes is not None
+
+        assert len(episodes) == 14
+        episode_1 = episodes[0]
+        assert episode_1.imdb_id == "tt0579539"
+        assert episode_1.type == "tv_episode"
+        assert episode_1.title == u'The Train Job'
+        assert episode_1.release_date == "2002-09-20"
+        assert episode_1.year == 2002
+
     def test_get_person_images(self):
         person_images = self.imdb.get_person_images('nm0000033')
 

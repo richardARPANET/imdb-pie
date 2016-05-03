@@ -14,7 +14,7 @@ from six.moves import html_parser
 from six.moves import http_client as httplib
 from six.moves.urllib.parse import urlencode, quote
 
-from imdbpie.objects import Image, Title, Person, Review
+from imdbpie.objects import Image, Title, Person, Episode, Review
 from imdbpie.constants import (
     BASE_URI, SHA1_KEY, USER_AGENTS, DEFAULT_PROXY_URI
 )
@@ -208,6 +208,30 @@ class Imdb(object):
         url = self._build_url('/name/photos', {'nconst': imdb_id})
         response = self._get(url)
         return self._get_images(response)
+
+    def get_episodes(self, title):
+        if title.type != "tv_series":
+            print "Title provided is not of type TV Series"
+            return None
+
+        url = self._build_url('/title/episodes', {'tconst': title.imdb_id})
+        response = self._get(url)
+
+        if response is None:
+            return None
+
+        seasons = response.get('data').get('seasons')
+        episodes = []
+
+        for season in seasons:
+            season_number = season.get('token')
+            for i, episode_data in enumerate(season.get('list')):
+                episode_data['episode'] = i
+                episode_data['season'] = season_number
+                e = Episode(episode_data)
+                episodes.append(e)
+
+        return episodes
 
     def _get_credits_data(self, imdb_id):
         url = self._build_url('/title/fullcredits', {'tconst': imdb_id})
