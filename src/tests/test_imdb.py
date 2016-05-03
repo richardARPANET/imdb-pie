@@ -352,9 +352,7 @@ class TestImdb(object):
         assert self.imdb.get_title_by_id('tt0303461') is not None
 
         imdb = Imdb()
-        title = imdb.get_title_by_id('tt0303461')
-
-        episodes = imdb.get_episodes(title)
+        episodes = imdb.get_episodes('tt0303461')
         assert episodes is not None
 
         assert len(episodes) == 14
