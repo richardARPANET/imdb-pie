@@ -171,6 +171,7 @@ class Episode(object):
         self.imdb_id = self.data.get('tconst')
         self.release_date = self.data.get('release_date', {}).get('normal')
         self.title = self.data.get('title')
+        self.series_name = self.data.get('series_name')
         self.type = self.data.get('type')
         self.year = self._extract_year()
         self.season = self.data.get('season')

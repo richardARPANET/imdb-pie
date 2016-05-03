@@ -358,6 +358,7 @@ class TestImdb(object):
         assert episode_1.imdb_id == "tt0579539"
         assert episode_1.type == "tv_episode"
         assert episode_1.title == u'The Train Job'
+        assert episode_1.series_name == 'Firefly'
         assert episode_1.release_date == "2002-09-20"
         assert episode_1.year == 2002
 
