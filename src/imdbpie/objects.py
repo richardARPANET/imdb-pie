@@ -190,6 +190,7 @@ class Episode(object):
     def __unicode__(self):
         return '<Episode: {0} - {1}>'.format(self.title, self.imdb_id)
 
+
 class Review(object):
 
     def __init__(self, data):
