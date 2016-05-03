@@ -209,12 +209,13 @@ class Imdb(object):
         response = self._get(url)
         return self._get_images(response)
 
-    def get_episodes(self, title):
+    def get_episodes(self, imdb_id):
+        title = self.get_title_by_id(imdb_id)
         if title.type != "tv_series":
-            print "Title provided is not of type TV Series"
+            print("Title provided is not of type TV Series")
             return None
 
-        url = self._build_url('/title/episodes', {'tconst': title.imdb_id})
+        url = self._build_url('/title/episodes', {'tconst': imdb_id})
         response = self._get(url)
 
         if response is None:
