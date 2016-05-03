@@ -60,35 +60,34 @@ class TestImdb(object):
     def test_get_title_plots(self):
         plots = self.imdb.get_title_plots('tt0111161')
 
-        expected_plot0 = ('Andy Dufresne is a young and successful banker '
-                          'whose life changes drastically when he is convicted'
-                          ' and sentenced to life imprisonment for the murder '
-                          'of his wife and her lover. Set in the 1940s, the '
-                          'film shows how Andy, with the help of his friend '
-                          'Red, the prison entrepreneur, turns out to be a '
-                          'most unconventional prisoner.')
-        expected_plot3 = ('Andy Dufresne is sent to Shawshank Prison for the '
-                          'murder of his wife and her secret lover. He is very'
-                          ' isolated and lonely at first, but realizes there '
-                          'is something deep inside your body that people '
-                          'can\'t touch or get to....\'HOPE\'. Andy becomes '
-                          'friends with prison \'fixer\' Red, and Andy '
-                          'epitomizes why it is crucial to have dreams. His '
-                          'spirit and determination lead us into a world full '
-                          'of imagination, one filled with courage and desire.'
-                          ' Will Andy ever realize his dreams?')
-        expected_plot4 = ('Bank Merchant Andy Defrene is convicted of the '
-                          'murder of his wife and her lover, and sentenced to '
-                          'life imprisonment at Shawshank prison. Life seems '
-                          'to have taken a turn for the worse, but fortunately'
-                          ' Andy befriends some of the other inmates, in '
-                          'particular a character known only as Red. Over time'
-                          ' Andy finds ways to live out life with relative '
-                          'ease as one can in a prison, leaving a message for'
-                          ' all that while the body may be locked away in a '
-                          'cell, the spirit can never be truly imprisoned.')
+        expected_plot0 = ('Chronicles the experiences of a formerly successful '
+                          'banker as a prisoner in the gloomy jailhouse of '
+                          'Shawshank after being found guilty of a crime he '
+                          'claims he did not commit. The film portrays the '
+                          'man\'s unique way of dealing with his new, torturous'
+                          ' life; along the way he befriends a number of fellow'
+                          ' prisoners, most notably a wise long-term inmate '
+                          'named Red.')
+        expected_plot3 = ('After the murder of his wife, hotshot banker Andrew'
+                          ' Dufresne is sent to Shawshank Prison, where the '
+                          'usual unpleasantness occurs. Over the years, he '
+                          'retains hope and eventually gains the respect of '
+                          'his fellow inmates, especially longtime convict '
+                          '"Red" Redding, a black marketeer, and becomes '
+                          'influential within the prison. Eventually, Andrew '
+                          'achieves his ends on his own terms.')
+        expected_plot4 = ('Andy Dufresne is sent to Shawshank Prison for the '
+                          'murder of his wife and her secret lover. He is very '
+                          'isolated and lonely at first, but realizes there is '
+                          'something deep inside your body that people can\'t '
+                          'touch or get to....\'HOPE\'. Andy becomes friends '
+                          'with prison \'fixer\' Red, and Andy epitomizes why '
+                          'it is crucial to have dreams. His spirit and '
+                          'determination lead us into a world full of '
+                          'imagination, one filled with courage and desire. '
+                          'Will Andy ever realize his dreams?')
 
-        assert 5 == len(plots)
+        assert 6 == len(plots)
         assert expected_plot0 == plots[0]
         assert expected_plot3 == plots[3]
         assert expected_plot4 == plots[4]
@@ -172,32 +171,31 @@ class TestImdb(object):
             },
         ]
 
-        assert 12 == len(results)
+        assert 14 == len(results)
         assert expected_top_results == results[:2]
 
     def test_search_for_person(self):
         results = self.imdb.search_for_person('Brad Pitt')
 
-        assert 17 == len(results)
+        assert 16 == len(results)
         expected_results = [
-            {'imdb_id': 'nm0000093', 'name': 'Brad Pitt'},
-            {'imdb_id': 'nm6221785', 'name': 'Brad Pittance'},
-            {'imdb_id': 'nm2876601', 'name': 'Brad Spitt'},
-            {'imdb_id': 'nm2542384', 'name': 'Brad Witt'},
-            {'imdb_id': 'nm7062918', 'name': 'Brad Pitz'},
-            {'imdb_id': 'nm3258729', 'name': 'Bradd Spitt'},
-            {'imdb_id': 'nm6173397', 'name': 'Brad Fitt'},
-            {'imdb_id': 'nm1694695', 'name': 'Prad Pitt'},
-            {'imdb_id': 'nm1784745', 'name': 'Brad Patton'},
-            {'imdb_id': 'nm6275510', 'name': 'Brad Sitton'},
-            {'imdb_id': 'nm2296458', 'name': 'Brad Pattison'},
-            {'imdb_id': 'nm1583570', 'name': 'Brad Pitre'},
-            {'imdb_id': 'nm3768356', 'name': 'Brad Bittner'},
-            {'imdb_id': 'nm4463090', 'name': 'Brad Patterson'},
-            {'imdb_id': 'nm1899342', 'name': 'Brad Pattullo'},
-            {'imdb_id': 'nm5741181', 'name': 'Brad Little'},
-            {'imdb_id': 'nm2703988', 'name': 'Brad Pitt vom Mahdenwald'}
-        ]
+             {u'imdb_id': u'nm0000093', u'name': u'Brad Pitt'},
+             {u'imdb_id': u'nm1583570', u'name': u'Brad Pitre'},
+             {u'imdb_id': u'nm1694695', u'name': u'Prad Pitt'},
+             {u'imdb_id': u'nm1784745', u'name': u'Brad Patton'},
+             {u'imdb_id': u'nm2296458', u'name': u'Brad Pattison'},
+             {u'imdb_id': u'nm2542384', u'name': u'Brad Witt'},
+             {u'imdb_id': u'nm2703988', u'name': u'Brad Pitt vom Mahdenwald'},
+             {u'imdb_id': u'nm2876601', u'name': u'Brad Spitt'},
+             {u'imdb_id': u'nm3258729', u'name': u'Bradd Spitt'},
+             {u'imdb_id': u'nm3768356', u'name': u'Brad Bittner'},
+             {u'imdb_id': u'nm4463090', u'name': u'Brad Patterson'},
+             {u'imdb_id': u'nm6173397', u'name': u'Brad Fitt'},
+             {u'imdb_id': u'nm6221785', u'name': u'Brad Pittance'},
+             {u'imdb_id': u'nm6275510', u'name': u'Brad Sitton'},
+             {u'imdb_id': u'nm7062918', u'name': u'Brad Pitz'},
+             {u'imdb_id': u'nm7733123', u'name': u'Bradley Pitts'}
+         ]
         assert (sorted(expected_results, key=itemgetter('imdb_id')) ==
                 sorted(results, key=itemgetter('imdb_id')))
 
@@ -270,7 +268,7 @@ class TestImdb(object):
         assert title.tagline == ('Fear can hold you prisoner. '
                                  'Hope can set you free.')
         assert isinstance(title.plots, list) is True
-        assert len(title.plots) == 5
+        assert len(title.plots) == 6
         assert isinstance(title.rating, float) is True
         assert sorted(title.genres) == sorted(['Crime', 'Drama'])
         assert isinstance(title.votes, int) is True
@@ -286,8 +284,8 @@ class TestImdb(object):
         assert title.release_date == '1994-10-14'
         assert title.certification == 'R'
         assert title.trailer_image_urls == [
-            'http://ia.media-imdb.com/images/M/MV5BMzAzMDI1MTE0MF5BMl5BanBnX'
-            'kFtZTgwNjMxNTMzMzE@._V1_.jpg'
+            'http://ia.media-imdb.com/images/M/MV5BNjQ2NDA3MDcxMF5BMl5BanBnX'
+            'kFtZTgwMjE5NTU0NzE@._V1_.jpg'
         ]
         expected_plot_outline = (
             'Two imprisoned men bond over a number '
@@ -311,7 +309,7 @@ class TestImdb(object):
         for name in expected_writers:
             assert name in [p.name for p in title.writers_summary]
 
-        assert len(title.credits) == 326
+        assert len(title.credits) == 328
         assert (
             sorted(load_test_data('expected_credits.json')) ==
             sorted([p.imdb_id for p in title.credits])
@@ -330,7 +328,7 @@ class TestImdb(object):
         assert title.tagline == ('Fear can hold you prisoner. '
                                  'Hope can set you free.')
         assert isinstance(title.plots, list) is True
-        assert len(title.plots) == 5
+        assert len(title.plots) == 6
         assert isinstance(title.rating, float) is True
         assert sorted(title.genres) == sorted(['Crime', 'Drama'])
         assert isinstance(title.votes, int) is True
@@ -364,20 +362,21 @@ class TestImdb(object):
         assert episode_1.year == 2002
 
     def test_get_person_images(self):
-        person_images = self.imdb.get_person_images('nm0000033')
+        person_images = self.imdb.get_person_images('nm0000032')
 
-        assert len(person_images) == 280
-        assert person_images[0].caption == 'Alfred Hitchcock'
+        assert len(person_images) == 207
+        assert person_images[0].caption == ('Charlton Heston and Yul '
+                                            'Brynner in The Buccaneer')
         assert person_images[0].url == (
-            'http://ia.media-imdb.com/images/M/MV5BMTQwMzIzNDY0OV5BMl5BanBnX'
-            'kFtZTcwMTg0MzgyOQ@@._V1_.jpg')
-        assert person_images[0].width == 1308
-        assert person_images[0].height == 2048
+            'http://ia.media-imdb.com/images/M/MV5BMTU4NTc2NzQxNl5BMl5BanBnX'
+            'kFtZTgwNDYzMDkwMzE@._V1_.jpg')
+        assert person_images[0].width == 375
+        assert person_images[0].height == 500
 
     def test_get_title_images(self):
         title_images = self.imdb.get_title_images('tt0111161')
 
-        assert len(title_images) == 33
+        assert len(title_images) == 39
 
         for image in title_images:
             assert isinstance(image, Image) is True
