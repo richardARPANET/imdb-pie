@@ -1,16 +1,16 @@
+# coding: utf-8
 from __future__ import absolute_import, unicode_literals
 
-import cgi
 import time
 import datetime
 from operator import itemgetter
 
 import pytest
-from six.moves.urllib_parse import urlparse, quote
-
 from mock import patch
+from six.moves.urllib_parse import quote
+
 from imdbpie import Imdb
-from imdbpie.objects import Image, Person, Review
+from imdbpie.objects import Image, Person
 from imdbpie.exceptions import HTTPError
 
 from tests.utils import load_test_data, assert_urls_match
@@ -77,27 +77,16 @@ class TestImdb(object):
                           'spirit and determination lead us into a world full '
                           'of imagination, one filled with courage and desire.'
                           ' Will Andy ever realize his dreams?')
-        expected_plot4 = ('Bank Merchant Andy Defrene is convicted of the '
-                          'murder of his wife and her lover, and sentenced to '
-                          'life imprisonment at Shawshank prison. Life seems '
-                          'to have taken a turn for the worse, but fortunately'
-                          ' Andy befriends some of the other inmates, in '
-                          'particular a character known only as Red. Over time'
-                          ' Andy finds ways to live out life with relative '
-                          'ease as one can in a prison, leaving a message for'
-                          ' all that while the body may be locked away in a '
-                          'cell, the spirit can never be truly imprisoned.')
 
-        assert 5 == len(plots)
-        assert expected_plot0 == plots[0]
-        assert expected_plot3 == plots[3]
-        assert expected_plot4 == plots[4]
+        assert len(plots) >= 6
+        assert expected_plot0 in plots
+        assert expected_plot3 in plots
 
     def test_get_credits_data(self):
         credits = self.imdb._get_credits_data('tt0111161')
         expected_credits = load_test_data('get_credits_tt0111161.json')
 
-        assert len(expected_credits) == len(credits)
+        assert len(expected_credits) <= len(credits)
         for index, credit_item in enumerate(expected_credits):
             assert (
                 sorted(credit_item, key=itemgetter(1)) ==
@@ -172,31 +161,26 @@ class TestImdb(object):
             },
         ]
 
-        assert 12 == len(results)
+        assert 14 == len(results)
         assert expected_top_results == results[:2]
 
     def test_search_for_person(self):
-        results = self.imdb.search_for_person('Brad Pitt')
+        results = self.imdb.search_for_person('Andrew Lloyd Webber')
 
-        assert 17 == len(results)
+        assert 12 == len(results)
         expected_results = [
-            {'imdb_id': 'nm0000093', 'name': 'Brad Pitt'},
-            {'imdb_id': 'nm6221785', 'name': 'Brad Pittance'},
-            {'imdb_id': 'nm2876601', 'name': 'Brad Spitt'},
-            {'imdb_id': 'nm2542384', 'name': 'Brad Witt'},
-            {'imdb_id': 'nm7062918', 'name': 'Brad Pitz'},
-            {'imdb_id': 'nm3258729', 'name': 'Bradd Spitt'},
-            {'imdb_id': 'nm6173397', 'name': 'Brad Fitt'},
-            {'imdb_id': 'nm1694695', 'name': 'Prad Pitt'},
-            {'imdb_id': 'nm1784745', 'name': 'Brad Patton'},
-            {'imdb_id': 'nm6275510', 'name': 'Brad Sitton'},
-            {'imdb_id': 'nm2296458', 'name': 'Brad Pattison'},
-            {'imdb_id': 'nm1583570', 'name': 'Brad Pitre'},
-            {'imdb_id': 'nm3768356', 'name': 'Brad Bittner'},
-            {'imdb_id': 'nm4463090', 'name': 'Brad Patterson'},
-            {'imdb_id': 'nm1899342', 'name': 'Brad Pattullo'},
-            {'imdb_id': 'nm5741181', 'name': 'Brad Little'},
-            {'imdb_id': 'nm2703988', 'name': 'Brad Pitt vom Mahdenwald'}
+            {'name': 'Andrew Lloyd Webber', 'imdb_id': 'nm0515908'},
+            {'name': 'Andrew Lloyd Walker', 'imdb_id': 'nm3530714'},
+            {'name': 'Robert Lloyd', 'imdb_id': 'nm0516115'},
+            {'name': 'Madeleine Gurdon', 'imdb_id': 'nm2967056'},
+            {'name': 'Andrew Webberley', 'imdb_id': 'nm1422165'},
+            {'name': 'Imogen Lloyd Webber', 'imdb_id': 'nm2622250'},
+            {'name': 'Robert Floyd', 'imdb_id': 'nm0283292'},
+            {'name': 'Andrew Webber', 'imdb_id': 'nm0916341'},
+            {'name': 'Andrew Webber', 'imdb_id': 'nm1267376'},
+            {'name': 'Andrew Webber', 'imdb_id': 'nm3404464'},
+            {'name': 'Mark Webber', 'imdb_id': 'nm1902514'},
+            {'name': 'Andrew Webber', 'imdb_id': 'nm5409221'}
         ]
         assert (sorted(expected_results, key=itemgetter('imdb_id')) ==
                 sorted(results, key=itemgetter('imdb_id')))
@@ -270,7 +254,7 @@ class TestImdb(object):
         assert title.tagline == ('Fear can hold you prisoner. '
                                  'Hope can set you free.')
         assert isinstance(title.plots, list) is True
-        assert len(title.plots) == 5
+        assert len(title.plots) == 6
         assert isinstance(title.rating, float) is True
         assert sorted(title.genres) == sorted(['Crime', 'Drama'])
         assert isinstance(title.votes, int) is True
@@ -285,10 +269,7 @@ class TestImdb(object):
         )
         assert title.release_date == '1994-10-14'
         assert title.certification == 'R'
-        assert title.trailer_image_urls == [
-            'http://ia.media-imdb.com/images/M/MV5BMzAzMDI1MTE0MF5BMl5BanBnX'
-            'kFtZTgwNjMxNTMzMzE@._V1_.jpg'
-        ]
+        assert 'http://ia.media-imdb.com/images' in title.trailer_image_urls[0]
         expected_plot_outline = (
             'Two imprisoned men bond over a number '
             'of years, finding solace and eventual redemption through acts '
@@ -311,7 +292,7 @@ class TestImdb(object):
         for name in expected_writers:
             assert name in [p.name for p in title.writers_summary]
 
-        assert len(title.credits) == 326
+        assert len(title.credits) >= 327
         assert (
             sorted(load_test_data('expected_credits.json')) ==
             sorted([p.imdb_id for p in title.credits])
@@ -330,7 +311,7 @@ class TestImdb(object):
         assert title.tagline == ('Fear can hold you prisoner. '
                                  'Hope can set you free.')
         assert isinstance(title.plots, list) is True
-        assert len(title.plots) == 5
+        assert len(title.plots) == 6
         assert isinstance(title.rating, float) is True
         assert sorted(title.genres) == sorted(['Crime', 'Drama'])
         assert isinstance(title.votes, int) is True
@@ -351,18 +332,19 @@ class TestImdb(object):
     def test_get_person_images(self):
         person_images = self.imdb.get_person_images('nm0000033')
 
-        assert len(person_images) == 280
-        assert person_images[0].caption == 'Alfred Hitchcock'
-        assert person_images[0].url == (
-            'http://ia.media-imdb.com/images/M/MV5BMTQwMzIzNDY0OV5BMl5BanBnX'
-            'kFtZTcwMTg0MzgyOQ@@._V1_.jpg')
-        assert person_images[0].width == 1308
-        assert person_images[0].height == 2048
+        assert len(person_images) >= 281
+        assert person_images[0].caption == (
+            'Still of Alfred Hitchcock and François Truffaut '
+            'in Hitchcock/Truffaut'
+        )
+        assert 'http://ia.media-imdb.com/images/M/' in person_images[0].url
+        assert person_images[0].width == 2000
+        assert person_images[0].height == 1302
 
     def test_get_title_images(self):
         title_images = self.imdb.get_title_images('tt0111161')
 
-        assert len(title_images) == 33
+        assert len(title_images) >= 38
 
         for image in title_images:
             assert isinstance(image, Image) is True
