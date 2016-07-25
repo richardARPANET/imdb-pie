@@ -54,58 +54,56 @@ class Person(object):
 class Title(object):
 
     def __init__(self, data):
-        self.data = data
-
-        self.imdb_id = self.data.get('tconst')
-        self.title = self.data.get('title')
-        self.type = self.data.get('type')
-        self.year = self._extract_year()
-        self.tagline = self.data.get('tagline')
-        self.plots = self.data.get('plots')
-        self.plot_outline = self.data.get('plot', {}).get('outline')
-        self.rating = self.data.get('rating')
-        self.genres = self.data.get('genres')
-        self.votes = self.data.get('num_votes')
-        self.runtime = self.data.get('runtime', {}).get('time')
-        self.poster_url = self.data.get('image', {}).get('url')
-        self.cover_url = self._extract_cover_url()
-        self.release_date = self.data.get('release_date', {}).get('normal')
-        self.certification = self.data.get('certificate', {}).get(
+        self.imdb_id = data.get('tconst')
+        self.title = data.get('title')
+        self.type = data.get('type')
+        self.year = self._extract_year(data)
+        self.tagline = data.get('tagline')
+        self.plots = data.get('plots')
+        self.plot_outline = data.get('plot', {}).get('outline')
+        self.rating = data.get('rating')
+        self.genres = data.get('genres')
+        self.votes = data.get('num_votes')
+        self.runtime = data.get('runtime', {}).get('time')
+        self.poster_url = data.get('image', {}).get('url')
+        self.cover_url = self._extract_cover_url(data)
+        self.release_date = data.get('release_date', {}).get('normal')
+        self.certification = data.get('certificate', {}).get(
             'certificate')
-        self.trailer_image_urls = self._extract_trailer_image_urls()
-        self.directors_summary = self._extract_directors_summary()
-        self.creators = self._extract_creators()
-        self.cast_summary = self._extract_cast_summary()
-        self.writers_summary = self._extract_writers_summary()
-        self.credits = self._extract_credits()
-        self.trailers = self._extract_trailers()
+        self.trailer_image_urls = self._extract_trailer_image_urls(data)
+        self.directors_summary = self._extract_directors_summary(data)
+        self.creators = self._extract_creators(data)
+        self.cast_summary = self._extract_cast_summary(data)
+        self.writers_summary = self._extract_writers_summary(data)
+        self.credits = self._extract_credits(data)
+        self.trailers = self._extract_trailers(data)
 
-    def _extract_directors_summary(self):
-        return [Person(p) for p in self.data.get('directors_summary', [])]
+    def _extract_directors_summary(self, data):
+        return [Person(p) for p in data.get('directors_summary', [])]
 
-    def _extract_creators(self):
-        return [Person(p) for p in self.data.get('creators', [])]
+    def _extract_creators(self, data):
+        return [Person(p) for p in data.get('creators', [])]
 
-    def _extract_trailers(self):
+    def _extract_trailers(self, data):
         def build_dict(val):
             return {'url': val['url'], 'format': val['format']}
 
-        trailers = self.data.get('trailer', {}).get('encodings', {}).values()
+        trailers = data.get('trailer', {}).get('encodings', {}).values()
         return [build_dict(trailer) for trailer in trailers]
 
-    def _extract_writers_summary(self):
-        return [Person(p) for p in self.data.get('writers_summary', [])]
+    def _extract_writers_summary(self, data):
+        return [Person(p) for p in data.get('writers_summary', [])]
 
-    def _extract_cast_summary(self):
-        return [Person(p) for p in self.data.get('cast_summary', [])]
+    def _extract_cast_summary(self, data):
+        return [Person(p) for p in data.get('cast_summary', [])]
 
-    def _extract_credits(self):
+    def _extract_credits(self, data):
         credits = []
 
-        if not self.data.get('credits'):
+        if not data.get('credits'):
             return []
 
-        for credit_group in self.data['credits']:
+        for credit_group in data['credits']:
             """
             Possible tokens: directors, cast, writers, producers and others
             """
@@ -125,19 +123,19 @@ class Title(object):
                     credits.append(Person(person_data))
         return credits
 
-    def _extract_year(self):
-        year = self.data.get('year')
+    def _extract_year(self, data):
+        year = data.get('year')
         # if there's no year the API returns ????...
         if not year or year == '????':
             return None
         return int(year)
 
-    def _extract_cover_url(self):
+    def _extract_cover_url(self, data):
         if self.poster_url:
             return '{0}_SX214_.jpg'.format(self.poster_url.replace('.jpg', ''))
 
-    def _extract_trailer_image_urls(self):
-        slates = self.data.get('trailer', {}).get('slates', [])
+    def _extract_trailer_image_urls(self, data):
+        slates = data.get('trailer', {}).get('slates', [])
         return [s['url'] for s in slates]
 
     def __repr__(self):
@@ -166,19 +164,17 @@ class Image(object):
 class Episode(object):
 
     def __init__(self, data):
-        self.data = data
+        self.imdb_id = data.get('tconst')
+        self.release_date = data.get('release_date', {}).get('normal')
+        self.title = data.get('title')
+        self.series_name = data.get('series_name')
+        self.type = data.get('type')
+        self.year = self._extract_year(data)
+        self.season = data.get('season')
+        self.episode = data.get('episode')
 
-        self.imdb_id = self.data.get('tconst')
-        self.release_date = self.data.get('release_date', {}).get('normal')
-        self.title = self.data.get('title')
-        self.series_name = self.data.get('series_name')
-        self.type = self.data.get('type')
-        self.year = self._extract_year()
-        self.season = self.data.get('season')
-        self.episode = self.data.get('episode')
-
-    def _extract_year(self):
-        year = self.data.get('year')
+    def _extract_year(self, data):
+        year = data.get('year')
         # if there's no year the API returns ????...
         if not year or year == '????':
             return None
