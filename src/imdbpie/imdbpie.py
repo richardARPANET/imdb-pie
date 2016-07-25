@@ -24,9 +24,9 @@ logger = logging.getLogger(__name__)
 
 class Imdb(object):
 
-    def __init__(self, api_key=None, locale=None, anonymize=None,
+    def __init__(self, api_key=None, locale=None, anonymize=False,
                  exclude_episodes=None, user_agent=None, cache=None,
-                 proxy_uri=None, verify_ssl=None):
+                 proxy_uri=None, verify_ssl=True):
         self.api_key = api_key or SHA1_KEY
         self.timestamp = time.mktime(datetime.date.today().timetuple())
         self.user_agent = user_agent or random.choice(USER_AGENTS)
@@ -34,8 +34,8 @@ class Imdb(object):
         self.exclude_episodes = True if exclude_episodes is True else False
         self.caching_enabled = True if cache is True else False
         self.proxy_uri = proxy_uri or DEFAULT_PROXY_URI
-        self.anonymize = False or anonymize
-        self.verify_ssl = True or verify_ssl
+        self.anonymize = anonymize
+        self.verify_ssl = verify_ssl
         self.session = requests
 
         if self.caching_enabled:
@@ -212,8 +212,7 @@ class Imdb(object):
     def get_episodes(self, imdb_id):
         title = self.get_title_by_id(imdb_id)
         if title.type != "tv_series":
-            print("Title provided is not of type TV Series")
-            return None
+            raise RuntimeError('Title provided is not of type TV Series')
 
         url = self._build_url('/title/episodes', {'tconst': imdb_id})
         response = self._get(url)
