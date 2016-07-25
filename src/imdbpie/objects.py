@@ -163,6 +163,35 @@ class Image(object):
         return '<Image: {0}>'.format(self.caption.encode('utf-8'))
 
 
+class Episode(object):
+
+    def __init__(self, data):
+        self.data = data
+
+        self.imdb_id = self.data.get('tconst')
+        self.release_date = self.data.get('release_date', {}).get('normal')
+        self.title = self.data.get('title')
+        self.series_name = self.data.get('series_name')
+        self.type = self.data.get('type')
+        self.year = self._extract_year()
+        self.season = self.data.get('season')
+        self.episode = self.data.get('episode')
+
+    def _extract_year(self):
+        year = self.data.get('year')
+        # if there's no year the API returns ????...
+        if not year or year == '????':
+            return None
+        return int(year)
+
+    def __repr__(self):
+        return '<Episode: {0} - {1}>'.format(repr(self.title),
+                                             repr(self.imdb_id))
+
+    def __unicode__(self):
+        return '<Episode: {0} - {1}>'.format(self.title, self.imdb_id)
+
+
 class Review(object):
 
     def __init__(self, data):

@@ -14,7 +14,7 @@ from six.moves import html_parser
 from six.moves import http_client as httplib
 from six.moves.urllib.parse import urlencode, quote
 
-from imdbpie.objects import Image, Title, Person, Review
+from imdbpie.objects import Image, Title, Person, Episode, Review
 from imdbpie.constants import (
     BASE_URI, SHA1_KEY, USER_AGENTS, DEFAULT_PROXY_URI
 )
@@ -24,9 +24,9 @@ logger = logging.getLogger(__name__)
 
 class Imdb(object):
 
-    def __init__(self, api_key=None, locale=None, anonymize=None,
+    def __init__(self, api_key=None, locale=None, anonymize=False,
                  exclude_episodes=None, user_agent=None, cache=None,
-                 proxy_uri=None, verify_ssl=None):
+                 proxy_uri=None, verify_ssl=True):
         self.api_key = api_key or SHA1_KEY
         self.timestamp = time.mktime(datetime.date.today().timetuple())
         self.user_agent = user_agent or random.choice(USER_AGENTS)
@@ -34,8 +34,8 @@ class Imdb(object):
         self.exclude_episodes = True if exclude_episodes is True else False
         self.caching_enabled = True if cache is True else False
         self.proxy_uri = proxy_uri or DEFAULT_PROXY_URI
-        self.anonymize = False or anonymize
-        self.verify_ssl = True or verify_ssl
+        self.anonymize = anonymize
+        self.verify_ssl = verify_ssl
         self.session = requests
 
         if self.caching_enabled:
@@ -208,6 +208,31 @@ class Imdb(object):
         url = self._build_url('/name/photos', {'nconst': imdb_id})
         response = self._get(url)
         return self._get_images(response)
+
+    def get_episodes(self, imdb_id):
+        title = self.get_title_by_id(imdb_id)
+        if title.type != "tv_series":
+            raise RuntimeError('Title provided is not of type TV Series')
+
+        url = self._build_url('/title/episodes', {'tconst': imdb_id})
+        response = self._get(url)
+
+        if response is None:
+            return None
+
+        seasons = response.get('data').get('seasons')
+        episodes = []
+
+        for season in seasons:
+            season_number = season.get('token')
+            for i, episode_data in enumerate(season.get('list')):
+                episode_data['series_name'] = title.title
+                episode_data['episode'] = str(i+1)
+                episode_data['season'] = season_number
+                e = Episode(episode_data)
+                episodes.append(e)
+
+        return episodes
 
     def _get_credits_data(self, imdb_id):
         url = self._build_url('/title/fullcredits', {'tconst': imdb_id})
