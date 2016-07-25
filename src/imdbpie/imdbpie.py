@@ -35,7 +35,7 @@ class Imdb(object):
         self.caching_enabled = True if cache is True else False
         self.proxy_uri = proxy_uri or DEFAULT_PROXY_URI
         self.anonymize = False or anonymize
-        self.verify_ssl = True or verify_ssl
+        self.verify_ssl = False if verify_ssl is not None else True
         self.session = requests
 
         if self.caching_enabled:
