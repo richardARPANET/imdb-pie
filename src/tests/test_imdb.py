@@ -338,6 +338,11 @@ class TestImdb(object):
         assert episode_1.release_date == "2002-09-20"
         assert episode_1.year == 2002
 
+    def test_get_episodes_raises_when_exclude_episodes_enabled(self):
+        imdb = Imdb(locale='en_US', cache=False, exclude_episodes=True)
+        with pytest.raises(ValueError):
+            imdb.get_episodes('tt0303461')
+
     def test_get_person_images(self):
         person_images = self.imdb.get_person_images('nm0000032')
 
