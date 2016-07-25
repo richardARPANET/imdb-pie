@@ -13,7 +13,9 @@ def set_up():
 
     seasons = data.get('data').get('seasons')
     first_episode = seasons[0].get('list')[0]
-
+    first_episode['series_name'] = 'Some Series Name'
+    first_episode['episode'] = 4
+    first_episode['season'] = 5
     return {
         'data': first_episode,
     }
@@ -21,11 +23,25 @@ def set_up():
 
 def test_episode(set_up):
     data = set_up['data']
-
     episode = Episode(data=data)
 
-    assert episode.imdb_id == 'tt0579539'
+    assert episode.imdb_id == 'tt1001012'
     assert episode.type == 'tv_episode'
-    assert episode.title == u'The Train Job'
-    assert episode.release_date == '2002-09-20'
+    assert episode.title == 'Who Can Gain the Most Weight in One Week?'
+    assert episode.release_date == '2002'
+    assert episode.season == 5
+    assert episode.episode == 4
+    assert episode.series_name == 'Some Series Name'
     assert episode.year == 2002
+
+
+@pytest.mark.parametrize('value,expected', [
+    ('unknown', None),
+    ('100', 100),
+    (10, 10),
+    (None, None),
+])
+def test_extract_season_episode(value, expected):
+    episode = Episode(data={})
+
+    assert episode._extract_season_episode(value=value) == expected

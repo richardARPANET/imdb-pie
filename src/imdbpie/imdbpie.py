@@ -228,9 +228,9 @@ class Imdb(object):
 
         for season in seasons:
             season_number = season.get('token')
-            for i, episode_data in enumerate(season.get('list')):
+            for idx, episode_data in enumerate(season.get('list')):
                 episode_data['series_name'] = title.title
-                episode_data['episode'] = str(i+1)
+                episode_data['episode'] = idx + 1
                 episode_data['season'] = season_number
                 e = Episode(episode_data)
                 episodes.append(e)

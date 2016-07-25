@@ -170,10 +170,11 @@ class Episode(object):
         self.series_name = data.get('series_name')
         self.type = data.get('type')
         self.year = self._extract_year(data)
-        self.season = int(data.get('season')) if data.get('season') else None
-        self.episode = (
-            int(data.get('episode')) if data.get('episode') else None
-        )
+        self.season = self._extract_season_episode(data.get('season'))
+        self.episode = self._extract_season_episode(data.get('episode'))
+
+    def _extract_season_episode(self, value):
+        return int(value) if value and value != 'unknown' else None
 
     def _extract_year(self, data):
         year = data.get('year')
