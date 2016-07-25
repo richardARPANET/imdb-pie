@@ -6,6 +6,7 @@ import time
 import random
 import logging
 import datetime
+import warnings
 
 import requests
 from cachecontrol import CacheControl
@@ -39,6 +40,8 @@ class Imdb(object):
         self.session = requests
 
         if self.caching_enabled:
+            warnings.warn('caching will be removed in version 5.0.0 '
+                          'due to not being thread safe')
             self.session = CacheControl(
                 requests.Session(), cache=FileCache('.imdbpie_cache')
             )
