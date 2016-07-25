@@ -3,10 +3,12 @@
 Release History
 ---------------
 
-4.0.3 (unreleased)
+4.1.0 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Changed ``Title`` and other objects to use less memory.
+- Added notice of deprecation of caching in version 5.0.0.
+- Added ``Imdb.get_episodes`` to retrieve Title Episode information.
 
 
 4.0.2 (2015-08-08)
