@@ -6,6 +6,7 @@ import time
 import random
 import logging
 import datetime
+import warnings
 
 import requests
 from cachecontrol import CacheControl
@@ -25,13 +26,13 @@ logger = logging.getLogger(__name__)
 class Imdb(object):
 
     def __init__(self, api_key=None, locale=None, anonymize=False,
-                 exclude_episodes=None, user_agent=None, cache=None,
+                 exclude_episodes=False, user_agent=None, cache=None,
                  proxy_uri=None, verify_ssl=True):
         self.api_key = api_key or SHA1_KEY
         self.timestamp = time.mktime(datetime.date.today().timetuple())
         self.user_agent = user_agent or random.choice(USER_AGENTS)
         self.locale = locale or 'en_US'
-        self.exclude_episodes = True if exclude_episodes is True else False
+        self.exclude_episodes = exclude_episodes
         self.caching_enabled = True if cache is True else False
         self.proxy_uri = proxy_uri or DEFAULT_PROXY_URI
         self.anonymize = anonymize
@@ -39,6 +40,8 @@ class Imdb(object):
         self.session = requests
 
         if self.caching_enabled:
+            warnings.warn('caching will be removed in version 5.0.0 '
+                          'due to not being thread safe')
             self.session = CacheControl(
                 requests.Session(), cache=FileCache('.imdbpie_cache')
             )
@@ -187,9 +190,7 @@ class Imdb(object):
         return self._get_images(response)
 
     def get_title_reviews(self, imdb_id, max_results=None):
-        """
-        Retrieves reviews for a title ordered by 'Best' descending
-        """
+        """Retrieve reviews for a title ordered by 'Best' descending"""
         user_comments = self._get_reviews_data(
             imdb_id,
             max_results=max_results
@@ -210,8 +211,11 @@ class Imdb(object):
         return self._get_images(response)
 
     def get_episodes(self, imdb_id):
+        if self.exclude_episodes:
+            raise ValueError('exclude_episodes is currently set')
+
         title = self.get_title_by_id(imdb_id)
-        if title.type != "tv_series":
+        if title.type != 'tv_series':
             raise RuntimeError('Title provided is not of type TV Series')
 
         url = self._build_url('/title/episodes', {'tconst': imdb_id})
@@ -225,9 +229,9 @@ class Imdb(object):
 
         for season in seasons:
             season_number = season.get('token')
-            for i, episode_data in enumerate(season.get('list')):
+            for idx, episode_data in enumerate(season.get('list')):
                 episode_data['series_name'] = title.title
-                episode_data['episode'] = str(i+1)
+                episode_data['episode'] = idx + 1
                 episode_data['season'] = season_number
                 e = Episode(episode_data)
                 episodes.append(e)
@@ -307,7 +311,7 @@ class Imdb(object):
     @staticmethod
     def _is_redirection_result(response):
         """
-        Returns True if response is that of a redirection else False
+        Return True if response is that of a redirection else False
         Redirection results have no information of use.
         """
         imdb_id = response['data'].get('tconst')

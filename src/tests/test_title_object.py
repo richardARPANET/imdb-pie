@@ -1,7 +1,5 @@
 from __future__ import absolute_import, unicode_literals
 
-import os
-import json
 from operator import itemgetter
 
 import pytest
@@ -24,8 +22,9 @@ def set_up():
 
 def test_extract_trailers(set_up):
     title = set_up['title']
+    data = set_up['title_data']
 
-    trailers = title._extract_trailers()
+    trailers = title._extract_trailers(data)
     expected_trailers = [
         {
             'format': 'H.264 Fire 600',
@@ -59,21 +58,23 @@ def test_extract_trailers(set_up):
 
 def test_extract_trailer_image_urls(set_up):
     title = set_up['title']
+    data = set_up['title_data']
 
     expected_urls = [
         ('http://ia.media-imdb.com/images/M/'
          'MV5BMTg4NjMwOTY2Ml5BMl5BanBnXkFtZTcwMDY1MTI5Mw@@._V1_.jpg')
     ]
 
-    urls = title._extract_trailer_image_urls()
+    urls = title._extract_trailer_image_urls(data)
 
     assert expected_urls == urls
 
 
 def test_extract_creators(set_up):
     title = set_up['title']
+    data = set_up['title_data']
 
-    creators = title._extract_creators()
+    creators = title._extract_creators(data)
 
     assert 2 == len(creators)
     assert 'nm0001778' == creators[0].imdb_id
@@ -84,8 +85,9 @@ def test_extract_creators(set_up):
 
 def test_extract_directors_summary(set_up):
     title = set_up['title']
+    data = set_up['title_data']
 
-    directors_summary = title._extract_directors_summary()
+    directors_summary = title._extract_directors_summary(data)
 
     assert 1 == len(directors_summary)
     assert 'nm1403225' == directors_summary[0].imdb_id
@@ -94,8 +96,9 @@ def test_extract_directors_summary(set_up):
 
 def test_extract_cast_summary(set_up):
     title = set_up['title']
+    data = set_up['title_data']
 
-    cast_summary = title._extract_cast_summary()
+    cast_summary = title._extract_cast_summary(data)
 
     assert 4 == len(cast_summary)
     assert 'nm3732046' == cast_summary[0].imdb_id
@@ -108,8 +111,9 @@ def test_extract_cast_summary(set_up):
 
 def test_extract_writers_summary(set_up):
     title = set_up['title']
+    data = set_up['title_data']
 
-    writers_summary = title._extract_writers_summary()
+    writers_summary = title._extract_writers_summary(data)
 
     assert 1 == len(writers_summary)
     assert 'nm1403225' == writers_summary[0].imdb_id
@@ -118,24 +122,26 @@ def test_extract_writers_summary(set_up):
 
 def test_extract_year(set_up):
     title = set_up['title']
-    assert 2010 == title._extract_year()
+    data = set_up['title_data']
+    assert 2010 == title._extract_year(data)
 
 
 def test_extract_year_no_year():
     data = {'year': '????'}
     title = Title(data=data)
-    assert title._extract_year() is None
+    assert title._extract_year(data) is None
 
 
 def test_extract_cover_url(set_up):
     title = set_up['title']
+    data = set_up['title_data']
 
     expected_cover_url = (
         'http://ia.media-imdb.com/images/M/'
         'MV5BMTUyNjE5NTEzM15BMl5BanBnXkFtZTcwNjc0MTI5Mw@@'
         '._V1__SX214_.jpg'
     )
-    cover_url = title._extract_cover_url()
+    cover_url = title._extract_cover_url(data)
 
     assert expected_cover_url == cover_url
 
@@ -146,7 +152,7 @@ def test_extract_credits():
 
     title = Title(data=data)
 
-    people = title._extract_credits()
+    people = title._extract_credits(data)
 
     assert 6 == len(people)
 

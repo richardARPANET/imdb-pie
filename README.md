@@ -53,6 +53,32 @@ imdb = Imdb(cache=True)
 "nm0000151"
 ```
 
+### Find all episodes for a title by its imdb_id
+
+```python
+>>> imdb.get_episodes('tt0096697')
+[<Episode: u'Simpsons Roasting on an Open Fire' - u'tt0348034'>,
+ <Episode: u'Bart the Genius' - u'tt0756593'>,
+ <Episode: u"Homer's Odyssey" - u'tt0701124'>,...]
+
+>>> episode.release_date
+'1989-12-17'
+>>> episode.title
+'Simpsons Roasting on an Open Fire'
+>>> episode.series_name
+'The Simpsons'
+>>> episode.type
+'tv_episode'
+>>> episode.year
+1989
+>>> episode.season
+1
+>>> episode.episode
+1
+>>> episode.imdb_id
+'tt0348034'
+```
+
 ### Find a title trailer poster
 ```python
 >>> title = imdb.get_title_by_id("tt1210166")
