@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-4.1.0 (unreleased)
+4.1.0 (2016-07-26)
 ++++++++++++++++++
 
 - Changed ``Title`` and other objects to use less memory.
