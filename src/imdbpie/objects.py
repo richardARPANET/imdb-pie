@@ -8,6 +8,7 @@ class Person(object):
 
         self.name = self._extract_name(data)
         self.imdb_id = self._extract_imdb_id(data)
+        self.photo_url = self._extract_photo_url(data)
 
         # secondary attribs, will only get data when called via get_title_by_id
 
@@ -41,6 +42,11 @@ class Person(object):
         if isinstance(name, dict):
             return name.get('nconst')
         return data.get('nconst')
+
+    @staticmethod
+    def _extract_photo_url(data):
+        photo_url = data.get('image', {}).get('url')
+        return photo_url
 
     def __repr__(self):
         return '<Person: {0} ({1})>'.format(repr(self.name),
