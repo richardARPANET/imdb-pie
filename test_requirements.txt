@@ -1,5 +1,4 @@
 -r requirements.txt
-imdbpie
 pytest>=2.6.4,<3.0.0
 coverage>=3.7.1,<4.0
 mock==1.0.0

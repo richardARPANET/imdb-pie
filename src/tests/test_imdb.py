@@ -13,7 +13,7 @@ from imdbpie import Imdb
 from imdbpie.objects import Image, Person
 from imdbpie.exceptions import HTTPError
 
-from tests.utils import load_test_data, assert_urls_match
+from tests.utils import load_test_data, assert_urls_match, is_valid_url
 
 
 class TestImdb(object):
@@ -231,6 +231,7 @@ class TestImdb(object):
 
         assert person.name == 'Morgan Freeman'
         assert person.imdb_id == 'nm0000151'
+        assert is_valid_url(person.photo_url) is True
 
     @patch('imdbpie.imdbpie.Imdb._get')
     def test_get_person_by_id_returns_none_when_no_resp(self, mock_get):
@@ -251,18 +252,15 @@ class TestImdb(object):
         assert sorted(title.genres) == sorted(['Crime', 'Drama'])
         assert isinstance(title.votes, int) is True
         assert title.runtime == 8520
-        assert title.poster_url == (
-            'http://ia.media-imdb.com/images/M/MV5BODU4MjU4NjIwNl5BMl5BanBnX'
-            'kFtZTgwMDU2MjEyMDE@._V1_.jpg'
-        )
-        assert title.cover_url == (
-            'http://ia.media-imdb.com/images/M/MV5BODU4MjU4NjIwNl5BMl5BanBnX'
-            'kFtZTgwMDU2MjEyMDE@._V1__SX214_.jpg'
-        )
+
+        assert is_valid_url(title.poster_url) is True
+        assert is_valid_url(title.cover_url) is True
         assert title.release_date == '1994-10-14'
         assert title.certification == 'R'
 
-        assert 'http://ia.media-imdb.com/images' in title.trailer_image_urls[0]
+        for trailer_url in title.trailer_image_urls:
+            assert is_valid_url(trailer_url) is True
+
         expected_plot_outline = (
             'Two imprisoned men bond over a number '
             'of years, finding solace and eventual redemption through acts '
@@ -347,11 +345,11 @@ class TestImdb(object):
         person_images = self.imdb.get_person_images('nm0000032')
 
         assert len(person_images) >= 200
-        assert person_images[0].caption is not None
-        assert 'http://ia.media-imdb.com/images/M/' in person_images[0].url
-        assert isinstance(person_images[0].width, int)
-        assert isinstance(person_images[0].height, int)
-        assert person_images[0].height > person_images[0].width
+        for person_image in person_images[:10]:
+            assert person_image.caption is not None
+            assert is_valid_url(person_image.url) is True
+            assert isinstance(person_image.width, int)
+            assert isinstance(person_image.height, int)
 
     def test_get_title_images(self):
         title_images = self.imdb.get_title_images('tt0111161')
