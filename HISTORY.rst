@@ -3,10 +3,12 @@
 Release History
 ---------------
 
-4.1.1 (unreleased)
+4.2.0 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+**Added**
+
+- ``Person.photo_url`` has been added. It returns a string (url) or None.
 
 
 4.1.0 (2016-07-26)
