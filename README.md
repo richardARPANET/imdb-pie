@@ -51,6 +51,8 @@ imdb = Imdb(cache=True)
 "Morgan Freeman"
 >>> person.imdb_id
 "nm0000151"
+>>> person.photo_url
+"https://images-na.ssl-images-amazon.com/images/M/MV5BNzkwNTY1MDYxOF5BMl5BanBnXkFtZTgwNjk4NjM3OTE@._V1_.jpg"
 ```
 
 ### Find all episodes for a title by its imdb_id

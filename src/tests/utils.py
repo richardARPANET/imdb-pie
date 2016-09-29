@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
+import re
 import os
 import json
 import cgi
@@ -22,3 +23,15 @@ def assert_urls_match(url_a, url_b):
     assert url_a.netloc == url_b.netloc
     assert url_a.path == url_b.path
     assert cgi.parse_qs(url_a.query) == cgi.parse_qs(url_b.query)
+
+
+def is_valid_url(url):
+    regex = re.compile(
+        r'^(?:http|ftp)s?://'  # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
+        r'localhost|'  # localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|'  # ...or ipv4
+        r'\[?[A-F0-9]*:[A-F0-9:]+\]?)'  # ...or ipv6
+        r'(?::\d+)?'  # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    return bool(regex.match(url))
