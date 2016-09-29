@@ -17,11 +17,6 @@ pip install imdbpie
 from imdbpie import Imdb
 imdb = Imdb()
 imdb = Imdb(anonymize=True) # to proxy requests
-
-# Creating an instance with caching enabled
-# Note that the cached responses expire every 2 hours or so.
-# The API response itself dictates the expiry time)
-imdb = Imdb(cache=True)
 ```
 
 ### Search for a title by its title
