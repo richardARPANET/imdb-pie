@@ -1,4 +1,0 @@
-{
-  "src/tests/test_imdb.py::TestImdb::()::test_get_title_by_id": true,
-  "src/tests/test_imdb.py::TestImdb::()::test_search_for_person": true
-}
