@@ -217,6 +217,22 @@ class TestImdb(object):
         for index, result in enumerate(results):
             assert set(expected_keys).issubset(set(result.keys())) is True
 
+    def test_popular_movies(self):
+        results = self.imdb.popular_movies()
+
+        assert 25 == len(results)
+
+        expected_keys = [
+            'tconst',
+            'title',
+            'year',
+            'principals',
+            'type'
+        ]
+
+        for index, result in enumerate(results):
+            assert set(expected_keys).issubset(set(result['object'].keys())) is True
+
     def test_get_title_by_id_returns_none_when_is_episode(self):
         imdb = Imdb(exclude_episodes=True)
         assert imdb.get_title_by_id('tt0615090') is None
