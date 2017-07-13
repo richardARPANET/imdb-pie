@@ -167,12 +167,12 @@ class TestImdb(object):
             {'name': 'Madeleine Gurdon', 'imdb_id': 'nm2967056'},
             {'name': 'Andrew Webberley', 'imdb_id': 'nm1422165'},
             {'name': 'Imogen Lloyd Webber', 'imdb_id': 'nm2622250'},
+            {'name': 'Andrew Webber', 'imdb_id': 'nm8698321'},
             {'name': 'Robert Floyd', 'imdb_id': 'nm0283292'},
             {'name': 'Andrew Webber', 'imdb_id': 'nm0916341'},
             {'name': 'Andrew Webber', 'imdb_id': 'nm1267376'},
             {'name': 'Andrew Webber', 'imdb_id': 'nm3404464'},
-            {'name': 'Mark Webber', 'imdb_id': 'nm1902514'},
-            {'name': 'Andrew Webber', 'imdb_id': 'nm5409221'}
+            {'name': 'Mark Webber', 'imdb_id': 'nm1902514'}
         ]
         assert (sorted(expected_results, key=itemgetter('imdb_id')) ==
                 sorted(results, key=itemgetter('imdb_id')))
