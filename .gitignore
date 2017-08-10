@@ -1,5 +1,6 @@
 #pycharm
 .idea
+.cache
 
 #################
 ## Eclipse
@@ -158,6 +159,8 @@ pip-log.txt
 .coverage
 .tox
 
+# virtual env
+venv 
 #Translations
 *.mo
 

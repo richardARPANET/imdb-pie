@@ -167,12 +167,12 @@ class TestImdb(object):
             {'name': 'Madeleine Gurdon', 'imdb_id': 'nm2967056'},
             {'name': 'Andrew Webberley', 'imdb_id': 'nm1422165'},
             {'name': 'Imogen Lloyd Webber', 'imdb_id': 'nm2622250'},
+            {'name': 'Andrew Webber', 'imdb_id': 'nm8698321'},
             {'name': 'Robert Floyd', 'imdb_id': 'nm0283292'},
             {'name': 'Andrew Webber', 'imdb_id': 'nm0916341'},
             {'name': 'Andrew Webber', 'imdb_id': 'nm1267376'},
             {'name': 'Andrew Webber', 'imdb_id': 'nm3404464'},
-            {'name': 'Mark Webber', 'imdb_id': 'nm1902514'},
-            {'name': 'Andrew Webber', 'imdb_id': 'nm5409221'}
+            {'name': 'Mark Webber', 'imdb_id': 'nm1902514'}
         ]
         assert (sorted(expected_results, key=itemgetter('imdb_id')) ==
                 sorted(results, key=itemgetter('imdb_id')))
@@ -216,6 +216,22 @@ class TestImdb(object):
         # results are changeable so check on data structure
         for index, result in enumerate(results):
             assert set(expected_keys).issubset(set(result.keys())) is True
+
+    def test_popular_movies(self):
+        results = self.imdb.popular_movies()
+
+        assert 25 == len(results)
+
+        expected_keys = [
+            'tconst',
+            'title',
+            'year',
+            'principals',
+            'type'
+        ]
+
+        for index, result in enumerate(results):
+            assert set(expected_keys).issubset(set(result['object'].keys())) is True
 
     def test_get_title_by_id_returns_none_when_is_episode(self):
         imdb = Imdb(exclude_episodes=True)
