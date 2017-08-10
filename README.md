@@ -92,7 +92,49 @@ imdb = Imdb(anonymize=True) # to proxy requests
 ### Get the current popular shows
 ```python
 >>> imdb.popular_shows()
-[{'title': 'Glee', 'year': "2009", 'imdb_id': 'tt1327801'}, {'title': "Dexter", ...}]
+[{
+	'image': {
+		'height': 2048,
+		'url': 'https://images-na.ssl-images-amazon.com/images/M/MV5BMjE3NTQ1NDg1Ml5BMl5BanBnXkFtZTgwNzY2NDA0MjI@._V1_.jpg',
+		'width': 1382
+	},
+	'principals': [{
+			'name': 'Emilia Clarke',
+			'nconst': 'nm3592338'
+		},
+        ...
+	],
+	'tconst': 'tt0944947',
+	'title': 'Game of Thrones',
+	'type': 'tv_series',
+	'year': '2011'
+}]
+```
+
+### Get the current popular movies
+```python
+>>> imdb.popular_movies()
+[{
+	'prev': 1,
+	'object': {
+		'tconst': 'tt0944947',
+		'title': 'Game of Thrones',
+		'image': {
+			'url': 'https://images-na.ssl-images-amazon.com/images/M/MV5BMjE3NTQ1NDg1Ml5BMl5BanBnXkFtZTgwNzY2NDA0MjI@._V1_.jpg',
+			'width': 1382,
+			'height': 2048
+		},
+		'year': '2011',
+		'principals': [{
+			'nconst': 'nm3592338',
+			'name': 'Emilia Clarke'
+		},
+		...
+        ],
+		'type': 'tv_series'
+	},
+	'rank': 1
+}]
 ```
 
 ### Check if a title exists

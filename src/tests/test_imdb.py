@@ -229,7 +229,6 @@ class TestImdb(object):
             'principals',
             'type'
         ]
-
         for index, result in enumerate(results):
             assert set(expected_keys).issubset(set(result['object'].keys())) is True
 

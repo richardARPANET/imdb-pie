@@ -3,10 +3,12 @@
 Release History
 ---------------
 
-4.2.1 (unreleased)
+4.3.0 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+**Added**
+
+- Added ``Imdb.popular_movies`` to retrieve current popular movies.
 
 
 4.2.0 (2016-09-29)
