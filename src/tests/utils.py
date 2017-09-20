@@ -3,9 +3,8 @@ from __future__ import absolute_import, unicode_literals
 import re
 import os
 import json
-import cgi
 
-from six.moves.urllib_parse import urlparse
+from six.moves.urllib_parse import parse_qs, urlparse
 
 
 def load_test_data(filename):
@@ -22,7 +21,7 @@ def assert_urls_match(url_a, url_b):
     assert url_a.scheme == url_b.scheme
     assert url_a.netloc == url_b.netloc
     assert url_a.path == url_b.path
-    assert cgi.parse_qs(url_a.query) == cgi.parse_qs(url_b.query)
+    assert parse_qs(url_a.query) == parse_qs(url_b.query)
 
 
 def is_valid_url(url):

@@ -153,7 +153,7 @@ class TestImdb(object):
             },
         ]
 
-        assert 14 == len(results)
+        assert 15 == len(results)
         assert expected_top_results == results[:2]
 
     def test_search_for_person(self):
