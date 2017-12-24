@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-4.4.0 (unreleased)
+4.4.0 (2017-12-24)
 ++++++++++++++++++
 
 - Fixes ``search_for_person`` and ``search_for_title`` methods, which were broken because XML api used by the client was removed, migrated to using search suggestions api used by the website itself.
