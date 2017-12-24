@@ -144,35 +144,25 @@ class TestImdb(object):
             {
                 'imdb_id': 'tt0111161',
                 'title': 'The Shawshank Redemption',
-                'year': '1994'
+                'year': '1994',
+                'type': 'feature',
             },
             {
-                'imdb_id': 'tt0265738',
-                'title': 'The SharkTank Redemption',
-                'year': '2000'
+                'imdb_id': 'tt5443386',
+                'title': 'The Shawshank Redemption: Behind the Scenes',
+                'year': '2004',
+                'type': 'video',
             },
         ]
-
-        assert 15 == len(results)
+        assert len(results) > 0
         assert expected_top_results == results[:2]
 
     def test_search_for_person(self):
         results = self.imdb.search_for_person('Andrew Lloyd Webber')
 
-        assert 12 == len(results)
+        assert len(results) > 0
         expected_results = [
             {'name': 'Andrew Lloyd Webber', 'imdb_id': 'nm0515908'},
-            {'name': 'Andrew Lloyd Walker', 'imdb_id': 'nm3530714'},
-            {'name': 'Robert Lloyd', 'imdb_id': 'nm0516115'},
-            {'name': 'Madeleine Gurdon', 'imdb_id': 'nm2967056'},
-            {'name': 'Andrew Webberley', 'imdb_id': 'nm1422165'},
-            {'name': 'Imogen Lloyd Webber', 'imdb_id': 'nm2622250'},
-            {'name': 'Andrew Webber', 'imdb_id': 'nm8698321'},
-            {'name': 'Robert Floyd', 'imdb_id': 'nm0283292'},
-            {'name': 'Andrew Webber', 'imdb_id': 'nm0916341'},
-            {'name': 'Andrew Webber', 'imdb_id': 'nm1267376'},
-            {'name': 'Andrew Webber', 'imdb_id': 'nm3404464'},
-            {'name': 'Mark Webber', 'imdb_id': 'nm1902514'}
         ]
         assert (sorted(expected_results, key=itemgetter('imdb_id')) ==
                 sorted(results, key=itemgetter('imdb_id')))
@@ -230,7 +220,10 @@ class TestImdb(object):
             'type'
         ]
         for index, result in enumerate(results):
-            assert set(expected_keys).issubset(set(result['object'].keys())) is True
+            assert (
+                set(expected_keys).issubset(set(result['object'].keys()))
+                is True
+            )
 
     def test_get_title_by_id_returns_none_when_is_episode(self):
         imdb = Imdb(exclude_episodes=True)

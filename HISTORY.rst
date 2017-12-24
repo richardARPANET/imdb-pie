@@ -3,10 +3,11 @@
 Release History
 ---------------
 
-4.3.1 (unreleased)
+4.4.0 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Fixes ``search_for_person`` and ``search_for_title`` methods, which were broken because XML api used by the client was removed, migrated to using search suggestions api used by the website itself.
+- Adds optional ``session`` param to client init method, used to specify ``requests.Session``.
 
 
 4.3.0 (2017-08-10)
