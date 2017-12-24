@@ -88,7 +88,7 @@ class TestImdb(object):
     def test_get_credits_non_existant_title(self):
 
         with pytest.raises(HTTPError):
-            self.imdb._get_credits_data('tt-non-existant-id')
+            self.imdb._get_credits_data('tt9999999')
 
     def test_get_reviews_data(self):
         reviews = self.imdb._get_reviews_data('tt0111161')
@@ -128,7 +128,7 @@ class TestImdb(object):
     def test_title_reviews_non_existant_title(self):
 
         with pytest.raises(HTTPError):
-            self.imdb.get_title_reviews('tt-non-existant-id')
+            self.imdb.get_title_reviews('tt9999999')
 
     def test_title_exists(self):
         result = self.imdb.title_exists('tt2322441')
@@ -144,35 +144,25 @@ class TestImdb(object):
             {
                 'imdb_id': 'tt0111161',
                 'title': 'The Shawshank Redemption',
-                'year': '1994'
+                'year': '1994',
+                'type': 'feature',
             },
             {
-                'imdb_id': 'tt0265738',
-                'title': 'The SharkTank Redemption',
-                'year': '2000'
+                'imdb_id': 'tt5443386',
+                'title': 'The Shawshank Redemption: Behind the Scenes',
+                'year': '2004',
+                'type': 'video',
             },
         ]
-
-        assert 15 == len(results)
+        assert len(results) > 0
         assert expected_top_results == results[:2]
 
     def test_search_for_person(self):
         results = self.imdb.search_for_person('Andrew Lloyd Webber')
 
-        assert 12 == len(results)
+        assert len(results) > 0
         expected_results = [
             {'name': 'Andrew Lloyd Webber', 'imdb_id': 'nm0515908'},
-            {'name': 'Andrew Lloyd Walker', 'imdb_id': 'nm3530714'},
-            {'name': 'Robert Lloyd', 'imdb_id': 'nm0516115'},
-            {'name': 'Madeleine Gurdon', 'imdb_id': 'nm2967056'},
-            {'name': 'Andrew Webberley', 'imdb_id': 'nm1422165'},
-            {'name': 'Imogen Lloyd Webber', 'imdb_id': 'nm2622250'},
-            {'name': 'Andrew Webber', 'imdb_id': 'nm8698321'},
-            {'name': 'Robert Floyd', 'imdb_id': 'nm0283292'},
-            {'name': 'Andrew Webber', 'imdb_id': 'nm0916341'},
-            {'name': 'Andrew Webber', 'imdb_id': 'nm1267376'},
-            {'name': 'Andrew Webber', 'imdb_id': 'nm3404464'},
-            {'name': 'Mark Webber', 'imdb_id': 'nm1902514'}
         ]
         assert (sorted(expected_results, key=itemgetter('imdb_id')) ==
                 sorted(results, key=itemgetter('imdb_id')))
@@ -230,7 +220,10 @@ class TestImdb(object):
             'type'
         ]
         for index, result in enumerate(results):
-            assert set(expected_keys).issubset(set(result['object'].keys())) is True
+            assert (
+                set(expected_keys).issubset(set(result['object'].keys()))
+                is True
+            )
 
     def test_get_title_by_id_returns_none_when_is_episode(self):
         imdb = Imdb(exclude_episodes=True)
@@ -378,3 +371,19 @@ class TestImdb(object):
 
         with pytest.raises(HTTPError):
             self.imdb.get_title_by_id('tt9999999')
+
+    @pytest.mark.parametrize('imdb_id, exp_valid', [
+        ('tt1234567', True),
+        ('nm1234567', True),
+        ('x', False),
+        (1234567, False),
+        (None, False),
+    ])
+    def test_validate_imdb_id(self, imdb_id, exp_valid):
+
+        if exp_valid:
+            # no raise
+            self.imdb.validate_imdb_id(imdb_id)
+        else:
+            with pytest.raises(ValueError):
+                self.imdb.validate_imdb_id(imdb_id)
