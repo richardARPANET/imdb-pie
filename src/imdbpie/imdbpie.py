@@ -27,7 +27,7 @@ class Imdb(object):
 
     def __init__(self, api_key=None, locale=None, anonymize=False,
                  exclude_episodes=False, user_agent=None, cache=None,
-                 proxy_uri=None, verify_ssl=True):
+                 proxy_uri=None, verify_ssl=True, session=None):
         self.api_key = api_key or SHA1_KEY
         self.timestamp = time.mktime(datetime.date.today().timetuple())
         self.user_agent = user_agent or random.choice(USER_AGENTS)
@@ -37,13 +37,13 @@ class Imdb(object):
         self.proxy_uri = proxy_uri or DEFAULT_PROXY_URI
         self.anonymize = anonymize
         self.verify_ssl = verify_ssl
-        self.session = requests
+        self.session = session or requests.Session()
 
         if self.caching_enabled:
             warnings.warn('caching will be removed in version 5.0.0 '
                           'due to not being thread safe')
             self.session = CacheControl(
-                requests.Session(), cache=FileCache('.imdbpie_cache')
+                self.session, cache=FileCache('.imdbpie_cache')
             )
 
     def get_person_by_id(self, imdb_id):
