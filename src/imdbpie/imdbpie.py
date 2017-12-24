@@ -260,7 +260,7 @@ class Imdb(object):
         resp_data = resp.content.decode('utf-8')
         try:
             resp_dict = json.loads(resp_data)
-        except json.decoder.JSONDecodeError:
+        except ValueError:
             resp_dict = self._parse_dirty_json(resp_data)
 
         if resp_dict.get('error'):
