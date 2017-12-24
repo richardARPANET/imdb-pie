@@ -47,6 +47,7 @@ class Imdb(object):
             )
 
     def get_person_by_id(self, imdb_id):
+        self.validate_imdb_id(imdb_id)
         url = self._build_url('/name/maindetails', {'nconst': imdb_id})
         response = self._get(url)
 
@@ -57,6 +58,7 @@ class Imdb(object):
         return person
 
     def get_title_by_id(self, imdb_id):
+        self.validate_imdb_id(imdb_id)
         url = self._build_url('/title/maindetails', {'tconst': imdb_id})
         response = self._get(url)
 
@@ -77,6 +79,7 @@ class Imdb(object):
         return title
 
     def get_title_plots(self, imdb_id):
+        self.validate_imdb_id(imdb_id)
         url = self._build_url('/title/plot', {'tconst': imdb_id})
         response = self._get(url)
 
@@ -87,6 +90,7 @@ class Imdb(object):
         return [plot.get('text') for plot in plots]
 
     def title_exists(self, imdb_id):
+        self.validate_imdb_id(imdb_id)
         page_url = 'http://www.imdb.com/title/{0}/'.format(imdb_id)
 
         if self.anonymize is True:
@@ -155,12 +159,14 @@ class Imdb(object):
         return response['data']['list']
 
     def get_title_images(self, imdb_id):
+        self.validate_imdb_id(imdb_id)
         url = self._build_url('/title/photos', {'tconst': imdb_id})
         response = self._get(url)
         return self._get_images(response)
 
     def get_title_reviews(self, imdb_id, max_results=None):
         """Retrieve reviews for a title ordered by 'Best' descending"""
+        self.validate_imdb_id(imdb_id)
         user_comments = self._get_reviews_data(
             imdb_id,
             max_results=max_results
@@ -176,11 +182,13 @@ class Imdb(object):
         return title_reviews
 
     def get_person_images(self, imdb_id):
+        self.validate_imdb_id(imdb_id)
         url = self._build_url('/name/photos', {'nconst': imdb_id})
         response = self._get(url)
         return self._get_images(response)
 
     def get_episodes(self, imdb_id):
+        self.validate_imdb_id(imdb_id)
         if self.exclude_episodes:
             raise ValueError('exclude_episodes is currently set')
 
@@ -209,6 +217,7 @@ class Imdb(object):
         return episodes
 
     def _get_credits_data(self, imdb_id):
+        self.validate_imdb_id(imdb_id)
         url = self._build_url('/title/fullcredits', {'tconst': imdb_id})
         response = self._get(url)
 
@@ -218,6 +227,7 @@ class Imdb(object):
         return response.get('data').get('credits')
 
     def _get_reviews_data(self, imdb_id, max_results=None):
+        self.validate_imdb_id(imdb_id)
         params = {'tconst': imdb_id}
         if max_results:
             params['limit'] = max_results
@@ -248,6 +258,14 @@ class Imdb(object):
             match_json_within_dirty_json, data, re.IGNORECASE
         ).groups()[0]
         return json.loads(data_clean)
+
+    @staticmethod
+    def validate_imdb_id(imdb_id):
+        match_id = r'[a-zA-Z]{2}[0-9]{7}'
+        try:
+            re.match(match_id, imdb_id, re.IGNORECASE).group()
+        except (AttributeError, TypeError):
+            raise ValueError('invalid imdb id')
 
     def _get(self, url):
         resp = self.session.get(

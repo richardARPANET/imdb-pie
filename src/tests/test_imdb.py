@@ -88,7 +88,7 @@ class TestImdb(object):
     def test_get_credits_non_existant_title(self):
 
         with pytest.raises(HTTPError):
-            self.imdb._get_credits_data('tt-non-existant-id')
+            self.imdb._get_credits_data('tt9999999')
 
     def test_get_reviews_data(self):
         reviews = self.imdb._get_reviews_data('tt0111161')
@@ -128,7 +128,7 @@ class TestImdb(object):
     def test_title_reviews_non_existant_title(self):
 
         with pytest.raises(HTTPError):
-            self.imdb.get_title_reviews('tt-non-existant-id')
+            self.imdb.get_title_reviews('tt9999999')
 
     def test_title_exists(self):
         result = self.imdb.title_exists('tt2322441')
@@ -371,3 +371,19 @@ class TestImdb(object):
 
         with pytest.raises(HTTPError):
             self.imdb.get_title_by_id('tt9999999')
+
+    @pytest.mark.parametrize('imdb_id, exp_valid', [
+        ('tt1234567', True),
+        ('nm1234567', True),
+        ('x', False),
+        (1234567, False),
+        (None, False),
+    ])
+    def test_validate_imdb_id(self, imdb_id, exp_valid):
+
+        if exp_valid:
+            # no raise
+            self.imdb.validate_imdb_id(imdb_id)
+        else:
+            with pytest.raises(ValueError):
+                self.imdb.validate_imdb_id(imdb_id)
