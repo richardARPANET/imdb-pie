@@ -6,7 +6,7 @@ Release History
 4.4.1 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Fixes bug when searching with non alphanumeric characters.
 
 
 4.4.0 (2017-12-24)

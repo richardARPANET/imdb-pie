@@ -157,6 +157,14 @@ class TestImdb(object):
         assert len(results) > 0
         assert expected_top_results == results[:2]
 
+    @pytest.mark.parametrize('query', [
+        'Mission: Impossible',
+        'Honey, I Shrunk the Kids',
+    ])
+    def test_search_for_title_input_with_special_chars(self, query):
+        results = self.imdb.search_for_title(query)
+        assert len(results) > 0
+
     def test_search_for_person(self):
         results = self.imdb.search_for_person('Andrew Lloyd Webber')
 
