@@ -13,7 +13,7 @@ from cachecontrol import CacheControl
 from cachecontrol.caches import FileCache
 from six.moves import html_parser
 from six.moves import http_client as httplib
-from six.moves.urllib.parse import urlencode, quote, quote_plus
+from six.moves.urllib.parse import urlencode, quote, quote_plus, unquote_plus
 
 from imdbpie.objects import Image, Title, Person, Episode, Review
 from imdbpie.constants import (
@@ -113,7 +113,7 @@ class Imdb(object):
         url = 'https://v2.sg.media-imdb.com/suggests/{0}/{1}.json'.format(
             query[0].lower(), query
         )
-        search_results = self._get(url)
+        search_results = self._get(url=url, query=query)
         results = []
         for result in search_results.get('d', ()):
             if not result['id'].startswith('nm'):
@@ -131,7 +131,7 @@ class Imdb(object):
         url = 'https://v2.sg.media-imdb.com/suggests/{0}/{1}.json'.format(
             query[0].lower(), query
         )
-        search_results = self._get(url)
+        search_results = self._get(url=url, query=query)
         results = []
         for result in search_results.get('d', ()):
             result_item = {
@@ -252,8 +252,12 @@ class Imdb(object):
         with open(file_path, 'w+') as f:
             json.dump(resp, f)
 
-    def _parse_dirty_json(self, data):
-        match_json_within_dirty_json = r'imdb\$[\w_]+\({1}(.+)\){1}'
+    def _parse_dirty_json(self, data, query=None):
+        if query is None:
+            match_json_within_dirty_json = r'imdb\$.+\({1}(.+)\){1}'
+        else:
+            query_match = re.sub(r'\W+','.+', unquote_plus(query))
+            match_json_within_dirty_json = r'imdb\${}\((.+)\)'.format(query_match)
         data_clean = re.match(
             match_json_within_dirty_json, data, re.IGNORECASE
         ).groups()[0]
@@ -267,7 +271,7 @@ class Imdb(object):
         except (AttributeError, TypeError):
             raise ValueError('invalid imdb id')
 
-    def _get(self, url):
+    def _get(self, url, query=None):
         resp = self.session.get(
             url,
             headers={'User-Agent': self.user_agent},
@@ -279,7 +283,9 @@ class Imdb(object):
         try:
             resp_dict = json.loads(resp_data)
         except ValueError:
-            resp_dict = self._parse_dirty_json(resp_data)
+            resp_dict = self._parse_dirty_json(
+                data=resp_data, query=query
+            )
 
         if resp_dict.get('error'):
             return None
