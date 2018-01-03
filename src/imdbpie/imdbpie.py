@@ -13,7 +13,7 @@ from cachecontrol import CacheControl
 from cachecontrol.caches import FileCache
 from six.moves import html_parser
 from six.moves import http_client as httplib
-from six.moves.urllib.parse import urlencode, quote, quote_plus, unquote_plus
+from six.moves.urllib.parse import urlencode, quote, quote_plus, unquote
 
 from imdbpie.objects import Image, Title, Person, Episode, Review
 from imdbpie.constants import (
@@ -108,10 +108,17 @@ class Imdb(object):
         else:
             response.raise_for_status()
 
+    def _query_first_alpha_num(self, query):
+        for char in query.lower():
+            if char.isalnum():
+                return char
+        raise ValueError('Could not find any chars')
+
     def search_for_person(self, name):
+        name = re.sub(r'\W+', '_', name).strip('_')
         query = quote(name)
         url = 'https://v2.sg.media-imdb.com/suggests/{0}/{1}.json'.format(
-            query[0].lower(), query
+            self._query_first_alpha_num(name), query
         )
         search_results = self._get(url=url, query=query)
         results = []
@@ -127,9 +134,10 @@ class Imdb(object):
         return results
 
     def search_for_title(self, title):
+        title = re.sub(r'\W+', '_', title).strip('_')
         query = quote(title)
         url = 'https://v2.sg.media-imdb.com/suggests/{0}/{1}.json'.format(
-            query[0].lower(), query
+            self._query_first_alpha_num(title), query
         )
         search_results = self._get(url=url, query=query)
         results = []
@@ -256,7 +264,8 @@ class Imdb(object):
         if query is None:
             match_json_within_dirty_json = r'imdb\$.+\({1}(.+)\){1}'
         else:
-            query_match = re.sub(r'\W+','.+', unquote_plus(query))
+            query_match = ''.join(x if x.isalnum() else f'[{x}]' for x in unquote(query))
+            query_match = query_match.replace('[ ]' , '.+')
             match_json_within_dirty_json = r'imdb\${}\((.+)\)'.format(query_match)
         data_clean = re.match(
             match_json_within_dirty_json, data, re.IGNORECASE
