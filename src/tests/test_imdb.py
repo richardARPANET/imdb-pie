@@ -2,6 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import time
+import re
 import datetime
 from operator import itemgetter
 
@@ -160,6 +161,15 @@ class TestImdb(object):
     @pytest.mark.parametrize('query', [
         'Mission: Impossible',
         'Honey, I Shrunk the Kids',
+        '4.3.2.1. (2010)',
+        '500 Days of Summer (2009)',
+        '$9.99 (2008)',
+        'Goonies 1986',
+        '[REC] (2007)',
+        '[REC]² (2009)',
+        '[REC]³ Genesis (2012)',
+        '¡Three Amigos! (1986)',
+        '(Untitled) (2009)',
     ])
     def test_search_for_title_input_with_special_chars(self, query):
         results = self.imdb.search_for_title(query)
