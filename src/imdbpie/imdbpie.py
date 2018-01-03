@@ -112,7 +112,9 @@ class Imdb(object):
         for char in query.lower():
             if char.isalnum():
                 return char
-        raise ValueError('Could not find any chars')
+        raise ValueError(
+            'invalid query, does not contain any alphanumeric characters'
+        )
 
     def search_for_person(self, name):
         name = re.sub(r'\W+', '_', name).strip('_')
