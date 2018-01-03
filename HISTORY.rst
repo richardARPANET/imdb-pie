@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-4.4.2 (unreleased)
+4.4.2 (2018-01-03)
 ++++++++++++++++++
 
 - Fixes bug when searching with non alphanumeric characters, second attempt.
