@@ -267,7 +267,7 @@ class Imdb(object):
             match_json_within_dirty_json = r'imdb\$.+\({1}(.+)\){1}'
         else:
             query_match = ''.join(
-                char if char.isalnum() else f'[{char}]'
+                char if char.isalnum() else '[{}]'.format(char)
                 for char in unquote(query)
             )
             query_match = query_match.replace('[ ]', '.+')
