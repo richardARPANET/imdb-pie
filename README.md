@@ -29,6 +29,13 @@ imdb.get_title('tt0111161')
 # Returns a dict containing title information
 ```
 
+#### get_title_genres
+
+```python
+imdb.get_title_genres('tt0303461')
+# Returns a dict containing genres information
+```
+
 #### get_title_episodes
 
 ```python
