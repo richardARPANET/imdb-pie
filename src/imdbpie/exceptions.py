@@ -1,1 +1,3 @@
-from requests.exceptions import HTTPError
+
+class ImdbAPIError(Exception):
+    pass

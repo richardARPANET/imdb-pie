@@ -1,3 +1,4 @@
+# -*- coding: future_fstrings -*-
 from __future__ import absolute_import, unicode_literals
 
 import re
@@ -9,92 +10,63 @@ import datetime
 import warnings
 
 import requests
-from cachecontrol import CacheControl
-from cachecontrol.caches import FileCache
-from six.moves import html_parser
+from requests.exceptions import HTTPError
 from six.moves import http_client as httplib
-from six.moves.urllib.parse import urlencode, quote, quote_plus, unquote
-
-from imdbpie.objects import Image, Title, Person, Episode, Review
-from imdbpie.constants import (
-    BASE_URI, SHA1_KEY, USER_AGENTS, DEFAULT_PROXY_URI
+from six.moves.urllib.parse import (
+    urlencode, quote, quote_plus, unquote, urlparse
 )
+from .constants import BASE_URI, HOST, SEARCH_BASE_URI
+from .auth import get_auth_headers
+from .exceptions import ImdbAPIError
 
 logger = logging.getLogger(__name__)
 
 
 class Imdb(object):
 
-    def __init__(self, api_key=None, locale=None, anonymize=False,
-                 exclude_episodes=False, user_agent=None, cache=None,
-                 proxy_uri=None, verify_ssl=True, session=None):
-        self.api_key = api_key or SHA1_KEY
-        self.timestamp = time.mktime(datetime.date.today().timetuple())
-        self.user_agent = user_agent or random.choice(USER_AGENTS)
+    def __init__(
+        self, api_key=None, locale=None, exclude_episodes=False,
+        session=None
+    ):
         self.locale = locale or 'en_US'
         self.exclude_episodes = exclude_episodes
-        self.caching_enabled = True if cache is True else False
-        self.proxy_uri = proxy_uri or DEFAULT_PROXY_URI
-        self.anonymize = anonymize
-        self.verify_ssl = verify_ssl
         self.session = session or requests.Session()
 
-        if self.caching_enabled:
-            warnings.warn('caching will be removed in version 5.0.0 '
-                          'due to not being thread safe')
-            self.session = CacheControl(
-                self.session, cache=FileCache('.imdbpie_cache')
-            )
-
-    def get_person_by_id(self, imdb_id):
+    def get_name(self, imdb_id):
         self.validate_imdb_id(imdb_id)
-        url = self._build_url('/name/maindetails', {'nconst': imdb_id})
-        response = self._get(url)
+        return self._get_resource(f'/name/{imdb_id}/fulldetails')
 
-        if response is None or self._is_redirection_result(response):
-            return None
-
-        person = Person(response["data"])
-        return person
-
-    def get_title_by_id(self, imdb_id):
+    def get_title(self, imdb_id):
         self.validate_imdb_id(imdb_id)
-        url = self._build_url('/title/maindetails', {'tconst': imdb_id})
-        response = self._get(url)
-
-        if response is None or self._is_redirection_result(response):
-            return None
-
-        # get the full cast information, add key if not present
-        response['data']['credits'] = self._get_credits_data(imdb_id)
-        response['data']['plots'] = self.get_title_plots(imdb_id)
+        self._redirection_title_check(imdb_id)
+        try:
+            resource = self._get_resource(f'/title/{imdb_id}/fulldetails')
+        except LookupError:
+            self._title_not_found()
 
         if (
             self.exclude_episodes is True and
-            response['data'].get('type') == 'tv_episode'
+            resource['base']['titleType'] == 'tvEpisode'
         ):
-            return None
+            raise LookupError(
+                'Title not found. Title was an episode and '
+                '"exclude_episodes" is set to true'
+            )
+        return resource
 
-        title = Title(data=response['data'])
-        return title
+    def get_title_credits(self, imdb_id):
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource(f'/title/{imdb_id}/fullcredits')
 
     def get_title_plots(self, imdb_id):
         self.validate_imdb_id(imdb_id)
-        url = self._build_url('/title/plot', {'tconst': imdb_id})
-        response = self._get(url)
-
-        if response['data']['tconst'] != imdb_id:  # pragma: no cover
-            return []
-
-        plots = response['data'].get('plots', [])
-        return [plot.get('text') for plot in plots]
+        self._redirection_title_check(imdb_id)
+        return self._get_resource(f'/title/{imdb_id}/plot')
 
     def title_exists(self, imdb_id):
         self.validate_imdb_id(imdb_id)
-        page_url = 'http://www.imdb.com/title/{0}/'.format(imdb_id)
-
-        if self.anonymize is True:
-            page_url = self.proxy_uri.format(quote(page_url))
+        page_url = f'http://www.imdb.com/title/{imdb_id}/'
 
         response = self.session.head(page_url)
 
@@ -108,19 +80,12 @@ class Imdb(object):
         else:
             response.raise_for_status()
 
-    def _query_first_alpha_num(self, query):
-        for char in query.lower():
-            if char.isalnum():
-                return char
-        raise ValueError(
-            'invalid query, does not contain any alphanumeric characters'
-        )
-
     def search_for_person(self, name):
         name = re.sub(r'\W+', '_', name).strip('_')
         query = quote(name)
-        url = 'https://v2.sg.media-imdb.com/suggests/{0}/{1}.json'.format(
-            self._query_first_alpha_num(name), query
+        first_alphanum_char = self._query_first_alpha_num(name)
+        url = (
+            f'{SEARCH_BASE_URI}/suggests/{first_alphanum_char}/{query}.json'
         )
         search_results = self._get(url=url, query=query)
         results = []
@@ -138,8 +103,9 @@ class Imdb(object):
     def search_for_title(self, title):
         title = re.sub(r'\W+', '_', title).strip('_')
         query = quote(title)
-        url = 'https://v2.sg.media-imdb.com/suggests/{0}/{1}.json'.format(
-            self._query_first_alpha_num(title), query
+        first_alphanum_char = self._query_first_alpha_num(title)
+        url = (
+            f'{SEARCH_BASE_URI}/suggests/{first_alphanum_char}/{query}.json'
         )
         search_results = self._get(url=url, query=query)
         results = []
@@ -154,108 +120,33 @@ class Imdb(object):
         return results
 
     def top_250(self):
-        url = self._build_url('/chart/top', {})
-        response = self._get(url)
-        return response['data']['list']['list']
+        return self._get_resource('/chart/titlemeter')
 
     def popular_shows(self):
-        url = self._build_url('/chart/tv', {})
-        response = self._get(url)
-        return response['data']['list']
+        return self._get_resource('/chart/tvmeter')
 
     def popular_movies(self):
-        url = self._build_url('/chart/moviemeter', {})
-        response = self._get(url)
-        return response['data']['list']
+        return self._get_resource('/chart/moviemeter')
 
     def get_title_images(self, imdb_id):
         self.validate_imdb_id(imdb_id)
-        url = self._build_url('/title/photos', {'tconst': imdb_id})
-        response = self._get(url)
-        return self._get_images(response)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource(f'/title/{imdb_id}/images')
 
-    def get_title_reviews(self, imdb_id, max_results=None):
-        """Retrieve reviews for a title ordered by 'Best' descending"""
+    def get_title_reviews(self, imdb_id):
         self.validate_imdb_id(imdb_id)
-        user_comments = self._get_reviews_data(
-            imdb_id,
-            max_results=max_results
-        )
+        self._redirection_title_check(imdb_id)
+        return self._get_resource(f'/title/{imdb_id}/userreviews')
 
-        if not user_comments:
-            return None
-
-        title_reviews = []
-
-        for review_data in user_comments:
-            title_reviews.append(Review(review_data))
-        return title_reviews
-
-    def get_person_images(self, imdb_id):
+    def get_name_images(self, imdb_id):
         self.validate_imdb_id(imdb_id)
-        url = self._build_url('/name/photos', {'nconst': imdb_id})
-        response = self._get(url)
-        return self._get_images(response)
+        return self._get_resource(f'/name/{imdb_id}/images')
 
     def get_episodes(self, imdb_id):
         self.validate_imdb_id(imdb_id)
         if self.exclude_episodes:
-            raise ValueError('exclude_episodes is currently set')
-
-        title = self.get_title_by_id(imdb_id)
-        if title.type != 'tv_series':
-            raise RuntimeError('Title provided is not of type TV Series')
-
-        url = self._build_url('/title/episodes', {'tconst': imdb_id})
-        response = self._get(url)
-
-        if response is None:
-            return None
-
-        seasons = response.get('data').get('seasons')
-        episodes = []
-
-        for season in seasons:
-            season_number = season.get('token')
-            for idx, episode_data in enumerate(season.get('list')):
-                episode_data['series_name'] = title.title
-                episode_data['episode'] = idx + 1
-                episode_data['season'] = season_number
-                e = Episode(episode_data)
-                episodes.append(e)
-
-        return episodes
-
-    def _get_credits_data(self, imdb_id):
-        self.validate_imdb_id(imdb_id)
-        url = self._build_url('/title/fullcredits', {'tconst': imdb_id})
-        response = self._get(url)
-
-        if response is None:
-            return None
-
-        return response.get('data').get('credits')
-
-    def _get_reviews_data(self, imdb_id, max_results=None):
-        self.validate_imdb_id(imdb_id)
-        params = {'tconst': imdb_id}
-        if max_results:
-            params['limit'] = max_results
-        url = self._build_url('/title/usercomments', params)
-        response = self._get(url)
-
-        if response is None:
-            return None
-
-        return response.get('data').get('user_comments')
-
-    def _get_images(self, response):
-        images = []
-
-        for image_data in response.get('data').get('photos', []):
-            images.append(Image(image_data))
-
-        return images
+            raise ValueError('exclude_episodes is current set to true')
+        return self._get_resource(f'/title/{imdb_id}/episodes')
 
     @staticmethod
     def _cache_response(file_path, resp):
@@ -267,7 +158,7 @@ class Imdb(object):
             match_json_within_dirty_json = r'imdb\$.+\({1}(.+)\){1}'
         else:
             query_match = ''.join(
-                char if char.isalnum() else '[{}]'.format(char)
+                char if char.isalnum() else f'[{char}]'
                 for char in unquote(query)
             )
             query_match = query_match.replace('[ ]', '.+')
@@ -287,48 +178,6 @@ class Imdb(object):
         except (AttributeError, TypeError):
             raise ValueError('invalid imdb id')
 
-    def _get(self, url, query=None):
-        resp = self.session.get(
-            url,
-            headers={'User-Agent': self.user_agent},
-            verify=self.verify_ssl
-        )
-
-        resp.raise_for_status()
-        resp_data = resp.content.decode('utf-8')
-        try:
-            resp_dict = json.loads(resp_data)
-        except ValueError:
-            resp_dict = self._parse_dirty_json(
-                data=resp_data, query=query
-            )
-
-        if resp_dict.get('error'):
-            return None
-
-        return resp_dict
-
-    def _build_url(self, path, params):
-        default_params = {
-            'api': 'v1',
-            'appid': 'iphone1_1',
-            'apiPolicy': 'app1_1',
-            'apiKey': self.api_key,
-            'locale': self.locale,
-            'timestamp': self.timestamp
-        }
-
-        query_params = dict(
-            list(default_params.items()) + list(params.items())
-        )
-        query_params = urlencode(query_params)
-        url = '{base}{path}?{params}'.format(base=BASE_URI,
-                                             path=path, params=query_params)
-
-        if self.anonymize is True:
-            return self.proxy_uri.format(quote(url))
-        return url
-
     @staticmethod
     def _is_redirection_result(response):
         """
@@ -342,3 +191,57 @@ class Imdb(object):
         ):
             return True
         return False
+
+    def _get_resource(self, path):
+        url = f'{BASE_URI}{path}'
+        return self._get(url=url)['resource']
+
+    def _get(self, url, query=None):
+        path = urlparse(url).path
+        headers = {'Accept-Language': self.locale}
+        headers.update(get_auth_headers(path))
+        resp = self.session.get(url, headers=headers)
+
+        if not resp.ok:
+            if resp.status_code == httplib.NOT_FOUND:
+                raise LookupError(f'Resource {path} not found')
+            else:
+                raise ImdbAPIError(resp.text)
+        resp_data = resp.content.decode('utf-8')
+        try:
+            resp_dict = json.loads(resp_data)
+        except ValueError:
+            resp_dict = self._parse_dirty_json(
+                data=resp_data, query=query
+            )
+
+        if resp_dict.get('error'):
+            return None
+
+        return resp_dict
+
+    def _redirection_title_check(self, imdb_id):
+        if self.is_redirection_title(imdb_id):
+            self._title_not_found(msg=f'{imdb_id} is a redirection imdb id')
+
+    def is_redirection_title(self, imdb_id):
+        self.validate_imdb_id(imdb_id)
+        page_url = f'http://www.imdb.com/title/{imdb_id}/'
+        response = self.session.head(page_url)
+        if response.status_code == httplib.MOVED_PERMANENTLY:
+            return True
+        else:
+            return False
+
+    def _query_first_alpha_num(self, query):
+        for char in query.lower():
+            if char.isalnum():
+                return char
+        raise ValueError(
+            'invalid query, does not contain any alphanumeric characters'
+        )
+
+    def _title_not_found(self, msg=''):
+        if msg:
+            msg = f' {msg}'
+        raise LookupError(f'Title not found.{msg}')

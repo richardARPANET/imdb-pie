@@ -1,0 +1,9 @@
+title/x/fulldetails
+title/x/fullcredits
+title/x/images
+title/x/plot
+/name/{}/fulldetails
+/name/{}/images
+/title/{}/userreviews
+/title/{}/metacritic
+/chart/titlemeter
