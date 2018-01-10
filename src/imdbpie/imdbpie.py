@@ -62,6 +62,12 @@ class Imdb(Auth):
         self._redirection_title_check(imdb_id)
         return self._get_resource(f'/title/{imdb_id}/fullcredits')
 
+    def get_title_genres(self, imdb_id):
+        logger.info('getting title %s genres', imdb_id)
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource(f'/title/{imdb_id}/genres')
+
     def get_title_plot(self, imdb_id):
         logger.info('getting title %s plot', imdb_id)
         self.validate_imdb_id(imdb_id)

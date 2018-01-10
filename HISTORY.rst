@@ -3,10 +3,10 @@
 Release History
 ---------------
 
-5.0.1 (unreleased)
+5.1.0 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Adds ``get_title_genres`` method.
 
 
 5.0.0 (2018-01-10)

@@ -165,6 +165,15 @@ def test_get_title(client):
     assert sorted(resource.keys()) == sorted(expected_keys)
 
 
+def test_get_title_genres(client):
+    imdb_id = 'tt0111161'
+    expected_keys = ['@type', 'genres', 'id', 'title', 'titleType', 'year']
+
+    resource = client.get_title_genres(imdb_id)
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
 def test_get_title_credits(client):
     imdb_id = 'tt0111161'
     expected_keys = ['@type', 'base', 'creditsSummary', 'id', 'credits']
