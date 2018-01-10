@@ -4,12 +4,14 @@ from __future__ import absolute_import, unicode_literals
 import base64
 import json
 import requests
+import tempfile
 from datetime import datetime
 try:
     from base64 import encodebytes
 except ImportError:
     from base64 import encodestring as encodebytes
 
+import diskcache
 from dateutil.tz import tzutc
 from dateutil.parser import parse
 import boto.utils
@@ -74,44 +76,61 @@ def _get_credentials():
 class Auth(object):
 
     SOON_EXPIRES_SECONDS = 60
+    _CREDS_STORAGE_KEY = 'imdbpie-credentials'
 
     def __init__(self, creds=None):
-        self._creds = creds
+        self._cachedir = tempfile.gettempdir()
+
+    def _get_creds(self):
+        with diskcache.Cache(directory=self._cachedir) as cache:
+            return cache.get(self._CREDS_STORAGE_KEY)
+
+    def _set_creds(self, creds):
+        with diskcache.Cache(directory=self._cachedir) as cache:
+            cache[self._CREDS_STORAGE_KEY] = creds
+        return creds
+
+    def clear_cached_credentials(self):
+        with diskcache.Cache(directory=self._cachedir) as cache:
+            cache.delete(self._CREDS_STORAGE_KEY)
 
     def _creds_soon_expiring(self):
-        if not self._creds:
-            return True
-        expires_at = parse(self._creds['expirationTimeStamp'])
+        creds = self._get_creds()
+        if not creds:
+            return creds, True
+        expires_at = parse(creds['expirationTimeStamp'])
         now = datetime.now(tzutc())
         if now < expires_at:
             time_diff = expires_at - now
             if time_diff.total_seconds() < self.SOON_EXPIRES_SECONDS:
                 # creds will soon expire, so renew them
-                return True
-            return False
+                return creds, True
+            return creds, False
         else:
-            return True
+            return creds, True
 
     def get_auth_headers(self, url_path):
-        if self._creds_soon_expiring():
-            self._creds = _get_credentials()
+        creds, soon_expires = self._creds_soon_expiring()
+        if soon_expires:
+            creds = self._set_creds(creds=_get_credentials())
 
         handler = ZuluHmacAuthV3HTTPHandler(
             host=HOST,
             config={},
             provider=provider.Provider(
                 name='aws',
-                access_key=self._creds['accessKeyId'],
-                secret_key=self._creds['secretAccessKey'],
-                security_token=self._creds['sessionToken'],
+                access_key=creds['accessKeyId'],
+                secret_key=creds['secretAccessKey'],
+                security_token=creds['sessionToken'],
             )
         )
+        parsed_url = urlparse(url_path)
         params = {
-            key: val[0] for key, val in parse_qs(urlparse(url_path).query).items()
+            key: val[0] for key, val in parse_qs(parsed_url.query).items()
         }
         request = HTTPRequest(
             method='GET', protocol='https', host=HOST,
-            port=443, path=urlparse(url_path).path, auth_path=None, params=params,
+            port=443, path=parsed_url.path, auth_path=None, params=params,
             headers={}, body=''
         )
         handler.add_auth(req=request)

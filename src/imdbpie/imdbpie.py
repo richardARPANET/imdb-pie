@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 import re
 import json
+import tempfile
 import time
 import random
 import logging
@@ -15,6 +16,7 @@ from six.moves import http_client as httplib
 from six.moves.urllib.parse import (
     urlencode, quote, quote_plus, unquote, urlparse
 )
+
 from .constants import BASE_URI, HOST, SEARCH_BASE_URI
 from .auth import Auth
 from .exceptions import ImdbAPIError
@@ -24,20 +26,19 @@ logger = logging.getLogger(__name__)
 
 class Imdb(Auth):
 
-    def __init__(
-        self, api_key=None, locale=None, exclude_episodes=False,
-        session=None
-    ):
+    def __init__(self, locale=None, exclude_episodes=False, session=None):
         self.locale = locale or 'en_US'
         self.exclude_episodes = exclude_episodes
         self.session = session or requests.Session()
-        self._creds = None
+        self._cachedir = tempfile.gettempdir()
 
     def get_name(self, imdb_id):
+        logger.info('getting name %s', imdb_id)
         self.validate_imdb_id(imdb_id)
         return self._get_resource(f'/name/{imdb_id}/fulldetails')
 
     def get_title(self, imdb_id):
+        logger.info('getting title %s', imdb_id)
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
         try:
@@ -56,11 +57,13 @@ class Imdb(Auth):
         return resource
 
     def get_title_credits(self, imdb_id):
+        logger.info('getting title %s credits', imdb_id)
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
         return self._get_resource(f'/title/{imdb_id}/fullcredits')
 
-    def get_title_plots(self, imdb_id):
+    def get_title_plot(self, imdb_id):
+        logger.info('getting title %s plot', imdb_id)
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
         return self._get_resource(f'/title/{imdb_id}/plot')
@@ -81,7 +84,8 @@ class Imdb(Auth):
         else:
             response.raise_for_status()
 
-    def search_for_person(self, name):
+    def search_for_name(self, name):
+        logger.info('searching for name %s', name)
         name = re.sub(r'\W+', '_', name).strip('_')
         query = quote(name)
         first_alphanum_char = self._query_first_alpha_num(name)
@@ -102,6 +106,7 @@ class Imdb(Auth):
         return results
 
     def search_for_title(self, title):
+        logger.info('searching for title %s', title)
         title = re.sub(r'\W+', '_', title).strip('_')
         query = quote(title)
         first_alphanum_char = self._query_first_alpha_num(title)
@@ -120,30 +125,40 @@ class Imdb(Auth):
             results.append(result_item)
         return results
 
-    def top_250(self):
+    def get_popular_titles(self):
         return self._get_resource('/chart/titlemeter')
 
-    def popular_shows(self):
+    def get_popular_shows(self):
         return self._get_resource('/chart/tvmeter')
 
-    def popular_movies(self):
+    def get_popular_movies(self):
         return self._get_resource('/chart/moviemeter')
 
     def get_title_images(self, imdb_id):
+        logger.info('getting title %s images', imdb_id)
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
         return self._get_resource(f'/title/{imdb_id}/images')
 
-    def get_title_reviews(self, imdb_id):
+    def get_title_user_reviews(self, imdb_id):
+        logger.info('getting title %s reviews', imdb_id)
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
         return self._get_resource(f'/title/{imdb_id}/userreviews')
 
+    def get_title_metacritic_reviews(self, imdb_id):
+        logger.info('getting title %s metacritic reviews', imdb_id)
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource(f'/title/{imdb_id}/metacritic')
+
     def get_name_images(self, imdb_id):
+        logger.info('getting namne %s images', imdb_id)
         self.validate_imdb_id(imdb_id)
         return self._get_resource(f'/name/{imdb_id}/images')
 
-    def get_episodes(self, imdb_id):
+    def get_title_episodes(self, imdb_id):
+        logger.info('getting title %s episodes', imdb_id)
         self.validate_imdb_id(imdb_id)
         if self.exclude_episodes:
             raise ValueError('exclude_episodes is current set to true')

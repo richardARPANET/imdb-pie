@@ -6,9 +6,10 @@ from imdbpie.auth import Auth
 
 @pytest.fixture
 def auth():
-    return Auth(creds={
-        'expirationTimeStamp': '2018-01-12T06:23:05Z',
-    })
+    auth_ = Auth()
+    auth_._set_creds({'expirationTimeStamp': '2018-01-12T06:23:05Z'})
+    yield auth_
+    auth_.clear_cached_credentials()
 
 
 @pytest.mark.parametrize('current_datetime, exp_expired', [
@@ -22,4 +23,4 @@ def auth():
 ])
 def test_creds_soon_expiring(auth, current_datetime, exp_expired):
     with freeze_time(current_datetime):
-        assert auth._creds_soon_expiring() is exp_expired
+        assert auth._creds_soon_expiring()[1] is exp_expired

@@ -8,34 +8,45 @@ import pytest
 from imdbpie import Imdb
 
 
-# TODO: reviews paging
-
-
 @pytest.fixture(scope='module')
 def client():
-    return Imdb(locale='en_US')
+    client = Imdb(locale='en_US')
+    yield client
+    client.clear_cached_credentials()
 
 
-def test_get_title_plots(client):
+def test_get_title_plot(client):
     expected_keys = ['@type', 'outline', 'summaries', 'totalSummaries']
 
-    resource = client.get_title_plots('tt0111161')
-    assert sorted(resource.keys()) == expected_keys
+    resource = client.get_title_plot('tt0111161')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
 
 
-def test_get_title_reviews(client):
+def test_get_title_user_reviews(client):
     expected_keys = [
         '@type', 'base', 'paginationKey', 'reviews', 'totalReviews'
     ]
 
-    resource = client.get_title_reviews('tt0111161')
+    resource = client.get_title_user_reviews('tt0111161')
 
-    assert sorted(resource.keys()) == expected_keys
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_metacritic_reviews(client):
+    expected_keys = [
+        '@type', 'id', 'metaScore', 'metacriticUrl', 'reviewCount',
+        'userRatingCount', 'userScore', 'reviews', 'title'
+    ]
+
+    resource = client.get_title_metacritic_reviews('tt0111161')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
 
 
 def test_title_reviews_non_existant_title(client):
     with pytest.raises(LookupError):
-        client.get_title_reviews('tt9999999')
+        client.get_title_user_reviews('tt9999999')
 
 
 def test_title_exists(client):
@@ -86,8 +97,8 @@ def test_search_for_title_input_with_special_chars(query, client):
     assert len(results) > 0
 
 
-def test_search_for_person(client):
-    results = client.search_for_person('Andrew Lloyd Webber')
+def test_search_for_name(client):
+    results = client.search_for_name('Andrew Lloyd Webber')
 
     assert len(results) > 0
     expected_results = [
@@ -102,31 +113,31 @@ def test_search_for_title_no_results(client):
     assert [] == results
 
 
-def test_top_250(client):
+def test_get_popular_titles(client):
     expected_keys = ['@type', 'id', 'ranks']
 
-    resource = client.top_250()
+    resource = client.get_popular_titles()
 
-    assert sorted(resource.keys()) == expected_keys
+    assert sorted(resource.keys()) == sorted(expected_keys)
     assert len(resource['ranks']) == 100
 
 
-def test_popular_shows(client):
+def test_get_popular_shows(client):
     expected_keys = ['@type', 'id', 'ranks']
 
-    resource = client.popular_shows()
+    resource = client.get_popular_shows()
 
-    assert sorted(resource.keys()) == expected_keys
+    assert sorted(resource.keys()) == sorted(expected_keys)
 
 
 # TODO: get title credits full
 
-def test_popular_movies(client):
+def test_get_popular_movies(client):
     expected_keys = ['@type', 'id', 'ranks']
 
-    resource = client.popular_shows()
+    resource = client.get_popular_shows()
 
-    assert sorted(resource.keys()) == expected_keys
+    assert sorted(resource.keys()) == sorted(expected_keys)
 
 
 def test_get_name(client):
@@ -137,7 +148,7 @@ def test_get_name(client):
 
     resource = client.get_name('nm0000151')
 
-    assert sorted(resource.keys()) == expected_keys
+    assert sorted(resource.keys()) == sorted(expected_keys)
 
 
 def test_get_title(client):
@@ -151,7 +162,7 @@ def test_get_title(client):
 
     resource = client.get_title(imdb_id)
 
-    assert sorted(resource.keys()) == expected_keys
+    assert sorted(resource.keys()) == sorted(expected_keys)
 
 
 def test_get_title_credits(client):
@@ -187,25 +198,25 @@ def test_get_title_excludes_episodes(client):
     exc.match(r'Title not found. Title was an episode.+')
 
 
-def test_get_episodes(client):
+def test_get_title_episodes(client):
     tv_show_imdb_id = 'tt0303461'
     expected_keys = ['@type', 'base', 'id', 'seasons']
 
-    resource = client.get_episodes(tv_show_imdb_id)
+    resource = client.get_title_episodes(tv_show_imdb_id)
 
-    assert sorted(resource.keys()) == expected_keys
+    assert sorted(resource.keys()) == sorted(expected_keys)
 
 
-def test_get_episodes_raises_when_exclude_episodes_enabled():
+def test_get_title_episodes_raises_when_exclude_episodes_enabled():
     client = Imdb(exclude_episodes=True)
     with pytest.raises(ValueError):
-        client.get_episodes('tt0303461')
+        client.get_title_episodes('tt0303461')
 
 
-def test_get_episodes_raises_imdb_id_is_not_that_of_a_tv_show(client):
+def test_get_title_episodes_raises_imdb_id_is_not_that_of_a_tv_show(client):
     non_show_imdb_id = 'tt0468569'
     with pytest.raises(LookupError):
-        client.get_episodes(non_show_imdb_id)
+        client.get_title_episodes(non_show_imdb_id)
 
 
 def test_get_name_images(client):
@@ -213,7 +224,7 @@ def test_get_name_images(client):
 
     resource = client.get_name_images('nm0000032')
 
-    assert sorted(resource.keys()) == expected_keys
+    assert sorted(resource.keys()) == sorted(expected_keys)
 
 
 def test_get_title_images(client):
@@ -221,7 +232,7 @@ def test_get_title_images(client):
 
     resource = client.get_title_images('tt0111161')
 
-    assert sorted(resource.keys()) == expected_keys
+    assert sorted(resource.keys()) == sorted(expected_keys)
 
 
 def test_get_title_raises_not_found(client):
