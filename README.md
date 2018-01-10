@@ -23,7 +23,7 @@ imdb = Imdb()
 
 ### Available methods
 
-NOTE: For most methods, if the resource cannot be found they will raise `LookupError`, if there is an API error then `ImdbAPIError` will raise.
+NOTE: For each client method, if the resource cannot be found they will raise `LookupError`, if there is an API error then `ImdbAPIError` will raise.
 
 #### get_title
 
