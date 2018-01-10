@@ -73,20 +73,27 @@ def _get_credentials():
 
 class Auth(object):
 
-    def __init__(self, *args, **kwargs):
-        self._creds = None
+    SOON_EXPIRES_SECONDS = 60
 
-    def _creds_have_expired(self):
+    def __init__(self, creds=None):
+        self._creds = creds
+
+    def _creds_soon_expiring(self):
         if not self._creds:
             return True
         expires_at = parse(self._creds['expirationTimeStamp'])
-        if datetime.now(tzutc()) < expires_at:
+        now = datetime.now(tzutc())
+        if now < expires_at:
+            time_diff = expires_at - now
+            if time_diff.total_seconds() < self.SOON_EXPIRES_SECONDS:
+                # creds will soon expire, so renew them
+                return True
             return False
         else:
             return True
 
     def get_auth_headers(self, url_path):
-        if self._creds_have_expired():
+        if self._creds_soon_expiring():
             self._creds = _get_credentials()
 
         handler = ZuluHmacAuthV3HTTPHandler(
