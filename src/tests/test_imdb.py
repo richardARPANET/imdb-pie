@@ -11,7 +11,7 @@ from imdbpie import Imdb
 # TODO: reviews paging
 
 
-@pytest.fixture
+@pytest.fixture(scope='module')
 def client():
     return Imdb(locale='en_US')
 
