@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.0.0 (2018-01-10)
+5.0.0 (unreleased)
 ++++++++++++++++++
 
 - Fixes client to work with new API.
