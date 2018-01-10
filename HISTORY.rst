@@ -3,10 +3,14 @@
 Release History
 ---------------
 
-4.4.3 (unreleased)
+5.0.0 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Fixes client to work with new API.
+- Renames most of methods on ``Imdb`` class.
+- Changes all methods on ``Imdb`` to return raw JSON resource dictionary rather than Python objects.
+- Removes params from ``Imdb`` ``__init__`` method (user_agent, proxy_uri, verify_ssl, api_key, cache, anonymize).
+- Adds ``clear_cached_credentials`` method to ``Imdb`` class.
 
 
 4.4.2 (2018-01-03)

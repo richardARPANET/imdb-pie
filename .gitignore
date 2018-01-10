@@ -11,6 +11,7 @@
 .metadata
 bin/
 tmp/
+.vscode
 *.tmp
 *.bak
 *.swp
@@ -160,7 +161,7 @@ pip-log.txt
 .tox
 
 # virtual env
-venv 
+venv
 #Translations
 *.mo
 
