@@ -16,13 +16,13 @@ from six.moves.urllib.parse import (
     urlencode, quote, quote_plus, unquote, urlparse
 )
 from .constants import BASE_URI, HOST, SEARCH_BASE_URI
-from .auth import get_auth_headers
+from .auth import Auth
 from .exceptions import ImdbAPIError
 
 logger = logging.getLogger(__name__)
 
 
-class Imdb(object):
+class Imdb(Auth):
 
     def __init__(
         self, api_key=None, locale=None, exclude_episodes=False,
@@ -31,6 +31,7 @@ class Imdb(object):
         self.locale = locale or 'en_US'
         self.exclude_episodes = exclude_episodes
         self.session = session or requests.Session()
+        self._creds = None
 
     def get_name(self, imdb_id):
         self.validate_imdb_id(imdb_id)
@@ -199,7 +200,7 @@ class Imdb(object):
     def _get(self, url, query=None):
         path = urlparse(url).path
         headers = {'Accept-Language': self.locale}
-        headers.update(get_auth_headers(path))
+        headers.update(self.get_auth_headers(path))
         resp = self.session.get(url, headers=headers)
 
         if not resp.ok:

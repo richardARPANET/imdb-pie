@@ -4,11 +4,14 @@ from __future__ import absolute_import, unicode_literals
 import base64
 import json
 import requests
+from datetime import datetime
 try:
     from base64 import encodebytes
 except ImportError:
     from base64 import encodestring as encodebytes
 
+from dateutil.tz import tzutc
+from dateutil.parser import parse
 import boto.utils
 from six.moves.urllib.parse import urlparse, parse_qs, quote
 from boto import provider
@@ -68,27 +71,43 @@ def _get_credentials():
     return json.loads(response.content.decode('utf8'))['resource']
 
 
-def get_auth_headers(url_path):
-    creds = _get_credentials()
-    handler = ZuluHmacAuthV3HTTPHandler(
-        host=HOST,
-        config={},
-        provider=provider.Provider(
-            name='aws',
-            access_key=creds['accessKeyId'],
-            secret_key=creds['secretAccessKey'],
-            security_token=creds['sessionToken'],
+class Auth(object):
+
+    def __init__(self, *args, **kwargs):
+        self._creds = None
+
+    def _creds_have_expired(self):
+        if not self._creds:
+            return True
+        expires_at = parse(self._creds['expirationTimeStamp'])
+        if datetime.now(tzutc()) < expires_at:
+            return False
+        else:
+            return True
+
+    def get_auth_headers(self, url_path):
+        if self._creds_have_expired():
+            self._creds = _get_credentials()
+
+        handler = ZuluHmacAuthV3HTTPHandler(
+            host=HOST,
+            config={},
+            provider=provider.Provider(
+                name='aws',
+                access_key=self._creds['accessKeyId'],
+                secret_key=self._creds['secretAccessKey'],
+                security_token=self._creds['sessionToken'],
+            )
         )
-    )
-    params = {
-        key: val[0] for key, val in parse_qs(urlparse(url_path).query).items()
-    }
-    request = HTTPRequest(
-        method='GET', protocol='https', host=HOST,
-        port=443, path=urlparse(url_path).path, auth_path=None, params=params,
-        headers={}, body=''
-    )
-    handler.add_auth(req=request)
-    headers = request.headers
-    headers['User-Agent'] = USER_AGENT
-    return headers
+        params = {
+            key: val[0] for key, val in parse_qs(urlparse(url_path).query).items()
+        }
+        request = HTTPRequest(
+            method='GET', protocol='https', host=HOST,
+            port=443, path=urlparse(url_path).path, auth_path=None, params=params,
+            headers={}, body=''
+        )
+        handler.add_auth(req=request)
+        headers = request.headers
+        headers['User-Agent'] = USER_AGENT
+        return headers

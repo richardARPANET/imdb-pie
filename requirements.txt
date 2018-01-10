@@ -3,3 +3,4 @@ six>=1.0.0,<2.0.0
 wheel==0.30.0
 boto==2.48.0
 future-fstrings==0.4.1
+python-dateutil==2.6.1
