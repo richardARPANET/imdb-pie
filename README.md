@@ -78,9 +78,9 @@ imdb.search_for_title("The Dark Knight")
 [{'title': "The Dark Knight", 'year':  "2008", 'imdb_id': "tt0468569"},{'title' : "Batman Unmasked", ...}]
 ```
 
-#### search_for_person
+#### search_for_name
 ```python
-imdb.search_for_person("Christian Bale")
+imdb.search_for_name("Christian Bale")
 # Returns list of dict results
 [{'imdb_id': 'nm0000288', 'name': 'Christian Bale'},{'imdb_id': 'nm7635250', ...}]
 ```
