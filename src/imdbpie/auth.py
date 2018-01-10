@@ -65,7 +65,7 @@ def _get_credentials():
         url, json={"appKey": APP_KEY}, headers={'User-Agent': USER_AGENT}
     )
     response.raise_for_status()
-    return json.loads(response.content)['resource']
+    return json.loads(response.content.decode('utf8'))['resource']
 
 
 def get_auth_headers(url_path):
