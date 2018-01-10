@@ -6,6 +6,11 @@
 
 Python IMDB client using the IMDB json web service made available for their iOS app.
 
+## API Terminology
+
+- `Title` this can be a movie, tv show, video, documentary etc.
+- `Name` this can be a credit, cast member, any person generally.
+
 ## Installation
 
 To install imdbpie, simply:
