@@ -1,4 +1,4 @@
-# -*- coding: future_fstrings -*-
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
 import base64
@@ -46,7 +46,7 @@ class ZuluHmacAuthV3HTTPHandler(HmacAuthV3HTTPHandler):
             value = boto.utils.get_utf8_value(http_request.params[param])
             param_ = quote(param, safe='-_.~')
             value_ = quote(value, safe='-_.~')
-            qs_parts.append(f'{param_}={value_}')
+            qs_parts.append('{0}={1}'.format(param_, value_))
         return '&'.join(qs_parts)
 
     def string_to_sign(self, http_request):
@@ -65,9 +65,9 @@ class ZuluHmacAuthV3HTTPHandler(HmacAuthV3HTTPHandler):
 
 
 def _get_credentials():
-    url = f'{BASE_URI}/authentication/credentials/temporary/ios82'
+    url = '{0}/authentication/credentials/temporary/ios82'.format(BASE_URI)
     response = requests.post(
-        url, json={"appKey": APP_KEY}, headers={'User-Agent': USER_AGENT}
+        url, json={'appKey': APP_KEY}, headers={'User-Agent': USER_AGENT}
     )
     response.raise_for_status()
     return json.loads(response.content.decode('utf8'))['resource']
