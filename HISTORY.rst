@@ -3,10 +3,22 @@
 Release History
 ---------------
 
-5.1.1 (unreleased)
+5.1.0 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Updates ``get_title`` to call "/auxiliary" as "/fulldetails" endpoint now returns an error.
+- Adds ``get_title_quotes`` method.
+- Adds ``get_title_ratings`` method.
+- Adds ``get_title_connections`` method.
+- Adds ``get_title_awards`` method.
+- Adds ``get_title_plot_synopsis`` method.
+- Adds ``get_title_versions`` method.
+- Adds ``get_title_releases`` method.
+- Adds ``get_title_similarities`` method.
+- Adds ``get_title_videos`` method.
+- Adds ``get_name_videos`` method.
+- Adds ``get_name_filmography`` method.
+- Adds response status code to ``ImdbAPIError`` exception message.
 
 
 5.1.0 (2018-01-10)

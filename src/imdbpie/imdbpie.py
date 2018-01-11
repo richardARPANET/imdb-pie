@@ -38,13 +38,18 @@ class Imdb(Auth):
         self.validate_imdb_id(imdb_id)
         return self._get_resource('/name/{0}/fulldetails'.format(imdb_id))
 
+    def get_name_filmography(self, imdb_id):
+        logger.info('getting name {0} filmography'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        return self._get_resource('/name/{0}/filmography'.format(imdb_id))
+
     def get_title(self, imdb_id):
         logger.info('getting title {0}'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
         try:
             resource = self._get_resource(
-                '/title/{0}/fulldetails'.format(imdb_id)
+                '/title/{0}/auxiliary'.format(imdb_id)
             )
         except LookupError:
             self._title_not_found()
@@ -65,17 +70,65 @@ class Imdb(Auth):
         self._redirection_title_check(imdb_id)
         return self._get_resource('/title/{0}/fullcredits'.format(imdb_id))
 
+    def get_title_quotes(self, imdb_id):
+        logger.info('getting title {0} quotes'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource('/title/{0}/quotes'.format(imdb_id))
+
+    def get_title_ratings(self, imdb_id):
+        logger.info('getting title {0} ratings'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource('/title/{0}/ratings'.format(imdb_id))
+
     def get_title_genres(self, imdb_id):
         logger.info('getting title {0} genres'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
         return self._get_resource('/title/{0}/genres'.format(imdb_id))
 
+    def get_title_similarities(self, imdb_id):
+        logger.info('getting title {0} similarities'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource('/title/{0}/similarities'.format(imdb_id))
+
+    def get_title_awards(self, imdb_id):
+        logger.info('getting title {0} awards'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource('/title/{0}/awards'.format(imdb_id))
+
+    def get_title_connections(self, imdb_id):
+        logger.info('getting title {0} connections'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource('/title/{0}/connections'.format(imdb_id))
+
+    def get_title_releases(self, imdb_id):
+        logger.info('getting title {0} releases'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource('/title/{0}/releases'.format(imdb_id))
+
+    def get_title_versions(self, imdb_id):
+        logger.info('getting title {0} versions'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource('/title/{0}/versions'.format(imdb_id))
+
     def get_title_plot(self, imdb_id):
         logger.info('getting title {0} plot'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
         return self._get_resource('/title/{0}/plot'.format(imdb_id))
+
+    def get_title_plot_synopsis(self, imdb_id):
+        logger.info('getting title {0} plot synopsis'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource('/title/{0}/plotsynopsis'.format(imdb_id))
 
     def title_exists(self, imdb_id):
         self.validate_imdb_id(imdb_id)
@@ -151,6 +204,12 @@ class Imdb(Auth):
         self._redirection_title_check(imdb_id)
         return self._get_resource('/title/{0}/images'.format(imdb_id))
 
+    def get_title_videos(self, imdb_id):
+        logger.info('getting title {0} videos'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource('/title/{0}/videos'.format(imdb_id))
+
     def get_title_user_reviews(self, imdb_id):
         logger.info('getting title {0} reviews'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
@@ -167,6 +226,11 @@ class Imdb(Auth):
         logger.info('getting namne {0} images'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         return self._get_resource('/name/{0}/images'.format(imdb_id))
+
+    def get_name_videos(self, imdb_id):
+        logger.info('getting namne {0} videos'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        return self._get_resource('/name/{0}/videos'.format(imdb_id))
 
     def get_title_episodes(self, imdb_id):
         logger.info('getting title {0} episodes'.format(imdb_id))
@@ -233,7 +297,8 @@ class Imdb(Auth):
             if resp.status_code == httplib.NOT_FOUND:
                 raise LookupError('Resource {0} not found'.format(path))
             else:
-                raise ImdbAPIError(resp.text)
+                msg = '{0} {1}'.format(resp.status_code, resp.text)
+                raise ImdbAPIError(msg)
         resp_data = resp.content.decode('utf-8')
         try:
             resp_dict = json.loads(resp_data)

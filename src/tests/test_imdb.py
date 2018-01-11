@@ -15,6 +15,16 @@ def client():
     client.clear_cached_credentials()
 
 
+def test_get_title_plot_synopsis(client):
+    expected_keys = [
+        '@type', 'id', 'plotSynopses', 'title', 'titleType', 'year'
+    ]
+
+    resource = client.get_title_plot_synopsis('tt0111161')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
 def test_get_title_plot(client):
     expected_keys = ['@type', 'outline', 'summaries', 'totalSummaries']
 
@@ -130,8 +140,6 @@ def test_get_popular_shows(client):
     assert sorted(resource.keys()) == sorted(expected_keys)
 
 
-# TODO: get title credits full
-
 def test_get_popular_movies(client):
     expected_keys = ['@type', 'id', 'ranks']
 
@@ -151,13 +159,19 @@ def test_get_name(client):
     assert sorted(resource.keys()) == sorted(expected_keys)
 
 
+def test_get_name_filmography(client):
+    expected_keys = ['@type', 'filmography']
+
+    resource = client.get_name_filmography('nm0000151')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
 def test_get_title(client):
     imdb_id = 'tt0111161'
     expected_keys = [
-        '@type', 'base', 'bottomRank', 'credits', 'facts', 'goofs',
-        'id', 'names', 'plot', 'principals', 'quotes', 'rating',
-        'ratingCount', 'soundtrackAlbums', 'soundtrackItems',
-        'supportsExplore', 'topRank', 'trivia'
+        '@type', 'base', 'filmingLocations', 'metacriticScore', 'plot',
+        'ratings', 'similarities', 'soundtrack'
     ]
 
     resource = client.get_title(imdb_id)
@@ -170,6 +184,76 @@ def test_get_title_genres(client):
     expected_keys = ['@type', 'genres', 'id', 'title', 'titleType', 'year']
 
     resource = client.get_title_genres(imdb_id)
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_similarities(client):
+    imdb_id = 'tt0111161'
+    expected_keys = ['@type', 'base', 'id', 'similarities']
+
+    resource = client.get_title_similarities(imdb_id)
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_awards(client):
+    imdb_id = 'tt0111161'
+    expected_keys = ['@type', 'awards', 'id']
+
+    resource = client.get_title_awards(imdb_id)
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_releases(client):
+    imdb_id = 'tt0111161'
+    expected_keys = ['@type', 'releases', 'id', 'title', 'titleType', 'year']
+
+    resource = client.get_title_releases(imdb_id)
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_versions(client):
+    imdb_id = 'tt0111161'
+    expected_keys = [
+        '@type', 'alternateTitles', 'alternateVersions', 'colorations',
+        'defaultTitle', 'silent', 'spokenLanguages', 'originalTitle',
+        'origins', 'runningTimes', 'id', 'title', 'titleType', 'year'
+    ]
+
+    resource = client.get_title_versions(imdb_id)
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_ratings(client):
+    imdb_id = 'tt0111161'
+    expected_keys = [
+        '@type', 'id', 'title', 'titleType', 'year', 'bottomRank',
+        'canRate', 'rating', 'ratingCount', 'topRank'
+    ]
+
+    resource = client.get_title_ratings(imdb_id)
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_quotes(client):
+    imdb_id = 'tt0111161'
+    expected_keys = ['@type', 'quotes', 'id', 'title', 'titleType', 'year']
+
+    resource = client.get_title_quotes(imdb_id)
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_connections(client):
+    imdb_id = 'tt0111161'
+    expected_keys = ['@type', 'base', 'connections']
+
+    resource = client.get_title_connections(imdb_id)
 
     assert sorted(resource.keys()) == sorted(expected_keys)
 
@@ -236,10 +320,32 @@ def test_get_name_images(client):
     assert sorted(resource.keys()) == sorted(expected_keys)
 
 
+def test_get_name_videos(client):
+    expected_keys = [
+        '@type', 'akas', 'id', 'image', 'legacyNameText', 'name', 'size',
+        'videoCounts', 'videos'
+    ]
+
+    resource = client.get_name_videos('nm0000032')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
 def test_get_title_images(client):
     expected_keys = ['@type', 'images', 'totalImageCount']
 
     resource = client.get_title_images('tt0111161')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_videos(client):
+    expected_keys = [
+        '@type', 'id', 'image', 'size', 'title', 'titleType', 'videoCounts',
+        'videos', 'year'
+    ]
+
+    resource = client.get_title_videos('tt0111161')
 
     assert sorted(resource.keys()) == sorted(expected_keys)
 

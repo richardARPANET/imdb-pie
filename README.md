@@ -41,7 +41,42 @@ imdb.get_title('tt0111161')
 
 ```python
 imdb.get_title_genres('tt0303461')
-# Returns a dict containing genres information
+# Returns a dict containing title genres information
+```
+
+#### get_title_quotes
+
+```python
+imdb.get_title_quotes('tt0303461')
+# Returns a dict containing title quotes information
+```
+
+#### get_title_ratings
+
+```python
+imdb.get_title_ratings('tt0303461')
+# Returns a dict containing title ratings information
+```
+
+#### get_title_connections
+
+```python
+imdb.get_title_connections('tt0303461')
+# Returns a dict containing title connections information
+```
+
+#### get_title_similarities
+
+```python
+imdb.get_title_similarities('tt0303461')
+# Returns a dict containing title similarities information
+```
+
+#### get_title_videos
+
+```python
+imdb.get_title_videos('tt0303461')
+# Returns a dict containing title videos information
 ```
 
 #### get_title_episodes
@@ -55,7 +90,35 @@ imdb.get_title_episodes('tt0303461')
 
 ```python
 imdb.get_title_plot('tt0111161')
-# Returns a dict containing plot information
+# Returns a dict containing title plot information
+```
+
+#### get_title_plot_synopsis
+
+```python
+imdb.get_title_plot_synopsis('tt0111161')
+# Returns a dict containing title plot synopsis information
+```
+
+#### get_title_awards
+
+```python
+imdb.get_title_awards('tt0111161')
+# Returns a dict containing title awards information
+```
+
+#### get_title_releases
+
+```python
+imdb.get_title_releases('tt0111161')
+# Returns a dict containing releases information
+```
+
+#### get_title_versions
+
+```python
+imdb.get_title_versions('tt0111161')
+# Returns a dict containing versions information (meaning different versions of this title for different regions, or different versions for DVD vs Cinema)
 ```
 
 #### get_title_user_reviews
@@ -107,11 +170,25 @@ imdb.get_name('nm0000151')
 # Returns a dict containing person/name information
 ```
 
+#### get_name_filmography
+
+```python
+imdb.get_name_filmography('nm0000151')
+# Returns a dict containing person/name filmography information
+```
+
 #### get_name_images
 
 ```python
 imdb.get_name_images('nm0000032')
 # Returns a dict containing person/name images information
+```
+
+#### get_name_videos
+
+```python
+imdb.get_name_videos('nm0000032')
+# Returns a dict containing person/name videos information
 ```
 
 #### validate_imdb_id
