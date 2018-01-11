@@ -44,6 +44,13 @@ imdb.get_title_genres('tt0303461')
 # Returns a dict containing title genres information
 ```
 
+#### get_title_credits
+
+```python
+imdb.get_title_credits('tt0303461')
+# Returns a dict containing title credits information
+```
+
 #### get_title_quotes
 
 ```python
