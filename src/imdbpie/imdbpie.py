@@ -1,4 +1,4 @@
-# -*- coding: future_fstrings -*-
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
 import re
@@ -12,6 +12,7 @@ import warnings
 
 import requests
 from requests.exceptions import HTTPError
+from six import text_type
 from six.moves import http_client as httplib
 from six.moves.urllib.parse import (
     urlencode, quote, quote_plus, unquote, urlparse
@@ -33,16 +34,18 @@ class Imdb(Auth):
         self._cachedir = tempfile.gettempdir()
 
     def get_name(self, imdb_id):
-        logger.info('getting name %s', imdb_id)
+        logger.info('getting name {0}'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
-        return self._get_resource(f'/name/{imdb_id}/fulldetails')
+        return self._get_resource('/name/{0}/fulldetails'.format(imdb_id))
 
     def get_title(self, imdb_id):
-        logger.info('getting title %s', imdb_id)
+        logger.info('getting title {0}'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
         try:
-            resource = self._get_resource(f'/title/{imdb_id}/fulldetails')
+            resource = self._get_resource(
+                '/title/{0}/fulldetails'.format(imdb_id)
+            )
         except LookupError:
             self._title_not_found()
 
@@ -57,26 +60,26 @@ class Imdb(Auth):
         return resource
 
     def get_title_credits(self, imdb_id):
-        logger.info('getting title %s credits', imdb_id)
+        logger.info('getting title {0} credits'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
-        return self._get_resource(f'/title/{imdb_id}/fullcredits')
+        return self._get_resource('/title/{0}/fullcredits'.format(imdb_id))
 
     def get_title_genres(self, imdb_id):
-        logger.info('getting title %s genres', imdb_id)
+        logger.info('getting title {0} genres'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
-        return self._get_resource(f'/title/{imdb_id}/genres')
+        return self._get_resource('/title/{0}/genres'.format(imdb_id))
 
     def get_title_plot(self, imdb_id):
-        logger.info('getting title %s plot', imdb_id)
+        logger.info('getting title {0} plot'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
-        return self._get_resource(f'/title/{imdb_id}/plot')
+        return self._get_resource('/title/{0}/plot'.format(imdb_id))
 
     def title_exists(self, imdb_id):
         self.validate_imdb_id(imdb_id)
-        page_url = f'http://www.imdb.com/title/{imdb_id}/'
+        page_url = 'http://www.imdb.com/title/{0}/'.format(imdb_id)
 
         response = self.session.head(page_url)
 
@@ -91,12 +94,13 @@ class Imdb(Auth):
             response.raise_for_status()
 
     def search_for_name(self, name):
-        logger.info('searching for name %s', name)
+        logger.info('searching for name {0}'.format(name))
         name = re.sub(r'\W+', '_', name).strip('_')
         query = quote(name)
         first_alphanum_char = self._query_first_alpha_num(name)
         url = (
-            f'{SEARCH_BASE_URI}/suggests/{first_alphanum_char}/{query}.json'
+            '{0}/suggests/{1}/{2}.json'.format(SEARCH_BASE_URI,
+                                               first_alphanum_char, query)
         )
         search_results = self._get(url=url, query=query)
         results = []
@@ -112,19 +116,20 @@ class Imdb(Auth):
         return results
 
     def search_for_title(self, title):
-        logger.info('searching for title %s', title)
+        logger.info('searching for title {0}'.format(title))
         title = re.sub(r'\W+', '_', title).strip('_')
         query = quote(title)
         first_alphanum_char = self._query_first_alpha_num(title)
         url = (
-            f'{SEARCH_BASE_URI}/suggests/{first_alphanum_char}/{query}.json'
+            '{0}/suggests/{1}/{2}.json'.format(SEARCH_BASE_URI,
+                                               first_alphanum_char, query)
         )
         search_results = self._get(url=url, query=query)
         results = []
         for result in search_results.get('d', ()):
             result_item = {
                 'title': result['l'],
-                'year': str(result.get('y')) if result.get('y') else None,
+                'year': text_type(result['y']) if result.get('y') else None,
                 'imdb_id': result['id'],
                 'type': result.get('q'),
             }
@@ -141,34 +146,34 @@ class Imdb(Auth):
         return self._get_resource('/chart/moviemeter')
 
     def get_title_images(self, imdb_id):
-        logger.info('getting title %s images', imdb_id)
+        logger.info('getting title {0} images'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
-        return self._get_resource(f'/title/{imdb_id}/images')
+        return self._get_resource('/title/{0}/images'.format(imdb_id))
 
     def get_title_user_reviews(self, imdb_id):
-        logger.info('getting title %s reviews', imdb_id)
+        logger.info('getting title {0} reviews'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
-        return self._get_resource(f'/title/{imdb_id}/userreviews')
+        return self._get_resource('/title/{0}/userreviews'.format(imdb_id))
 
     def get_title_metacritic_reviews(self, imdb_id):
-        logger.info('getting title %s metacritic reviews', imdb_id)
+        logger.info('getting title {0} metacritic reviews'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
-        return self._get_resource(f'/title/{imdb_id}/metacritic')
+        return self._get_resource('/title/{0}/metacritic'.format(imdb_id))
 
     def get_name_images(self, imdb_id):
-        logger.info('getting namne %s images', imdb_id)
+        logger.info('getting namne {0} images'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
-        return self._get_resource(f'/name/{imdb_id}/images')
+        return self._get_resource('/name/{0}/images'.format(imdb_id))
 
     def get_title_episodes(self, imdb_id):
-        logger.info('getting title %s episodes', imdb_id)
+        logger.info('getting title {0} episodes'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         if self.exclude_episodes:
             raise ValueError('exclude_episodes is current set to true')
-        return self._get_resource(f'/title/{imdb_id}/episodes')
+        return self._get_resource('/title/{0}/episodes'.format(imdb_id))
 
     @staticmethod
     def _cache_response(file_path, resp):
@@ -180,7 +185,7 @@ class Imdb(Auth):
             match_json_within_dirty_json = r'imdb\$.+\({1}(.+)\){1}'
         else:
             query_match = ''.join(
-                char if char.isalnum() else f'[{char}]'
+                char if char.isalnum() else '[{0}]'.format(char)
                 for char in unquote(query)
             )
             query_match = query_match.replace('[ ]', '.+')
@@ -215,7 +220,7 @@ class Imdb(Auth):
         return False
 
     def _get_resource(self, path):
-        url = f'{BASE_URI}{path}'
+        url = '{0}{1}'.format(BASE_URI, path)
         return self._get(url=url)['resource']
 
     def _get(self, url, query=None):
@@ -226,7 +231,7 @@ class Imdb(Auth):
 
         if not resp.ok:
             if resp.status_code == httplib.NOT_FOUND:
-                raise LookupError(f'Resource {path} not found')
+                raise LookupError('Resource {0} not found'.format(path))
             else:
                 raise ImdbAPIError(resp.text)
         resp_data = resp.content.decode('utf-8')
@@ -244,11 +249,13 @@ class Imdb(Auth):
 
     def _redirection_title_check(self, imdb_id):
         if self.is_redirection_title(imdb_id):
-            self._title_not_found(msg=f'{imdb_id} is a redirection imdb id')
+            self._title_not_found(
+                msg='{0} is a redirection imdb id'.format(imdb_id)
+            )
 
     def is_redirection_title(self, imdb_id):
         self.validate_imdb_id(imdb_id)
-        page_url = f'http://www.imdb.com/title/{imdb_id}/'
+        page_url = 'http://www.imdb.com/title/{0}/'.format(imdb_id)
         response = self.session.head(page_url)
         if response.status_code == httplib.MOVED_PERMANENTLY:
             return True
@@ -265,5 +272,5 @@ class Imdb(Auth):
 
     def _title_not_found(self, msg=''):
         if msg:
-            msg = f' {msg}'
-        raise LookupError(f'Title not found.{msg}')
+            msg = ' {0}'.format(msg)
+        raise LookupError('Title not found.{0}'.format(msg))
