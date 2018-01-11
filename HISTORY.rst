@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.1.0 (unreleased)
+5.2.0 (2018-01-11)
 ++++++++++++++++++
 
 - Updates ``get_title`` to call "/auxiliary" as "/fulldetails" endpoint now returns an error.
