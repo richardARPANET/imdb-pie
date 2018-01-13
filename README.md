@@ -86,6 +86,48 @@ imdb.get_title_videos('tt0303461')
 # Returns a dict containing title videos information
 ```
 
+#### get_title_plot_taglines
+
+```python
+imdb.get_title_plot_taglines('tt0303461')
+# Returns a dict containing taglines
+```
+
+#### get_title_news
+
+```python
+imdb.get_title_news('tt0303461')
+# Returns a dict containing news
+```
+
+#### get_title_trivia
+
+```python
+imdb.get_title_trivia('tt0303461')
+# Returns a dict containing trivia
+```
+
+#### get_title_soundtracks
+
+```python
+imdb.get_title_soundtracks('tt0303461')
+# Returns a dict containing soundtracks information
+```
+
+#### get_title_goofs
+
+```python
+imdb.get_title_goofs('tt0303461')
+# Returns a dict containing "goofs" and teaser information
+```
+
+#### get_title_technical
+
+```python
+imdb.get_title_technical('tt0303461')
+# Returns a dict containing technical details
+```
+
 #### get_title_episodes
 
 ```python
