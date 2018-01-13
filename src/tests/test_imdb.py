@@ -351,7 +351,7 @@ def test_get_title_videos(client):
 
 
 def test_get_title_plot_taglines(client):
-    expected_keys = ['@type', 'seriesEndYear', 'title', 'nextEpisode']
+    expected_keys = ['@type', 'id', 'image']
 
     resource = client.get_title_plot_taglines('tt0303461')
 
