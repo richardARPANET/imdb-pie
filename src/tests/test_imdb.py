@@ -351,7 +351,7 @@ def test_get_title_videos(client):
 
 
 def test_get_title_plot_taglines(client):
-    expected_keys = ['@type', 'id', 'image']
+    expected_keys = ['@type', 'id', 'image', 'nextEpisode', 'numberOfEpisodes', 'runningTimeInMinutes', 'seriesEndYear','seriesStartYear', 'taglines', 'title', 'titleType', 'year']
 
     resource = client.get_title_plot_taglines('tt0303461')
 
@@ -359,7 +359,7 @@ def test_get_title_plot_taglines(client):
 
 
 def test_get_title_news(client):
-    expected_keys = ['@type', 'paginationKey', 'title', 'titleType']
+    expected_keys = ['@type', 'id', 'image', 'items', 'label', 'paginationKey', 'title', 'titleType', 'year']
 
     resource = client.get_title_news('tt0303461')
 
@@ -375,7 +375,7 @@ def test_get_title_trivia(client):
 
 
 def test_get_title_soundtracks(client):
-    expected_keys = ['base']
+    expected_keys = ['@type', 'base', 'soundtracks']
 
     resource = client.get_title_soundtracks('tt0303461')
 
@@ -391,7 +391,7 @@ def test_get_title_goofs(client):
 
 
 def test_get_title_technical(client):
-    expected_keys = ['processes', 'colorations', 'soundMixes']
+    expected_keys = ['@type', 'aspectRatios', 'cameras', 'colorations', 'id', 'labs', 'negativeFormats', 'printedFormats', 'processes', 'soundMixes', 'title', 'titleType', 'year']
 
     resource = client.get_title_technical('tt0303461')
 
