@@ -350,6 +350,54 @@ def test_get_title_videos(client):
     assert sorted(resource.keys()) == sorted(expected_keys)
 
 
+def test_get_title_plot_taglines(client):
+    expected_keys = ['@type', 'seriesEndYear', 'title', 'nextEpisode']
+
+    resource = client.get_title_plot_taglines('tt0303461')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_news(client):
+    expected_keys = ['@type', 'paginationKey', 'title', 'titleType']
+
+    resource = client.get_title_news('tt0303461')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_trivia(client):
+    expected_keys = ['@type', 'spoilt', 'unspoilt', 'id']
+
+    resource = client.get_title_trivia('tt0303461')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_soundtracks(client):
+    expected_keys = ['base']
+
+    resource = client.get_title_soundtracks('tt0303461')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_goofs(client):
+    expected_keys = ['@type', 'goofs', 'base']
+
+    resource = client.get_title_goofs('tt0303461')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_technical(client):
+    expected_keys = ['processes', 'colorations', 'soundMixes']
+
+    resource = client.get_title_technical('tt0303461')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
 def test_get_title_raises_not_found(client):
     with pytest.raises(LookupError):
         client.get_title('tt9999999')
