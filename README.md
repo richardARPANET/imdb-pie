@@ -128,6 +128,13 @@ imdb.get_title_technical('tt0303461')
 # Returns a dict containing technical details
 ```
 
+#### get_title_companies
+
+```python
+imdb.get_title_companies('tt0303461')
+# Returns a dict containing information about companies related to the title
+```
+
 #### get_title_episodes
 
 ```python
