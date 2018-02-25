@@ -398,6 +398,14 @@ def test_get_title_technical(client):
     assert sorted(resource.keys()) == sorted(expected_keys)
 
 
+def test_get_title_companies(client):
+    expected_keys = ['companies']
+
+    resource = client.get_title_companies('tt0303461')
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
 def test_get_title_raises_not_found(client):
     with pytest.raises(LookupError):
         client.get_title('tt9999999')
