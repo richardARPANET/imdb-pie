@@ -165,7 +165,7 @@ class Imdb(Auth):
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
         return self._get_resource('/title/{0}/technical'.format(imdb_id))
-    
+
     def get_title_companies(self, imdb_id):
         logger.info('getting title {0} companies'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
@@ -280,10 +280,6 @@ class Imdb(Auth):
         if self.exclude_episodes:
             raise ValueError('exclude_episodes is current set to true')
         return self._get_resource('/title/{0}/episodes'.format(imdb_id))
-    @staticmethod
-    def _cache_response(file_path, resp):
-        with open(file_path, 'w+') as f:
-            json.dump(resp, f)
 
     def _parse_dirty_json(self, data, query=None):
         if query is None:
