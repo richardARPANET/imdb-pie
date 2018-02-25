@@ -312,6 +312,16 @@ def test_get_title_episodes_raises_imdb_id_is_not_that_of_a_tv_show(client):
         client.get_title_episodes(non_show_imdb_id)
 
 
+def test_get_title_tv_episodes(client):
+    tv_show_imdb_id = 'tt0303461'
+    expected_keys = ['allSeasons', 'end', 'episodes', 'region', 'season',
+                     'seriesTitle', 'start', 'totalEpisodes']
+
+    resource = client.get_title_tv_episodes(tv_show_imdb_id)
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
 def test_get_name_images(client):
     expected_keys = ['@type', 'images', 'totalImageCount']
 
