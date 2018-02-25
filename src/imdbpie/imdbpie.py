@@ -165,6 +165,12 @@ class Imdb(Auth):
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
         return self._get_resource('/title/{0}/technical'.format(imdb_id))
+    
+    def get_title_companies(self, imdb_id):
+        logger.info('getting title {0} companies'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        return self._get_resource('/title/{0}/companies'.format(imdb_id))
 
     def title_exists(self, imdb_id):
         self.validate_imdb_id(imdb_id)
