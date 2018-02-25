@@ -171,19 +171,24 @@ class Imdb(Auth):
             raise ValueError('exclude_episodes is current set to true')
         return self._get_resource('/title/{0}/episodes'.format(imdb_id))
 
-    def get_title_tv_episodes(self, imdb_id, end=500, region='XX', season=0, start=0):
+    def get_title_tv_episodes(self, imdb_id, end=500, region=None,
+                              season=0, start=0):
         logger.info('getting title {0} tv episodes'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
-        query = {
+        params = {
             "end": end,
-            "region": region,
             "season": season,
             "start": start,
             "tconst": imdb_id
         }
-        return self._get(urljoin(BASE_URI, '/template/imdb-ios-writable/tv-episodes-v2.jstl/render'), query)
+        if region:
+            params.update({'region': region})
 
-    def _parse_dirty_json(self, data, query=None):
+        return self._get(urljoin(
+            BASE_URI, '/template/imdb-ios-writable/tv-episodes-v2.jstl/render'
+        ), params=params)
+    @staticmethod
+    def _parse_dirty_json(data, query=None):
         if query is None:
             match_json_within_dirty_json = r'imdb\$.+\({1}(.+)\){1}'
         else:
@@ -226,13 +231,13 @@ class Imdb(Auth):
         url = '{0}{1}'.format(BASE_URI, path)
         return self._get(url=url)['resource']
 
-    def _get(self, url, query=None):
+    def _get(self, url, query=None, params=None):
         path = urlparse(url).path
-        if query:
-            path += '?' + urlencode(query)
+        if params:
+            path += '?' + urlencode(params)
         headers = {'Accept-Language': self.locale}
         headers.update(self.get_auth_headers(path))
-        resp = self.session.get(url, headers=headers, params=query)
+        resp = self.session.get(url, headers=headers, params=params)
 
         if not resp.ok:
             if resp.status_code == httplib.NOT_FOUND:
