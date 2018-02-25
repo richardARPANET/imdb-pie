@@ -4,21 +4,16 @@ from __future__ import absolute_import, unicode_literals
 import re
 import json
 import tempfile
-import time
-import random
 import logging
-import datetime
-import warnings
 
 import requests
-from requests.exceptions import HTTPError
 from six import text_type
 from six.moves import http_client as httplib
 from six.moves.urllib.parse import (
-    urlencode, quote, quote_plus, unquote, urlparse
+    urlencode, urljoin, quote, unquote, urlparse
 )
 
-from .constants import BASE_URI, HOST, SEARCH_BASE_URI
+from .constants import BASE_URI, SEARCH_BASE_URI
 from .auth import Auth
 from .exceptions import ImdbAPIError
 
@@ -176,6 +171,18 @@ class Imdb(Auth):
             raise ValueError('exclude_episodes is current set to true')
         return self._get_resource('/title/{0}/episodes'.format(imdb_id))
 
+    def get_title_tv_episodes(self, imdb_id, end=500, region='XX', season=0, start=0):
+        logger.info('getting title {0} tv episodes'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        query = {
+            "end": end,
+            "region": region,
+            "season": season,
+            "start": start,
+            "tconst": imdb_id
+        }
+        return self._get(urljoin(BASE_URI, '/template/imdb-ios-writable/tv-episodes-v2.jstl/render'), query)
+
     def _parse_dirty_json(self, data, query=None):
         if query is None:
             match_json_within_dirty_json = r'imdb\$.+\({1}(.+)\){1}'
@@ -221,9 +228,11 @@ class Imdb(Auth):
 
     def _get(self, url, query=None):
         path = urlparse(url).path
+        if query:
+            path += '?' + urlencode(query)
         headers = {'Accept-Language': self.locale}
         headers.update(self.get_auth_headers(path))
-        resp = self.session.get(url, headers=headers)
+        resp = self.session.get(url, headers=headers, params=query)
 
         if not resp.ok:
             if resp.status_code == httplib.NOT_FOUND:
