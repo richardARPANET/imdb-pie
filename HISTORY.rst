@@ -3,10 +3,16 @@
 Release History
 ---------------
 
-5.2.1 (unreleased)
+5.3.0 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Adds ``get_title_plot_taglines`` method.
+- Adds ``get_title_news`` method.
+- Adds ``get_title_trivia`` method.
+- Adds ``get_title_soundtracks`` method.
+- Adds ``get_title_goofs`` method.
+- Adds ``get_title_technical`` method.
+- Adds ``get_title_companies`` method.
 
 
 5.2.0 (2018-01-11)
