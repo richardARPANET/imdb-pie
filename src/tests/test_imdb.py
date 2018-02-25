@@ -399,7 +399,7 @@ def test_get_title_technical(client):
 
 
 def test_get_title_companies(client):
-    expected_keys = ['companies']
+    expected_keys = ['specialEffects', 'miscellaneous', 'id', 'production', 'distribution', '@type']
 
     resource = client.get_title_companies('tt0303461')
 
