@@ -61,7 +61,7 @@ class Imdb(Auth):
 
     def __getattr__(self, method_name):
         if method_name not in _SIMPLE_GET_ENDPOINTS:
-            return super().__getattr__(method_name)
+            return super(Imdb).__getattr__(method_name)
         return self._simple_get_method(
             method=method_name, path=_SIMPLE_GET_ENDPOINTS[method_name]
         )
@@ -198,6 +198,7 @@ class Imdb(Auth):
         return self._get(urljoin(
             BASE_URI, '/template/imdb-ios-writable/tv-episodes-v2.jstl/render'
         ), params=params)
+
     @staticmethod
     def _parse_dirty_json(data, query=None):
         if query is None:
