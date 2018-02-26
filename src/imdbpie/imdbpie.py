@@ -171,8 +171,19 @@ class Imdb(Auth):
             raise ValueError('exclude_episodes is current set to true')
         return self._get_resource('/title/{0}/episodes'.format(imdb_id))
 
-    def get_title_tv_episodes(self, imdb_id, end=500, region=None,
-                              season=0, start=0):
+    def get_title_episodes_detailed(self, imdb_id, end=500, region=None,
+                                    season=0, start=0):
+        """
+        Request detailed information for a tv series, for a specific season.
+
+        :param imdb_id: The imdb id including the TT prefix.
+        :param end: Limit the amound of episodes returned for a season.
+        :param region: Two capital letter region code in ISO 3166-1 alpha-2.
+        :param season: The season you want the detailed episode information for. Note, that it expects to get the
+        season index. As for example, season 1 of a show, should be requested using the index 0.
+        :param start: Start with returning the episodes using the episode index. As for example episode 7 of a show
+        should be requested using the index 6.
+        """
         logger.info('getting title {0} tv episodes'.format(imdb_id))
         self.validate_imdb_id(imdb_id)
         params = {
