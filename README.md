@@ -142,6 +142,13 @@ imdb.get_title_episodes('tt0303461')
 # Returns a dict containing season and episodes information
 ```
 
+#### get_title_episodes_detailed
+
+```python
+imdb.get_title_episodes_detailed(imdb_id='tt0303461', season=1)
+# Returns a dict containing detailed season episodes information
+```
+
 #### get_title_plot
 
 ```python

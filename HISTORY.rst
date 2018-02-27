@@ -13,6 +13,7 @@ Release History
 - Adds ``get_title_goofs`` method.
 - Adds ``get_title_technical`` method.
 - Adds ``get_title_companies`` method.
+- Adds ``get_title_episodes_detailed`` method.
 
 
 5.2.0 (2018-01-11)
