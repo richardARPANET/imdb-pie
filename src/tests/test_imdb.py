@@ -312,6 +312,103 @@ def test_get_title_episodes_raises_imdb_id_is_not_that_of_a_tv_show(client):
         client.get_title_episodes(non_show_imdb_id)
 
 
+@pytest.fixture(scope='module')
+def client():
+    client = Imdb(locale='en_US')
+    yield client
+    client.clear_cached_credentials()
+
+
+@pytest.mark.parametrize('p', [
+    {
+        # firefly
+        'imdb_id': 'tt0303461',
+        'start': 0,
+        'end': 500,
+        'season': 0,
+        'region': None,
+        'expected_episodes_length': 14,
+        'expected_episodes_total': 14,
+        'expected_all_seasons': [1],
+        'expected_keys': [
+            'allSeasons', 'end', 'episodes', 'region', 'season',
+            'seriesTitle', 'start', 'totalEpisodes'
+        ]
+    },
+    {
+        # Naruto shippuuden
+        'imdb_id': 'tt0988824',
+        'start': 0,
+        'end': 50,
+        'season': 0,
+        'region': None,
+        'expected_episodes_length': 50,
+        'expected_episodes_total': 500,
+        'expected_all_seasons': [1, None],
+        'expected_keys': [
+            'allSeasons', 'end', 'episodes', 'region', 'season',
+            'seriesTitle', 'start', 'totalEpisodes'
+        ]
+    },
+    {
+        # Naruto shippuuden
+        'imdb_id': 'tt0988824',
+        'start': 120,
+        'end': 140,
+        'season': 0,
+        'region': None,
+        'expected_episodes_length': 20,
+        'expected_episodes_total': 500,
+        'expected_all_seasons': [1, None],
+        'expected_keys': [
+            'allSeasons', 'end', 'episodes', 'region', 'season',
+            'seriesTitle', 'start', 'totalEpisodes'
+        ]
+    },
+    {
+        # Breaking bad
+        'imdb_id': 'tt0903747',
+        'start': 0,
+        'end': 6,
+        'season': 3,
+        'region': None,
+        'expected_episodes_length': 6,
+        'expected_episodes_total': 13,
+        'expected_all_seasons': [1, 2, 3, 4, 5],
+        'expected_keys': [
+            'allSeasons', 'end', 'episodes', 'region', 'season',
+            'seriesTitle', 'start', 'totalEpisodes'
+        ]
+    },
+    {
+        # Detective conan
+        'imdb_id': 'tt0131179',
+        'start': 0,
+        'end': 500,
+        'season': 45,
+        'region': None,
+        'expected_episodes_length': 4,
+        'expected_episodes_total': 4,
+        'expected_all_seasons': list(range(1, 47)),
+        'expected_keys': [
+            'allSeasons', 'end', 'episodes', 'region', 'season',
+            'seriesTitle', 'start', 'totalEpisodes'
+        ]
+    }
+])
+def test_get_title_episodes_detailed(p, client):
+
+    resource = client.get_title_episodes_detailed(
+        p['imdb_id'], p['end'], region=p['region'],
+        season=p['season'], start=p['start']
+    )
+
+    assert sorted(resource.keys()) == sorted(p['expected_keys'])
+    assert len(resource['episodes']) == p['expected_episodes_length']
+    assert resource['totalEpisodes'] == p['expected_episodes_total']
+    assert resource['allSeasons'] == p['expected_all_seasons']
+
+
 def test_get_name_images(client):
     expected_keys = ['@type', 'images', 'totalImageCount']
 
@@ -346,76 +443,6 @@ def test_get_title_videos(client):
     ]
 
     resource = client.get_title_videos('tt0111161')
-
-    assert sorted(resource.keys()) == sorted(expected_keys)
-
-
-def test_get_title_plot_taglines(client):
-    expected_keys = [
-        '@type', 'id', 'image', 'nextEpisode', 'numberOfEpisodes',
-        'runningTimeInMinutes', 'seriesEndYear', 'seriesStartYear', 'taglines',
-        'title', 'titleType', 'year'
-    ]
-
-    resource = client.get_title_plot_taglines('tt0303461')
-
-    assert sorted(resource.keys()) == sorted(expected_keys)
-
-
-def test_get_title_news(client):
-    expected_keys = [
-        '@type', 'id', 'image', 'items', 'label', 'paginationKey', 'title',
-        'titleType', 'year'
-    ]
-
-    resource = client.get_title_news('tt0303461')
-
-    assert sorted(resource.keys()) == sorted(expected_keys)
-
-
-def test_get_title_trivia(client):
-    expected_keys = ['@type', 'spoilt', 'unspoilt', 'id']
-
-    resource = client.get_title_trivia('tt0303461')
-
-    assert sorted(resource.keys()) == sorted(expected_keys)
-
-
-def test_get_title_soundtracks(client):
-    expected_keys = ['@type', 'base', 'soundtracks']
-
-    resource = client.get_title_soundtracks('tt0303461')
-
-    assert sorted(resource.keys()) == sorted(expected_keys)
-
-
-def test_get_title_goofs(client):
-    expected_keys = ['@type', 'goofs', 'base']
-
-    resource = client.get_title_goofs('tt0303461')
-
-    assert sorted(resource.keys()) == sorted(expected_keys)
-
-
-def test_get_title_technical(client):
-    expected_keys = [
-        '@type', 'aspectRatios', 'cameras', 'colorations', 'id', 'labs',
-        'negativeFormats', 'printedFormats', 'processes', 'soundMixes',
-        'title', 'titleType', 'year'
-    ]
-
-    resource = client.get_title_technical('tt0303461')
-
-    assert sorted(resource.keys()) == sorted(expected_keys)
-
-
-def test_get_title_companies(client):
-    expected_keys = [
-        'specialEffects', 'miscellaneous', 'id', 'production', 'distribution',
-        '@type'
-    ]
-
-    resource = client.get_title_companies('tt0303461')
 
     assert sorted(resource.keys()) == sorted(expected_keys)
 

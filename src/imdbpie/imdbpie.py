@@ -4,21 +4,16 @@ from __future__ import absolute_import, unicode_literals
 import re
 import json
 import tempfile
-import time
-import random
 import logging
-import datetime
-import warnings
 
 import requests
-from requests.exceptions import HTTPError
 from six import text_type
 from six.moves import http_client as httplib
 from six.moves.urllib.parse import (
-    urlencode, quote, quote_plus, unquote, urlparse
+    urlencode, urljoin, quote, unquote, urlparse
 )
 
-from .constants import BASE_URI, HOST, SEARCH_BASE_URI
+from .constants import BASE_URI, SEARCH_BASE_URI
 from .auth import Auth
 from .exceptions import ImdbAPIError
 
@@ -66,7 +61,7 @@ class Imdb(Auth):
 
     def __getattr__(self, method_name):
         if method_name not in _SIMPLE_GET_ENDPOINTS:
-            return super().__getattr__(method_name)
+            return super(Imdb).__getattr__(method_name)
         return self._simple_get_method(
             method=method_name, path=_SIMPLE_GET_ENDPOINTS[method_name]
         )
@@ -176,7 +171,36 @@ class Imdb(Auth):
             raise ValueError('exclude_episodes is current set to true')
         return self._get_resource('/title/{0}/episodes'.format(imdb_id))
 
-    def _parse_dirty_json(self, data, query=None):
+    def get_title_episodes_detailed(self, imdb_id, end=500, region=None,
+                                    season=0, start=0):
+        """
+        Request detailed information for a tv series, for a specific season.
+
+        :param imdb_id: The imdb id including the TT prefix.
+        :param end: Limit the amound of episodes returned for a season.
+        :param region: Two capital letter region code in ISO 3166-1 alpha-2.
+        :param season: The season you want the detailed episode information for. Note, that it expects to get the
+        season index. As for example, season 1 of a show, should be requested using the index 0.
+        :param start: Start with returning the episodes using the episode index. As for example episode 7 of a show
+        should be requested using the index 6.
+        """
+        logger.info('getting title {0} tv episodes'.format(imdb_id))
+        self.validate_imdb_id(imdb_id)
+        params = {
+            "end": end,
+            "season": season,
+            "start": start,
+            "tconst": imdb_id
+        }
+        if region:
+            params.update({'region': region})
+
+        return self._get(urljoin(
+            BASE_URI, '/template/imdb-ios-writable/tv-episodes-v2.jstl/render'
+        ), params=params)
+
+    @staticmethod
+    def _parse_dirty_json(data, query=None):
         if query is None:
             match_json_within_dirty_json = r'imdb\$.+\({1}(.+)\){1}'
         else:
@@ -219,11 +243,13 @@ class Imdb(Auth):
         url = '{0}{1}'.format(BASE_URI, path)
         return self._get(url=url)['resource']
 
-    def _get(self, url, query=None):
+    def _get(self, url, query=None, params=None):
         path = urlparse(url).path
+        if params:
+            path += '?' + urlencode(params)
         headers = {'Accept-Language': self.locale}
         headers.update(self.get_auth_headers(path))
-        resp = self.session.get(url, headers=headers)
+        resp = self.session.get(url, headers=headers, params=params)
 
         if not resp.ok:
             if resp.status_code == httplib.NOT_FOUND:
