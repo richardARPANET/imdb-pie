@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.3.0 (unreleased)
+5.3.0 (2018-02-27)
 ++++++++++++++++++
 
 - Adds ``get_title_plot_taglines`` method.

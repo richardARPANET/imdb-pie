@@ -15,7 +15,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='imdbpie',
-    version='5.2.1.dev0',
+    version='5.3.0',
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
     include_package_data=True,
