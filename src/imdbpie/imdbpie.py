@@ -200,6 +200,24 @@ class Imdb(Auth):
             BASE_URI, '/template/imdb-ios-writable/tv-episodes-v2.jstl/render'
         ), params=params)
 
+    def get_title_top_crew(self, imdb_id):
+        """
+        Request detailed information about for a tv series.
+
+        :param imdb_id: The imdb id including the TT prefix.
+        """
+        logger.info('called get_title_top_crew %s', imdb_id)
+
+        self.validate_imdb_id(imdb_id)
+
+        params = {
+            'tconst': imdb_id,
+        }
+
+        return self._get(urljoin(
+            BASE_URI, '/template/imdb-android-writable/7.3.top-crew.jstl/render'
+        ), params=params)
+
     @staticmethod
     def _parse_dirty_json(data, query=None):
         if query is None:
