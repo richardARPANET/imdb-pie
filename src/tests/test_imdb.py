@@ -352,6 +352,14 @@ def test_get_title_episodes_detailed(
     assert resource['totalEpisodes'] == exp_episodes_total
     assert resource['allSeasons'] == exp_seasons
 
+def test_get_title_top_crew(client):
+    tv_show_imdb_id = 'tt0303461'
+    expected_keys = ['directors', 'writers']
+
+    resource = client.get_title_top_crew(tv_show_imdb_id)
+
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
 
 def test_get_name_images(client):
     expected_keys = ['@type', 'images', 'totalImageCount']
