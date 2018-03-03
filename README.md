@@ -51,6 +51,7 @@ Example | Description
 `get_title_companies('tt0303461')` | Returns a dict containing information about companies related to title
 `get_title_episodes('tt0303461')` | Returns a dict containing season and episodes information
 `get_title_episodes_detailed(imdb_id='tt0303461', season=1)` | Returns a dict containing detailed season episodes information
+`get_title_top_crew('tt0303461')` | Returns a dict containing detailed information about title's top crew (ie: directors, writters, etc.)
 `get_title_plot('tt0111161')` | Returns a dict containing title plot information
 `get_title_plot_synopsis('tt0111161')` | Returns a dict containing title plot synopsis information
 `get_title_awards('tt0111161')` |Returns a dict containing title plot information
