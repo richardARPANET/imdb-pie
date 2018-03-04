@@ -202,7 +202,7 @@ class Imdb(Auth):
 
     def get_title_top_crew(self, imdb_id):
         """
-        Request detailed information about for a tv series.
+        Request detailed information about title's top crew (ie: directors, writters, etc.).
 
         :param imdb_id: The imdb id including the TT prefix.
         """
