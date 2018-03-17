@@ -80,9 +80,6 @@ class Auth(object):
 
     def __init__(self, creds=None):
         self._cachedir = tempfile.gettempdir()
-    
-    def __getattr__(self, item):
-        raise AttributeError(item)
 
     def _get_creds(self):
         with diskcache.Cache(directory=self._cachedir) as cache:
