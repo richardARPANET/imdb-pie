@@ -3,10 +3,11 @@
 Release History
 ---------------
 
-5.3.1 (unreleased)
+5.4.0 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Bugfix for some client methods raising AttributeError.
+- Adds ``get_title_top_crew`` method.
 
 
 5.3.0 (2018-02-27)
