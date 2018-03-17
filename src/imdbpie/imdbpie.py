@@ -60,11 +60,16 @@ class Imdb(Auth):
         self._cachedir = tempfile.gettempdir()
 
     def __getattr__(self, method_name):
-        if method_name not in _SIMPLE_GET_ENDPOINTS:
-            return super(Imdb, self).__getattr__(method_name)
-        return self._simple_get_method(
-            method=method_name, path=_SIMPLE_GET_ENDPOINTS[method_name]
-        )
+        if method_name in _SIMPLE_GET_ENDPOINTS:
+            return self._simple_get_method(
+                method=method_name, path=_SIMPLE_GET_ENDPOINTS[method_name]
+            )
+        else:
+            msg = '{obj!r} object has no attribute {name!r}'.format(
+                obj=self.__class__.__name__,
+                name=method_name,
+            )
+            raise AttributeError(msg)
 
     def get_title(self, imdb_id):
         logger.info('called get_title %s', imdb_id)
