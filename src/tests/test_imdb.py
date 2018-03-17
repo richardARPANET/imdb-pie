@@ -143,7 +143,7 @@ def test_get_popular_shows(client):
 def test_get_popular_movies(client):
     expected_keys = ['@type', 'id', 'ranks']
 
-    resource = client.get_popular_shows()
+    resource = client.get_popular_movies()
 
     assert sorted(resource.keys()) == sorted(expected_keys)
 
