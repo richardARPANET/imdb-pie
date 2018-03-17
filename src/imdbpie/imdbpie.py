@@ -59,15 +59,15 @@ class Imdb(Auth):
         self.session = session or requests.Session()
         self._cachedir = tempfile.gettempdir()
 
-    def __getattr__(self, method_name):
-        if method_name in _SIMPLE_GET_ENDPOINTS:
+    def __getattr__(self, name):
+        if name in _SIMPLE_GET_ENDPOINTS:
             return self._simple_get_method(
-                method=method_name, path=_SIMPLE_GET_ENDPOINTS[method_name]
+                method=name, path=_SIMPLE_GET_ENDPOINTS[name]
             )
         else:
             msg = '{obj!r} object has no attribute {name!r}'.format(
                 obj=self.__class__.__name__,
-                name=method_name,
+                name=name,
             )
             raise AttributeError(msg)
 
