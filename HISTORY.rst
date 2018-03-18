@@ -6,7 +6,7 @@ Release History
 5.4.0 (unreleased)
 ++++++++++++++++++
 
-- Bugfix for some client methods raising AttributeError.
+- Bugfix for incorrect AttributeError message showing when undefined attrs called on client class.
 - Adds ``get_title_top_crew`` method.
 
 
