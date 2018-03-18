@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.4.0 (unreleased)
+5.4.0 (2018-03-18)
 ++++++++++++++++++
 
 - Bugfix for incorrect AttributeError message showing when undefined attrs called on client class.
