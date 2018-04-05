@@ -1,6 +1,6 @@
 # Release History
 
-5.4.2 (unreleased)
+5.4.2 (2018-04-05)
 ------------------
 
 - Fixes missing setuptools dependency for pypi display of markdown formatted files.
