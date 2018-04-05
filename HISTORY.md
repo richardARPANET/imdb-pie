@@ -1,5 +1,11 @@
 # Release History
 
+5.4.2 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
 5.4.1 (2018-04-05)
 
 -   Packaging documentation fixes.
