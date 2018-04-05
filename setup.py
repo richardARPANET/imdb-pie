@@ -13,6 +13,12 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 with open('requirements.txt') as f:
     install_requires = f.read().splitlines()
 
+with open('README.md', 'r') as rm_file:
+    readme = rm_file.read()
+
+with open('HISTORY.md', 'r') as hist_file:
+    history = hist_file.read()
+
 setup(
     name='imdbpie',
     version='5.4.1.dev0',
@@ -27,7 +33,8 @@ setup(
     author='Richard O\'Dwyer',
     author_email='richard@richard.do',
     license='Creative Commons Attribution-Noncommercial-Share Alike license',
-    long_description='https://github.com/richardasaurus/imdb-pie',
+    long_description=readme + '\n\n' + history,
+    long_description_content_type='text/markdown',
     install_requires=install_requires,
     classifiers=[
         'Intended Audience :: Developers',
