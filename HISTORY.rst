@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.4.3 (unreleased)
+5.4.3 (2018-04-05)
 ++++++++++++++++++
 
 - Updates license.
