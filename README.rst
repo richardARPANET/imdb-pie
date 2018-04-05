@@ -36,8 +36,7 @@ Available methods
 ~~~~~~~~~~~~~~~~~
 
 NOTE: For each client method, if the resource cannot be found they will
-raise ``LookupError``, if there is an API error then ``ImdbAPIError``
-will raise.
+raise ``LookupError``, for any other API status codes > 399 the client will raise ``ImdbAPIError``.
 
 +----------------------------------------------------------------+-----------------------------------+
 | Example                                                        | Description                       |
