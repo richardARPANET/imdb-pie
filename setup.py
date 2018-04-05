@@ -21,7 +21,7 @@ with open('HISTORY.rst', 'r', encoding='utf-8') as hist_file:
 
 setup(
     name='imdbpie',
-    version='5.4.3',
+    version='5.4.4.dev0',
     packages=find_packages('src', exclude=('tests',)),
     package_dir={'': 'src'},
     include_package_data=True,
