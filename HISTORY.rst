@@ -3,10 +3,22 @@
 Release History
 ---------------
 
-5.4.1 (unreleased)
+5.4.3 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Updates license.
+
+
+5.4.2 (2018-04-05)
+++++++++++++++++++
+
+- Fixes missing setuptools dependency for pypi display of markdown formatted files.
+
+
+5.4.1 (2018-04-05)
+++++++++++++++++++
+
+-   Packaging documentation fixes.
 
 
 5.4.0 (2018-03-18)

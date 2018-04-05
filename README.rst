@@ -3,8 +3,7 @@ ImdbPie
 
 |PyPI| |Python Versions| |Build Status|
 
-Python IMDB client using the IMDB json web service made available for
-their iOS app.
+Python IMDB client using the IMDB JSON web service made available for their iOS application.
 
 API Terminology
 ---------------
