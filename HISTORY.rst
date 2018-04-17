@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.4.4 (unreleased)
+5.4.4 (2018-04-17)
 ++++++++++++++++++
 
 - Python 2.x setup.py bugfix.
