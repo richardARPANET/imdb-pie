@@ -7,6 +7,8 @@ Release History
 ++++++++++++++++++
 
 - Python 2.x setup.py bugfix.
+- Bugfix for ``title_exists`` method returning ``None``.
+- Bugfix for ``get_title`` raising an incorrect exception when redirection title.
 
 
 5.4.3 (2018-04-05)
