@@ -49,7 +49,7 @@ raise ``LookupError``, for any other API status codes > 399 the client will rais
 | ``search_for_name("Christian Bale")``                          | Returns a dict of results         |
 |                                                                |                                   |
 +----------------------------------------------------------------+-----------------------------------+
-| ``title_exits('tt0111161')``                                   | Returns True if exists otherwise  |
+| ``title_exists('tt0111161')``                                  | Returns True if exists otherwise  |
 |                                                                | False                             |
 +----------------------------------------------------------------+-----------------------------------+
 | ``get_title_genres('tt0303461')``                              | Returns a dict containing title   |
