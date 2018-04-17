@@ -6,7 +6,7 @@ Release History
 5.4.4 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Python 2.x setup.py bugfix.
 
 
 5.4.3 (2018-04-05)
