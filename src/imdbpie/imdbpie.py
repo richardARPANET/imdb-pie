@@ -103,9 +103,9 @@ class Imdb(Auth):
 
     def title_exists(self, imdb_id):
         self.validate_imdb_id(imdb_id)
-        page_url = 'http://www.imdb.com/title/{0}/'.format(imdb_id)
+        page_url = 'https://www.imdb.com/title/{0}/'.format(imdb_id)
 
-        response = self.session.head(page_url)
+        response = self.session.get(page_url, allow_redirects=False)
 
         if response.status_code == httplib.OK:
             return True
@@ -298,8 +298,8 @@ class Imdb(Auth):
 
     def is_redirection_title(self, imdb_id):
         self.validate_imdb_id(imdb_id)
-        page_url = 'http://www.imdb.com/title/{0}/'.format(imdb_id)
-        response = self.session.head(page_url)
+        page_url = 'https://www.imdb.com/title/{0}/'.format(imdb_id)
+        response = self.session.get(page_url, allow_redirects=False)
         if response.status_code == httplib.MOVED_PERMANENTLY:
             return True
         else:
