@@ -176,5 +176,5 @@ Running the tests
    :target: https://pypi.python.org/pypi/imdb-pie
 .. |Python Versions| image:: https://img.shields.io/pypi/pyversions/imdbpie.svg
    :target: https://pypi.python.org/pypi/imdb-pie
-.. |Build Status| image:: https://travis-ci.org/richardasaurus/imdb-pie.png?branch=master
-   :target: https://travis-ci.org/richardasaurus/imdb-pie
+.. |Build Status| image:: https://travis-ci.org/richardarpanet/imdb-pie.png?branch=master
+   :target: https://travis-ci.org/richardarpanet/imdb-pie
