@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.4.5 (unreleased)
+5.4.5 (2018-04-29)
 ++++++++++++++++++
 
 - Packaging documentation updates.
