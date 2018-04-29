@@ -1,4 +1,4 @@
-**NOTICE**: If you're reading this on GitHub.com please be aware this is a mirror of the primary remote located at https://code.richard.do/explore/projects.
+**NOTICE**: If you're reading this on GitHub.com please be aware this is a mirror of the primary remote located at https://code.richard.do/richardARPANET/imdb-pie.
 Please direct issues and pull requests there.
 
 ImdbPie
