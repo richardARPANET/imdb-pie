@@ -6,7 +6,7 @@ Release History
 5.4.5 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Packaging documentation updates.
 
 
 5.4.4 (2018-04-17)

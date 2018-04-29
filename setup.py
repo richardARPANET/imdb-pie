@@ -33,6 +33,7 @@ setup(
     ),
     author='Richard O\'Dwyer',
     author_email='richard@richard.do',
+    url='https://code.richard.do/richardARPANET/imdb-pie/',
     license='Apache 2.0',
     long_description=readme + '\n\n' + history,
     install_requires=install_requires,
