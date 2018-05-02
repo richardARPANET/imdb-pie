@@ -46,6 +46,7 @@ _SIMPLE_GET_ENDPOINTS = {
     'get_title_awards': '/title/{imdb_id}/awards',
     'get_title_ratings': '/title/{imdb_id}/ratings',
     'get_title_credits': '/title/{imdb_id}/fullcredits',
+    'get_title_certification': '/title/{imdb_id}/certification',
     'get_name': '/name/{imdb_id}/fulldetails',
     'get_name_filmography': '/name/{imdb_id}/filmography',
 }
@@ -90,6 +91,22 @@ class Imdb(Auth):
                 'Title not found. Title was an episode and '
                 '"exclude_episodes" is set to true'
             )
+        return resource
+
+    def get_title_auxiliary(self, imdb_id):
+        logger.info('called get_title_auxiliary %s', imdb_id)
+        url = (
+            '/template/imdb-ios-writable/title-auxiliary-v31.jstl'
+            '/render?inlineBannerAdWeblabOn=false&minwidth=320'
+            f'&osVersion=11.3.0&region=GB&tconst={imdb_id}&today=2018-05-06'
+        )
+        self.validate_imdb_id(imdb_id)
+        self._redirection_title_check(imdb_id)
+        try:
+            resource = self._get_resource(url)
+        except LookupError:
+            self._title_not_found()
+        # TODO: exclude eps check
         return resource
 
     def _simple_get_method(self, method, path):

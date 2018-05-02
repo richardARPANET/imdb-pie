@@ -215,6 +215,14 @@ def test_get_title_releases(client):
     assert sorted(resource.keys()) == sorted(expected_keys)
 
 
+def test_get_title_auxiliary(client):
+    imdb_id = 'tt0111161'
+
+    resource = client.get_title_auxiliary(imdb_id)
+
+    assert resource
+
+
 def test_get_title_versions(client):
     imdb_id = 'tt0111161'
     expected_keys = [

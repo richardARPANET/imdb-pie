@@ -106,7 +106,7 @@ raise ``LookupError``, for any other API status codes > 399 the client will rais
 | ``get_title_top_crew('tt0303461')``                            | Returns a dict containing         |
 |                                                                | detailed information about        |
 |                                                                | title’s top crew (ie: directors,  |
-|                                                                | writters, etc.)                   |
+|                                                                | writers, etc.)                   |
 +----------------------------------------------------------------+-----------------------------------+
 | ``get_title_plot('tt0111161')``                                | Returns a dict containing title   |
 |                                                                | plot information                  |
