@@ -3,10 +3,10 @@
 Release History
 ---------------
 
-5.4.6 (unreleased)
+5.5.9 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Adds ``get_title_auxiliary`` method.
 
 
 5.4.5 (2018-04-29)

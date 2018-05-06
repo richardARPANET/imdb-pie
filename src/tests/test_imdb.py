@@ -217,10 +217,30 @@ def test_get_title_releases(client):
 
 def test_get_title_auxiliary(client):
     imdb_id = 'tt0111161'
+    expected_keys = [
+        'certificate', 'filmingLocations', 'metacriticInfo', 'plot',
+        'principals', 'rating', 'numberOfVotes', 'canRate', 'topRank',
+        'userRating', 'alternateTitlesSample', 'alternateTitlesCount',
+        'hasAlternateVersions', 'originalTitle', 'runningTimes',
+        'spokenLanguages', 'origins', 'similaritiesCount', 'releaseDetails',
+        'soundtracks', 'genres', 'reviewsTeaser', 'reviewsCount',
+        'hasContentGuide', 'hasSynopsis', 'hasCriticsReviews',
+        'criticsReviewers', 'crazyCreditsTeaser', 'awards', 'photos',
+        'heroImages', 'seasonsInfo', 'productionStatus', 'directors',
+        'writers', 'videos', 'adWidgets', 'id', 'image',
+        'runningTimeInMinutes', 'title', 'titleType', 'year'
+    ]
 
     resource = client.get_title_auxiliary(imdb_id)
 
-    assert resource
+    assert sorted(resource.keys()) == sorted(expected_keys)
+
+
+def test_get_title_auxiliary_raises_when_exclude_episodes_enabled():
+    client = Imdb(exclude_episodes=True)
+    episode_imdb_id = 'tt3181538'
+    with pytest.raises(LookupError):
+        client.get_title_auxiliary(episode_imdb_id)
 
 
 def test_get_title_versions(client):

@@ -3,15 +3,14 @@ from __future__ import absolute_import, unicode_literals
 
 import re
 import json
+from datetime import date
 import tempfile
 import logging
 
 import requests
 from six import text_type
 from six.moves import http_client as httplib
-from six.moves.urllib.parse import (
-    urlencode, urljoin, quote, unquote, urlparse
-)
+from six.moves.urllib.parse import urlencode, urljoin, quote, unquote
 
 from .constants import BASE_URI, SEARCH_BASE_URI
 from .auth import Auth
@@ -56,6 +55,7 @@ class Imdb(Auth):
 
     def __init__(self, locale=None, exclude_episodes=False, session=None):
         self.locale = locale or 'en_US'
+        self.region = self.locale.split('_')[-1]
         self.exclude_episodes = exclude_episodes
         self.session = session or requests.Session()
         self._cachedir = tempfile.gettempdir()
@@ -95,18 +95,32 @@ class Imdb(Auth):
 
     def get_title_auxiliary(self, imdb_id):
         logger.info('called get_title_auxiliary %s', imdb_id)
-        url = (
-            '/template/imdb-ios-writable/title-auxiliary-v31.jstl'
-            '/render?inlineBannerAdWeblabOn=false&minwidth=320'
-            f'&osVersion=11.3.0&region=GB&tconst={imdb_id}&today=2018-05-06'
-        )
         self.validate_imdb_id(imdb_id)
         self._redirection_title_check(imdb_id)
+        path = '/template/imdb-ios-writable/title-auxiliary-v31.jstl/render'
         try:
-            resource = self._get_resource(url)
+            resource = self._get(
+                url=urljoin(BASE_URI, path),
+                params={
+                    'inlineBannerAdWeblabOn': 'false',
+                    'minwidth': '320',
+                    'osVersion': '11.3.0',
+                    'region': self.region,
+                    'tconst': imdb_id,
+                    'today': date.today().strftime('%Y-%m-%d'),
+                }
+            )
         except LookupError:
             self._title_not_found()
-        # TODO: exclude eps check
+
+        if (
+            self.exclude_episodes is True and
+            resource['titleType'] == 'tvEpisode'
+        ):
+            raise LookupError(
+                'Title not found. Title was an episode and '
+                '"exclude_episodes" is set to true'
+            )
         return resource
 
     def _simple_get_method(self, method, path):
@@ -282,16 +296,17 @@ class Imdb(Auth):
         return self._get(url=url)['resource']
 
     def _get(self, url, query=None, params=None):
-        path = urlparse(url).path
-        if params:
-            path += '?' + urlencode(params)
         headers = {'Accept-Language': self.locale}
-        headers.update(self.get_auth_headers(path))
+        if params:
+            full_url = '{0}?{1}'.format(url, urlencode(params))
+        else:
+            full_url = url
+        headers.update(self.get_auth_headers(full_url))
         resp = self.session.get(url, headers=headers, params=params)
 
         if not resp.ok:
             if resp.status_code == httplib.NOT_FOUND:
-                raise LookupError('Resource {0} not found'.format(path))
+                raise LookupError('Resource {0} not found'.format(url))
             else:
                 msg = '{0} {1}'.format(resp.status_code, resp.text)
                 raise ImdbAPIError(msg)
