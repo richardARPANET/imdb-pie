@@ -1,28 +1,40 @@
 before_script:
+  # Install pyenv
   - apt-get update
   - apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev
-  - pip install tox
   - git clone https://github.com/pyenv/pyenv.git ~/.pyenv
   - export PYENV_ROOT="$HOME/.pyenv"
   - export PATH="$PYENV_ROOT/bin:$PATH"
+  - eval "$(pyenv init -)"
+  # Install tox
+  - pip install tox
+
+test:python26:
+  script:
+  - pyenv install 2.6.9
+  - pyenv shell 2.6.9
+  - tox -e py26-normal
+
+test:python27:
+  script:
+  - pyenv install 2.7.14
+  - pyenv shell 2.7.14
+  - tox -e py27-normal
+
+test:python34:
+  script:
+  - pyenv install 3.4.7
+  - pyenv shell 3.4.7
+  - tox -e py34-normal
 
 test:python35:
   script:
   - pyenv install 3.5.4
-  - eval "$(pyenv init -)"
   - pyenv shell 3.5.4
   - tox -e py35-normal
 
 test:python36:
   script:
   - pyenv install 3.6.4
-  - eval "$(pyenv init -)"
   - pyenv shell 3.6.4
   - tox -e py36-normal
-
-test:python34:
-  script:
-  - pyenv install 3.4.7
-  - eval "$(pyenv init -)"
-  - pyenv shell 3.4.7
-  - tox -e py34-normal

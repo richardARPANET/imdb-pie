@@ -45,7 +45,6 @@ _SIMPLE_GET_ENDPOINTS = {
     'get_title_awards': '/title/{imdb_id}/awards',
     'get_title_ratings': '/title/{imdb_id}/ratings',
     'get_title_credits': '/title/{imdb_id}/fullcredits',
-    'get_title_certification': '/title/{imdb_id}/certification',
     'get_name': '/name/{imdb_id}/fulldetails',
     'get_name_filmography': '/name/{imdb_id}/filmography',
 }
@@ -55,7 +54,7 @@ class Imdb(Auth):
 
     def __init__(self, locale=None, exclude_episodes=False, session=None):
         self.locale = locale or 'en_US'
-        self.region = self.locale.split('_')[-1]
+        self.region = self.locale.split('_')[-1].upper()
         self.exclude_episodes = exclude_episodes
         self.session = session or requests.Session()
         self._cachedir = tempfile.gettempdir()
@@ -115,7 +114,7 @@ class Imdb(Auth):
 
         if (
             self.exclude_episodes is True and
-            resource['titleType'] == 'tvEpisode'
+            resource['titleType'].lower() == 'tvepisode'
         ):
             raise LookupError(
                 'Title not found. Title was an episode and '
