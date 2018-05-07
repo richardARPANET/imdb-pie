@@ -1,14 +1,13 @@
 from collections.abc import Sequence
-from datetime import date
 
-from dataclasses import dataclass
+import attr
 
 
-@dataclass
+@attr.s
 class Image:
-    url: str
-    width: int
-    height: int
+    url = attr.ib()
+    width = attr.ib()
+    height = attr.ib()
 
 
 class TitleEpisodes(Sequence):
@@ -33,79 +32,72 @@ class TitleEpisodes(Sequence):
 
     def __getitem__(self, index):
         imdb_id = self._episode_imdb_ids[index]
-        return self._facade.get_title_episode(imdb_id=imdb_id)
+        return self._facade.get_title(imdb_id=imdb_id)
 
 
-@dataclass
+@attr.s
 class Title:
-    imdb_id: str
-    title: str
-    type: str
-    certification: str
-    year: int
-    genres: tuple
-    writers: tuple
-    creators: tuple
-    credits: tuple
-    directors: tuple
-    stars: tuple
-    image: Image
-    episodes: TitleEpisodes
-    rating_count: int = 0
-    rating: float = None
-    plot_outline: str = None
-    release_date: date = None
-    releases: tuple = ()
+    imdb_id = attr.ib()
+    title = attr.ib()
+    type = attr.ib()
+    certification = attr.ib()
+    year = attr.ib()
+    genres = attr.ib()
+    writers = attr.ib()
+    creators = attr.ib()
+    credits = attr.ib()
+    directors = attr.ib()
+    stars = attr.ib()
+    image = attr.ib()
+    episodes = attr.ib()
+    rating_count = attr.ib(default=0)
+    releases = attr.ib(default=())
+    season = attr.ib(default=None)
+    episode = attr.ib(default=None)
+    rating = attr.ib(default=None)
+    plot_outline = attr.ib(default=None)
+    release_date = attr.ib(default=None)
 
     def __repr__(self):
         return 'Title(imdb_id={0}, title={1})'.format(self.imdb_id, self.title)
 
 
-@dataclass
-class TitleEpisode:
-    imdb_id: str
-    title: str
-    type: str
-    season: int
-    episode: int
-    certification: str
-    year: int
-    genres: tuple
-    writers: tuple
-    creators: tuple
-    credits: tuple
-    directors: tuple
-    stars: tuple
-    image: Image
-    rating_count: int = 0
-    rating: float = None
-    plot_outline: str = None
-    release_date: date = None
-    releases: tuple = ()
+@attr.s
+class TitleSearchResult:
+    imdb_id = attr.ib()
+    title = attr.ib()
+    type = attr.ib()
+    year = attr.ib()
 
 
-@dataclass
+@attr.s
+class NameSearchResult:
+    imdb_id = attr.ib()
+    name = attr.ib()
+
+
+@attr.s
 class TitleRelease:
-    date: date
-    region: str
+    date = attr.ib()
+    region = attr.ib()
 
 
-@dataclass
+@attr.s
 class TitleName:
-    name: str
-    category: str
-    imdb_id: str
-    job: str = None
-    characters: tuple = ()
+    name = attr.ib()
+    category = attr.ib()
+    imdb_id = attr.ib()
+    job = attr.ib(default=None)
+    characters = attr.ib(default=())
 
 
-@dataclass
+@attr.s
 class Name:
-    name: str
-    imdb_id: str
-    image: Image
-    birth_place: str
-    gender: str
-    bios: tuple
-    date_of_birth: date
-    filmography: tuple
+    name = attr.ib()
+    imdb_id = attr.ib()
+    image = attr.ib()
+    birth_place = attr.ib()
+    gender = attr.ib()
+    bios = attr.ib()
+    date_of_birth = attr.ib()
+    filmography = attr.ib()

@@ -1,9 +1,14 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
+
 import re
 
 from dateutil.parser import parse
 
+from .imdbpie import Imdb
 from .objects import (
-    Title, TitleEpisode, TitleEpisodes, Name, TitleName, Image, TitleRelease
+    Title, TitleEpisodes, Name, TitleName, Image, TitleRelease,
+    TitleSearchResult, NameSearchResult,
 )
 
 REGEX_IMDB_ID = re.compile(r'([a-zA-Z]{2}[0-9]{7})')
@@ -11,26 +16,24 @@ REGEX_IMDB_ID = re.compile(r'([a-zA-Z]{2}[0-9]{7})')
 
 class ImdbFacade(object):
 
-    def __init__(self, client):
-        self._client = client
+    def __init__(self, client=None):
+        self._client = client or Imdb()
 
     def get_title(self, imdb_id):
-        title_data, _ = self._get_title_data(imdb_id=imdb_id)
+        title_data, title_aux_data = self._get_title_data(imdb_id=imdb_id)
         try:
             episodes = TitleEpisodes(facade=self, imdb_id=imdb_id)
         except LookupError:
             episodes = ()
-        return Title(episodes=episodes, **title_data)
-
-    def get_title_episode(self, imdb_id):
-        title_data, title_aux_data = self._get_title_data(imdb_id=imdb_id)
         try:
             season = title_aux_data['season']
             episode = title_aux_data['episode']
         except KeyError:
             season = None
             episode = None
-        return TitleEpisode(season=season, episode=episode, **title_data)
+        return Title(
+            season=season, episode=episode, episodes=episodes, **title_data
+        )
 
     def get_name(self, imdb_id):
         name_data = self._client.get_name(imdb_id=imdb_id)
@@ -64,6 +67,29 @@ class ImdbFacade(object):
             gender=gender, birth_place=birth_place, bios=bios, image=image,
             filmography=filmography,
         )
+
+    def search_for_name(self, query):
+        results = []
+        for result in self._client.search_for_name(query):
+            result = NameSearchResult(
+                imdb_id=result['imdb_id'], name=result['name'],
+            )
+            results.append(result)
+        return tuple(results)
+
+    def search_for_title(self, query):
+        results = []
+        for result in self._client.search_for_title(query):
+            if result['year']:
+                year = int(result['year'])
+            else:
+                year = None
+            result = TitleSearchResult(
+                imdb_id=result['imdb_id'], title=result['title'],
+                type=result['type'], year=year,
+            )
+            results.append(result)
+        return tuple(results)
 
     def _get_writers(self, top_crew_data):
         return tuple(

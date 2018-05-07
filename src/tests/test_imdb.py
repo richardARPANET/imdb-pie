@@ -89,6 +89,11 @@ def test_search_for_title_searching_title(client):
     assert expected_top_results == results[:2]
 
 
+def test_search_for_title_returns_no_results_if_name_query(client):
+    results = client.search_for_title('Grigoriy Dobrygin')
+    assert len(results) == 0
+
+
 @pytest.mark.parametrize('query', [
     'Mission: Impossible',
     'Honey, I Shrunk the Kids',
@@ -116,6 +121,11 @@ def test_search_for_name(client):
     ]
     assert (sorted(expected_results, key=itemgetter('imdb_id')) ==
             sorted(results, key=itemgetter('imdb_id')))
+
+
+def test_search_for_name_returns_no_results_if_title_query(client):
+    results = client.search_for_name('Mission Impossible')
+    assert len(results) == 0
 
 
 def test_search_for_title_no_results(client):

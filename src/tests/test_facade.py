@@ -2,84 +2,86 @@ from datetime import date
 
 import pytest
 
-from imdbpie import Imdb, ImdbFacade
-from imdbpie.objects import TitleEpisode, Title, Name, TitleName
+from imdbpie import ImdbFacade
+from imdbpie.objects import (
+    Title, Name, TitleName, TitleSearchResult, NameSearchResult
+)
 
 
 @pytest.fixture(scope='module')
-def client():
-    client = Imdb(locale='en_US')
-    yield client
-    client.clear_cached_credentials()
+def facade():
+    return ImdbFacade()
 
 
-@pytest.fixture(scope='module')
-def facade(client):
-    return ImdbFacade(client=client)
+class TestGetTitle(object):
 
+    def test_tv_show(self, facade):
+        tv_show_imdb_id = 'tt0096697'
+        title = facade.get_title(imdb_id=tv_show_imdb_id)
 
-def test_get_title_tv_show(facade):
-    tv_show_imdb_id = 'tt0096697'
-    title = facade.get_title(imdb_id=tv_show_imdb_id)
+        assert isinstance(title, Title)
+        _check_title(title=title, facade=facade)
+        assert title.type == 'tvseries'
 
-    assert isinstance(title, Title)
-    _check_title(title=title, facade=facade)
-    assert title.type == 'tvseries'
+        num_checked = 0
+        for episode in title.episodes:
+            assert isinstance(episode, Title)
+            assert episode.imdb_id
+            assert isinstance(episode.season, int)
+            assert isinstance(episode.episode, int)
+            _check_title(title=episode, facade=facade)
+            num_checked += 1
+            if num_checked > 5:
+                break
 
-    assert str(title) == 'Title(imdb_id=tt0096697, title=The Simpsons)'
+        # Sequence operations
+        assert title.episodes[0].season == 1
+        assert title.episodes[0].episode == 1
+        assert title.episodes
+        assert len(title.episodes)
+        assert title.episodes[-1].imdb_id
+        assert title.episodes[10].imdb_id
 
-    num_checked = 0
-    for episode in title.episodes:
-        assert isinstance(episode, TitleEpisode)
-        assert episode.imdb_id
-        assert isinstance(episode.season, int)
-        assert isinstance(episode.episode, int)
-        _check_title(title=episode, facade=facade)
-        num_checked += 1
-        if num_checked > 5:
-            break
+    def test_movie(self, facade):
+        tv_show_imdb_id = 'tt0468569'
+        title = facade.get_title(imdb_id=tv_show_imdb_id)
+        assert isinstance(title, Title)
+        _check_title(title=title, facade=facade)
+        assert title.type == 'movie'
+        assert len(title.episodes) == 0
 
-    # Sequence operations
-    assert title.episodes[0].season == 1
-    assert title.episodes[0].episode == 1
-    assert title.episodes
-    assert len(title.episodes)
-    assert title.episodes[-1].imdb_id
-    assert title.episodes[10].imdb_id
+    @pytest.mark.parametrize('imdb_id', [
+        'tt0795176',
+        'tt7983794',
+    ])
+    def test_get_title_documentary(self, facade, imdb_id):
+        title = facade.get_title(imdb_id=imdb_id)
 
+        assert isinstance(title, Title)
+        _check_title(title=title, facade=facade)
 
-def test_get_title_movie(facade):
-    tv_show_imdb_id = 'tt0468569'
-    title = facade.get_title(imdb_id=tv_show_imdb_id)
-    assert isinstance(title, Title)
-    _check_title(title=title, facade=facade)
+        assert title.type in ('tvminiseries', 'movie')
 
-    assert title.type == 'movie'
-    assert len(title.episodes) == 0
+        num_checked = 0
+        for episode in title.episodes:
+            assert episode
+            assert episode.imdb_id
+            assert isinstance(episode.season, int)
+            assert isinstance(episode.episode, int)
+            _check_title(title=episode, facade=facade)
+            num_checked += 1
+            if num_checked > 5:
+                break
 
+    def test_tv_episode(self, facade):
+        episode_imdb_id = 'tt4847050'
+        title = facade.get_title(imdb_id=episode_imdb_id)
 
-@pytest.mark.parametrize('imdb_id', [
-    'tt0795176',
-    'tt7983794',
-])
-def test_get_title_documentary(facade, imdb_id):
-    title = facade.get_title(imdb_id=imdb_id)
-
-    assert isinstance(title, Title)
-    _check_title(title=title, facade=facade)
-
-    assert title.type in ('tvminiseries', 'movie')
-
-    num_checked = 0
-    for episode in title.episodes:
-        assert episode
-        assert episode.imdb_id
-        assert isinstance(episode.season, int)
-        assert isinstance(episode.episode, int)
-        _check_title(title=episode, facade=facade)
-        num_checked += 1
-        if num_checked > 5:
-            break
+        assert isinstance(title, Title)
+        assert title.imdb_id == episode_imdb_id
+        assert len(title.episodes) == 0
+        assert isinstance(title.season, int)
+        assert isinstance(title.episode, int)
 
 
 @pytest.mark.parametrize('imdb_id', [
@@ -109,22 +111,26 @@ def test_get_name(facade, imdb_id):
         facade._client.validate_imdb_id(imdb_id)
 
 
-def test_get_title_episode(facade):
-    episode_imdb_id = 'tt4847050'
-    title = facade.get_title_episode(imdb_id=episode_imdb_id)
-
-    assert isinstance(title, TitleEpisode)
-    assert title.imdb_id == episode_imdb_id
-    assert isinstance(title.season, int)
-    assert isinstance(title.episode, int)
-
-
 def test_search_for_name(facade):
-    pass
+    results = facade.search_for_name('Tom Hanks')
+
+    assert results
+    for result in results:
+        assert isinstance(result, NameSearchResult)
+        assert result.imdb_id.startswith('nm')
+        assert isinstance(result.name, str)
 
 
 def test_search_for_title(facade):
-    pass
+    results = facade.search_for_title('The Dark Knight')
+
+    assert results
+    for result in results:
+        assert isinstance(result, TitleSearchResult)
+        assert result.imdb_id.startswith('tt')
+        assert isinstance(result.title, str)
+        if result.year:
+            assert isinstance(result.year, int)
 
 
 def _check_title(title, facade):
