@@ -1,16 +1,14 @@
-from collections.abc import Sequence
-
 import attr
 
 
 @attr.s
-class Image:
+class Image(object):
     url = attr.ib()
     width = attr.ib()
     height = attr.ib()
 
 
-class TitleEpisodes(Sequence):
+class TitleEpisodes(object):
 
     def __init__(self, facade, imdb_id):
         self._facade = facade
@@ -36,7 +34,7 @@ class TitleEpisodes(Sequence):
 
 
 @attr.s
-class Title:
+class Title(object):
     imdb_id = attr.ib()
     title = attr.ib()
     type = attr.ib()
@@ -63,7 +61,7 @@ class Title:
 
 
 @attr.s
-class TitleSearchResult:
+class TitleSearchResult(object):
     imdb_id = attr.ib()
     title = attr.ib()
     type = attr.ib()
@@ -71,19 +69,19 @@ class TitleSearchResult:
 
 
 @attr.s
-class NameSearchResult:
+class NameSearchResult(object):
     imdb_id = attr.ib()
     name = attr.ib()
 
 
 @attr.s
-class TitleRelease:
+class TitleRelease(object):
     date = attr.ib()
     region = attr.ib()
 
 
 @attr.s
-class TitleName:
+class TitleName(object):
     name = attr.ib()
     category = attr.ib()
     imdb_id = attr.ib()
@@ -92,7 +90,7 @@ class TitleName:
 
 
 @attr.s
-class Name:
+class Name(object):
     name = attr.ib()
     imdb_id = attr.ib()
     image = attr.ib()
