@@ -3,10 +3,11 @@
 Release History
 ---------------
 
-5.5.9 (unreleased)
+5.5.0 (unreleased)
 ++++++++++++++++++
 
-- Adds ``get_title_auxiliary`` method.
+- Adds ``get_title_auxiliary`` method to client.
+- Adds `ImdbFacade` facade for API.
 
 
 5.4.5 (2018-04-29)

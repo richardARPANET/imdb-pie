@@ -133,3 +133,6 @@ raise ``LookupError``, for any other API status codes > 399 the client will rais
 | ``get_popular_movies()``                                       | Returns a dict containing popular |
 |                                                                | movies                            |
 +----------------------------------------------------------------+-----------------------------------+
+| ``get_title_auxiliary('tt0111161')``                           | Returns a dict containing         |
+|                                                                | auxiliary title information       |
++----------------------------------------------------------------+-----------------------------------+
