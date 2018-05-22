@@ -1,6 +1,7 @@
 from datetime import date
 
 import pytest
+import six
 
 from imdbpie import ImdbFacade
 from imdbpie.objects import (
@@ -95,17 +96,17 @@ def test_get_name(facade, imdb_id):
 
     assert isinstance(name, Name)
     if name.image:
-        assert isinstance(name.image.url, str)
+        assert isinstance(name.image.url, six.string_types)
         assert isinstance(name.image.width, int)
         assert isinstance(name.image.height, int)
     assert name.imdb_id == imdb_id
     assert isinstance(name.date_of_birth, date)
     assert isinstance(name.bios, tuple)
     assert name.gender in ('male', 'female')
-    assert isinstance(name.birth_place, str)
-    assert isinstance(name.name, str)
+    assert isinstance(name.birth_place, six.string_types)
+    assert isinstance(name.name, six.string_types)
     for bio in name.bios:
-        assert isinstance(bio, str)
+        assert isinstance(bio, six.string_types)
 
     for imdb_id in name.filmography:
         facade._client.validate_imdb_id(imdb_id)
@@ -118,7 +119,7 @@ def test_search_for_name(facade):
     for result in results:
         assert isinstance(result, NameSearchResult)
         assert result.imdb_id.startswith('nm')
-        assert isinstance(result.name, str)
+        assert isinstance(result.name, six.string_types)
 
 
 def test_search_for_title(facade):
@@ -128,79 +129,79 @@ def test_search_for_title(facade):
     for result in results:
         assert isinstance(result, TitleSearchResult)
         assert result.imdb_id.startswith('tt')
-        assert isinstance(result.title, str)
+        assert isinstance(result.title, six.string_types)
         if result.year:
             assert isinstance(result.year, int)
 
 
 def _check_title(title, facade):
-    assert isinstance(title.title, str)
-    assert isinstance(title.type, str)
+    assert isinstance(title.title, six.string_types)
+    assert isinstance(title.type, six.string_types)
     assert isinstance(title.year, int)
     assert isinstance(title.rating_count, int)
     assert isinstance(title.rating, float)
     assert isinstance(title.release_date, date)
     if title.plot_outline:
-        assert isinstance(title.plot_outline, str)
+        assert isinstance(title.plot_outline, six.string_types)
 
     assert title.releases
     for release in title.releases:
         assert isinstance(release.date, date)
-        assert isinstance(release.region, str)
+        assert isinstance(release.region, six.string_types)
 
     assert isinstance(title.writers, tuple)
     for name in title.writers:
         assert isinstance(name, TitleName)
-        assert isinstance(name.name, str)
+        assert isinstance(name.name, six.string_types)
         if name.job is not None:
-            assert isinstance(name.job, str)
-        assert isinstance(name.imdb_id, str)
+            assert isinstance(name.job, six.string_types)
+        assert isinstance(name.imdb_id, six.string_types)
         facade._client.validate_imdb_id(name.imdb_id)
 
     assert isinstance(title.creators, tuple)
     for name in title.creators:
         assert isinstance(name, TitleName)
-        assert isinstance(name.name, str)
+        assert isinstance(name.name, six.string_types)
         assert name.job == 'creator'
-        assert isinstance(name.imdb_id, str)
+        assert isinstance(name.imdb_id, six.string_types)
         facade._client.validate_imdb_id(name.imdb_id)
 
     assert isinstance(title.directors, tuple)
     for name in title.directors:
         assert isinstance(name, TitleName)
-        assert isinstance(name.name, str)
+        assert isinstance(name.name, six.string_types)
         if name.job is not None:
-            assert isinstance(name.job, str)
-        assert isinstance(name.imdb_id, str)
+            assert isinstance(name.job, six.string_types)
+        assert isinstance(name.imdb_id, six.string_types)
         facade._client.validate_imdb_id(name.imdb_id)
 
     assert isinstance(title.credits, tuple)
     for name in title.credits:
         assert isinstance(name, TitleName)
-        assert isinstance(name.name, str)
+        assert isinstance(name.name, six.string_types)
         if name.job is not None:
-            assert isinstance(name.job, str)
-        assert isinstance(name.imdb_id, str)
+            assert isinstance(name.job, six.string_types)
+        assert isinstance(name.imdb_id, six.string_types)
         facade._client.validate_imdb_id(name.imdb_id)
 
     assert isinstance(title.stars, tuple)
     for name in title.stars:
-        assert isinstance(name.name, str)
+        assert isinstance(name.name, six.string_types)
         assert not name.job
         assert isinstance(name.characters, tuple)
         for character_name in name.characters:
-            assert isinstance(character_name, str)
+            assert isinstance(character_name, six.string_types)
         assert name.category
-        assert isinstance(name.imdb_id, str)
+        assert isinstance(name.imdb_id, six.string_types)
         facade._client.validate_imdb_id(name.imdb_id)
 
     assert isinstance(title.genres, tuple)
     for genre in title.genres:
-        assert isinstance(genre, str)
+        assert isinstance(genre, six.string_types)
 
-    assert isinstance(title.certification, str)
+    assert isinstance(title.certification, six.string_types)
 
     assert title.image
-    assert isinstance(title.image.url, str)
+    assert isinstance(title.image.url, six.string_types)
     assert isinstance(title.image.width, int)
     assert isinstance(title.image.height, int)
