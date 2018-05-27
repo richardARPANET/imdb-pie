@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.5.0 (unreleased)
+5.5.0 (2018-05-27)
 ++++++++++++++++++
 
 - Adds ``get_title_auxiliary`` method to client.
