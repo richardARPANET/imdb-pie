@@ -23,6 +23,8 @@ class TestGetTitle(object):
         assert isinstance(title, Title)
         _check_title(title=title, facade=facade)
         assert title.type == 'tvseries'
+        assert isinstance(title.runtime, int)
+        assert title.runtime > 0
 
         num_checked = 0
         for episode in title.episodes:
@@ -50,6 +52,8 @@ class TestGetTitle(object):
         _check_title(title=title, facade=facade)
         assert title.type == 'movie'
         assert len(title.episodes) == 0
+        assert isinstance(title.runtime, int)
+        assert title.runtime > 0
 
     @pytest.mark.parametrize('imdb_id', [
         'tt0795176',
@@ -62,6 +66,8 @@ class TestGetTitle(object):
         _check_title(title=title, facade=facade)
 
         assert title.type in ('tvminiseries', 'movie')
+        assert isinstance(title.runtime, int)
+        assert title.runtime > 0
 
         num_checked = 0
         for episode in title.episodes:
@@ -79,6 +85,8 @@ class TestGetTitle(object):
         title = facade.get_title(imdb_id=episode_imdb_id)
 
         assert isinstance(title, Title)
+        assert isinstance(title.runtime, int)
+        assert title.runtime > 0
         assert title.imdb_id == episode_imdb_id
         assert len(title.episodes) == 0
         assert isinstance(title.season, int)

@@ -3,17 +3,17 @@
 Release History
 ---------------
 
-5.5.1 (unreleased)
+5.6.9 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Adds ``runtime`` attribute to ``ImdbFacade``.
 
 
 5.5.0 (2018-05-27)
 ++++++++++++++++++
 
 - Adds ``get_title_auxiliary`` method to client.
-- Adds `ImdbFacade` facade for API.
+- Adds ``ImdbFacade`` facade for API.
 
 
 5.4.5 (2018-04-29)

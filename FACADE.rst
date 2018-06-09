@@ -30,6 +30,7 @@ Get a title
 Returns a ``Title`` object with the following attributes:
 
 -  certification
+-  runtime
 -  creators
 -  credits
 -  directors
