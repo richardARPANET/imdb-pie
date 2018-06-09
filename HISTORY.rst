@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.6.9 (unreleased)
+5.6.0 (2018-06-09)
 ++++++++++++++++++
 
 - Adds ``runtime`` attribute to ``ImdbFacade``.
