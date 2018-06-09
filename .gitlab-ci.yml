@@ -6,14 +6,10 @@ before_script:
   - export PYENV_ROOT="$HOME/.pyenv"
   - export PATH="$PYENV_ROOT/bin:$PATH"
   - eval "$(pyenv init -)"
+  - export CFLAGS=-I/usr/include/openssl
+  - export LDFLAGS=-L/usr/lib
   # Install tox
   - pip install tox
-
-test:python26:
-  script:
-  - pyenv install 2.6.9
-  - pyenv shell 2.6.9
-  - tox -e py26-normal
 
 test:python27:
   script:
@@ -23,6 +19,7 @@ test:python27:
 
 test:python34:
   script:
+  - apt-get install -y libssl1.0-dev
   - pyenv install 3.4.7
   - pyenv shell 3.4.7
   - tox -e py34-normal
