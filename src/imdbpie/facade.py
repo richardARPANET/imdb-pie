@@ -22,6 +22,10 @@ class ImdbFacade(object):
     def get_title(self, imdb_id):
         title_data, title_aux_data = self._get_title_data(imdb_id=imdb_id)
         try:
+            runtime = title_aux_data['runningTimes'][0]['timeMinutes']
+        except (KeyError, IndexError):
+            runtime = None
+        try:
             episodes = TitleEpisodes(facade=self, imdb_id=imdb_id)
         except LookupError:
             episodes = ()
@@ -32,7 +36,8 @@ class ImdbFacade(object):
             season = None
             episode = None
         return Title(
-            season=season, episode=episode, episodes=episodes, **title_data
+            season=season, episode=episode, episodes=episodes,
+            runtime=runtime, **title_data
         )
 
     def get_name(self, imdb_id):

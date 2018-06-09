@@ -55,6 +55,7 @@ class Title(object):
     rating = attr.ib(default=None)
     plot_outline = attr.ib(default=None)
     release_date = attr.ib(default=None)
+    runtime = attr.ib(default=None)
 
     def __repr__(self):
         return 'Title(imdb_id={0}, title={1})'.format(self.imdb_id, self.title)
