@@ -140,7 +140,7 @@ class ImdbFacade(object):
 
     def _get_credits(self, credits_data):
         credits = []
-        for category in credits_data['credits']:
+        for category in credits_data.get('credits', ()):
             for item in credits_data['credits'][category]:
                 credits.append(TitleName(
                     name=item['name'],

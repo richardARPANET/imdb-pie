@@ -6,7 +6,7 @@ Release History
 5.6.1 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Bugfix for issue in ``ImdbFacade.get_title`` where with titles which no do yet have credits information would cause ``KeyError`` to raise.
 
 
 5.6.0 (2018-06-09)

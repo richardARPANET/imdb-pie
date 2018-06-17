@@ -80,13 +80,16 @@ class TestGetTitle(object):
             if num_checked > 5:
                 break
 
-    def test_tv_episode(self, facade):
-        episode_imdb_id = 'tt4847050'
+    @pytest.mark.parametrize('episode_imdb_id', [
+        'tt4847050',
+        'tt4849022',
+    ])
+    def test_tv_episode(self, facade, episode_imdb_id):
         title = facade.get_title(imdb_id=episode_imdb_id)
 
         assert isinstance(title, Title)
-        assert isinstance(title.runtime, int)
-        assert title.runtime > 0
+
+        assert isinstance(title.runtime, (int, type(None)))
         assert title.imdb_id == episode_imdb_id
         assert len(title.episodes) == 0
         assert isinstance(title.season, int)
