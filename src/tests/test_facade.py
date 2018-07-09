@@ -45,15 +45,20 @@ class TestGetTitle(object):
         assert title.episodes[-1].imdb_id
         assert title.episodes[10].imdb_id
 
-    def test_movie(self, facade):
-        tv_show_imdb_id = 'tt0468569'
-        title = facade.get_title(imdb_id=tv_show_imdb_id)
+    @pytest.mark.parametrize('movie_imdb_id', [
+        'tt0468569',
+        'tt0017587',
+    ])
+    def test_movie(self, facade, movie_imdb_id):
+        title = facade.get_title(imdb_id=movie_imdb_id)
         assert isinstance(title, Title)
         _check_title(title=title, facade=facade)
         assert title.type == 'movie'
+        assert title.imdb_id == movie_imdb_id
         assert len(title.episodes) == 0
-        assert isinstance(title.runtime, int)
-        assert title.runtime > 0
+        assert isinstance(title.runtime, (int, type(None)))
+        if title.runtime is not None:
+            assert title.runtime > 0
 
     @pytest.mark.parametrize('imdb_id', [
         'tt0795176',
@@ -210,9 +215,9 @@ def _check_title(title, facade):
     for genre in title.genres:
         assert isinstance(genre, six.string_types)
 
-    assert isinstance(title.certification, six.string_types)
+    assert isinstance(title.certification, (six.string_types, type(None)))
 
-    assert title.image
-    assert isinstance(title.image.url, six.string_types)
-    assert isinstance(title.image.width, int)
-    assert isinstance(title.image.height, int)
+    if title.image:
+        assert isinstance(title.image.url, six.string_types)
+        assert isinstance(title.image.width, int)
+        assert isinstance(title.image.height, int)
