@@ -6,7 +6,7 @@ Release History
 5.6.2 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Bugfix for issue in ``ImdbFacade.get_title`` where ``TypeError`` would raise if the Title did not have any genres.
 
 
 5.6.1 (2018-06-17)
