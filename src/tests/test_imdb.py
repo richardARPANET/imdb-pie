@@ -369,9 +369,9 @@ def test_get_title_episodes_raises_imdb_id_is_not_that_of_a_tv_show(client):
         ),
         # Detective conan
         (
-            dict(imdb_id='tt0131179', offset=0, limit=500, season=46),
-            4,
-            4,
+            dict(imdb_id='tt0131179', offset=0, limit=500, season=45),
+            18,
+            18,
             list(range(1, 47)),
         ),
     ]
