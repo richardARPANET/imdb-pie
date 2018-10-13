@@ -6,7 +6,7 @@ Release History
 5.6.3 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Bugfix for handing of national characters within search methods.
 
 
 5.6.2 (2018-07-09)

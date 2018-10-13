@@ -106,6 +106,7 @@ def test_search_for_title_returns_no_results_if_name_query(client):
     '[REC]³ Genesis (2012)',
     '¡Three Amigos! (1986)',
     '(Untitled) (2009)',
+    'Æon Flux(2005)',
 ])
 def test_search_for_title_input_with_special_chars(query, client):
     results = client.search_for_title(query)
