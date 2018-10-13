@@ -71,22 +71,14 @@ def test_title_exists_non_existant_title(client):
 
 def test_search_for_title_searching_title(client):
     results = client.search_for_title('Shawshank redemption')
-    expected_top_results = [
-        {
-            'imdb_id': 'tt0111161',
-            'title': 'The Shawshank Redemption',
-            'year': '1994',
-            'type': 'feature',
-        },
-        {
-            'imdb_id': 'tt5443386',
-            'title': 'The Shawshank Redemption: Behind the Scenes',
-            'year': '2004',
-            'type': 'video',
-        },
-    ]
+    expected_result = {
+        'imdb_id': 'tt0111161',
+        'title': 'The Shawshank Redemption',
+        'year': '1994',
+        'type': 'feature',
+    }
     assert len(results) > 0
-    assert expected_top_results == results[:2]
+    assert expected_result in results
 
 
 def test_search_for_title_returns_no_results_if_name_query(client):
@@ -106,6 +98,7 @@ def test_search_for_title_returns_no_results_if_name_query(client):
     '[REC]³ Genesis (2012)',
     '¡Three Amigos! (1986)',
     '(Untitled) (2009)',
+    'Æon Flux(2005)',
 ])
 def test_search_for_title_input_with_special_chars(query, client):
     results = client.search_for_title(query)
@@ -275,7 +268,7 @@ def test_get_title_ratings(client):
 
     resource = client.get_title_ratings(imdb_id)
 
-    assert sorted(resource.keys()) == sorted(expected_keys)
+    assert set(expected_keys).issubset(resource.keys())
 
 
 def test_get_title_quotes(client):
@@ -366,13 +359,6 @@ def test_get_title_episodes_raises_imdb_id_is_not_that_of_a_tv_show(client):
             5,
             13,
             [1, 2, 3, 4, 5],
-        ),
-        # Detective conan
-        (
-            dict(imdb_id='tt0131179', offset=0, limit=500, season=45),
-            18,
-            18,
-            list(range(1, 47)),
         ),
     ]
 )
