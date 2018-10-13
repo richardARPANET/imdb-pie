@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.6.3 (unreleased)
+5.6.3 (2018-10-13)
 ++++++++++++++++++
 
 - Bugfix for handing of national characters within search methods.
