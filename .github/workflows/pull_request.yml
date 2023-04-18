@@ -23,4 +23,5 @@ jobs:
           pip install pip wheel -U
           pip install -r test_requirements.txt
           pip install -e .
+          flake8
           pytest src/tests
