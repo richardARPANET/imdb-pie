@@ -8,9 +8,6 @@ ImdbPie
 
 Python IMDB client using the IMDB JSON web service made available for their iOS application.
 
-NOTICE: If you're reading this on Github.com please be aware this is a mirror of the primary remote located at https://code.richard.do/explore/projects.
-Please direct any issues or pull requests Gitlab.
-
 API Terminology
 ---------------
 
