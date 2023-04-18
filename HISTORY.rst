@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.6.4 (unreleased)
+5.6.4 (2023-04-18)
 ++++++++++++++++++
 
 - Fix for JSON parsing from the API.
