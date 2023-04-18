@@ -1,7 +1,7 @@
 ImdbPie
 =======
 
-|PyPI| |Python Versions| |Build Status|
+|PyPI| |Python Versions|
 
 Python IMDB client using the IMDB JSON web service made available for their iOS application.
 
@@ -49,5 +49,3 @@ Running the tests
    :target: https://pypi.python.org/pypi/imdb-pie
 .. |Python Versions| image:: https://img.shields.io/pypi/pyversions/imdbpie.svg
    :target: https://pypi.python.org/pypi/imdb-pie
-.. |Build Status| image:: https://travis-ci.org/richardARPANET/imdb-pie.png?branch=master
-   :target: https://travis-ci.org/richardARPANET/imdb-pie
