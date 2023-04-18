@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.6.5 (unreleased)
+5.6.5 (2023-04-18)
 ++++++++++++++++++
 
 - Packaging fixes.
