@@ -6,7 +6,7 @@ Release History
 5.6.5 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Packaging fixes.
 
 
 5.6.4 (2023-04-18)
