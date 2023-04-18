@@ -5,7 +5,11 @@ import six
 
 from imdbpie import ImdbFacade
 from imdbpie.objects import (
-    Title, Name, TitleName, TitleSearchResult, NameSearchResult
+    Title,
+    Name,
+    TitleName,
+    TitleSearchResult,
+    NameSearchResult,
 )
 
 
@@ -15,7 +19,6 @@ def facade():
 
 
 class TestGetTitle(object):
-
     def test_tv_show(self, facade):
         tv_show_imdb_id = 'tt0096697'
         title = facade.get_title(imdb_id=tv_show_imdb_id)
@@ -45,10 +48,13 @@ class TestGetTitle(object):
         assert title.episodes[-1].imdb_id
         assert title.episodes[10].imdb_id
 
-    @pytest.mark.parametrize('movie_imdb_id', [
-        'tt0468569',
-        'tt0017587',
-    ])
+    @pytest.mark.parametrize(
+        'movie_imdb_id',
+        [
+            'tt0468569',
+            'tt0017587',
+        ],
+    )
     def test_movie(self, facade, movie_imdb_id):
         title = facade.get_title(imdb_id=movie_imdb_id)
         assert isinstance(title, Title)
@@ -60,10 +66,13 @@ class TestGetTitle(object):
         if title.runtime is not None:
             assert title.runtime > 0
 
-    @pytest.mark.parametrize('imdb_id', [
-        'tt0795176',
-        'tt7983794',
-    ])
+    @pytest.mark.parametrize(
+        'imdb_id',
+        [
+            'tt0795176',
+            'tt7983794',
+        ],
+    )
     def test_get_title_documentary(self, facade, imdb_id):
         title = facade.get_title(imdb_id=imdb_id)
 
@@ -85,10 +94,13 @@ class TestGetTitle(object):
             if num_checked > 5:
                 break
 
-    @pytest.mark.parametrize('episode_imdb_id', [
-        'tt4847050',
-        'tt4849022',
-    ])
+    @pytest.mark.parametrize(
+        'episode_imdb_id',
+        [
+            'tt4847050',
+            'tt4849022',
+        ],
+    )
     def test_tv_episode(self, facade, episode_imdb_id):
         title = facade.get_title(imdb_id=episode_imdb_id)
 
@@ -101,12 +113,15 @@ class TestGetTitle(object):
         assert isinstance(title.episode, int)
 
 
-@pytest.mark.parametrize('imdb_id', [
-    'nm0000151',
-    'nm0588033',
-    'nm0047800',
-    'nm1799952',
-])
+@pytest.mark.parametrize(
+    'imdb_id',
+    [
+        'nm0000151',
+        'nm0588033',
+        'nm0047800',
+        'nm1799952',
+    ],
+)
 def test_get_name(facade, imdb_id):
     name = facade.get_name(imdb_id=imdb_id)
 

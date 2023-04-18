@@ -31,7 +31,7 @@ setup(
         'Python IMDB client using the IMDB json web service made '
         'available for their iOS app.'
     ),
-    author='Richard O\'Dwyer',
+    author="Richard O'Dwyer",
     author_email='richard@richard.do',
     url='https://code.richard.do/richardARPANET/imdb-pie/',
     license='Apache 2.0',
