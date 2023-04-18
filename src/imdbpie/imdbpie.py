@@ -11,7 +11,7 @@ from trans import trans
 import requests
 from six import text_type
 from six.moves import http_client as httplib
-from six.moves.urllib.parse import urlencode, urljoin, quote, unquote
+from six.moves.urllib.parse import urlencode, urljoin, quote
 
 from .constants import BASE_URI, SEARCH_BASE_URI
 from .auth import Auth
@@ -162,7 +162,7 @@ class Imdb(Auth):
 
     def search_for_name(self, name):
         logger.info('called search_for_name %s', name)
-        name = re.sub(r'\W+', '_', name).strip('_')
+        name = re.sub(r'\W+', '+', name).strip('+')
         search_results = self._suggest_search(name)
         results = []
         for result in search_results.get('d', ()):
@@ -178,7 +178,7 @@ class Imdb(Auth):
 
     def search_for_title(self, title):
         logger.info('called search_for_title %s', title)
-        title = re.sub(r'\W+', '_', title).strip('_')
+        title = re.sub(r'\W+', '+', title).strip('+')
         search_results = self._suggest_search(title)
         results = []
         for result in search_results.get('d', ()):
@@ -259,14 +259,8 @@ class Imdb(Auth):
         if query is None:
             match_json_within_dirty_json = r'imdb\$.+\({1}(.+)\){1}'
         else:
-            query_match = ''.join(
-                char if char.isalnum() else '[{0}]'.format(char)
-                for char in unquote(query)
-            )
-            query_match = query_match.replace('[ ]', '.+')
-            match_json_within_dirty_json = (
-                r'imdb\${}\((.+)\)'.format(query_match)
-            )
+            # No need to unquote as the json is containing quoted query
+            match_json_within_dirty_json = r'imdb\${}\((.+)\)'.format(query)
         data_clean = re.match(
             match_json_within_dirty_json, data, re.IGNORECASE
         ).groups()[0]
