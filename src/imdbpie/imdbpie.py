@@ -310,7 +310,6 @@ class Imdb(Auth):
             full_url = url
         headers.update(self.get_auth_headers(full_url))
         resp = self.session.get(url, headers=headers, params=params)
-
         if not resp.ok:
             if resp.status_code == httplib.NOT_FOUND:
                 raise LookupError('Resource {0} not found'.format(url))

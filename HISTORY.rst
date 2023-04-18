@@ -6,7 +6,8 @@ Release History
 5.6.4 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Fix for JSON parsing from the API.
+- Fix for ``title_exists`` method raising 403 error.
 
 
 5.6.3 (2018-10-13)
