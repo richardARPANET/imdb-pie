@@ -52,7 +52,6 @@ _SIMPLE_GET_ENDPOINTS = {
 
 
 class Imdb(Auth):
-
     def __init__(self, locale=None, exclude_episodes=False, session=None):
         self.locale = locale or 'en_US'
         self.region = self.locale.split('_')[-1].upper()
@@ -84,8 +83,8 @@ class Imdb(Auth):
             self._title_not_found()
 
         if (
-            self.exclude_episodes is True and
-            resource['base']['titleType'] == 'tvEpisode'
+            self.exclude_episodes is True
+            and resource['base']['titleType'] == 'tvEpisode'
         ):
             raise LookupError(
                 'Title not found. Title was an episode and '
@@ -108,14 +107,14 @@ class Imdb(Auth):
                     'region': self.region,
                     'tconst': imdb_id,
                     'today': date.today().strftime('%Y-%m-%d'),
-                }
+                },
             )
         except LookupError:
             self._title_not_found()
 
         if (
-            self.exclude_episodes is True and
-            resource['titleType'].lower() == 'tvepisode'
+            self.exclude_episodes is True
+            and resource['titleType'].lower() == 'tvepisode'
         ):
             raise LookupError(
                 'Title not found. Title was an episode and '
@@ -125,19 +124,24 @@ class Imdb(Auth):
 
     def _simple_get_method(self, method, path):
         """Return client method generated from ``_SIMPLE_GET_ENDPOINTS``."""
+
         def get(imdb_id):
             logger.info('called %s %s', method, imdb_id)
             self.validate_imdb_id(imdb_id)
             self._redirection_title_check(imdb_id)
             return self._get_resource(path.format(imdb_id=imdb_id))
+
         return get
 
     def title_exists(self, imdb_id):
         self.validate_imdb_id(imdb_id)
         page_url = 'https://www.imdb.com/title/{0}/'.format(imdb_id)
 
-        response = self.session.get(page_url, allow_redirects=False)
-
+        response = self.session.get(
+            page_url,
+            allow_redirects=False,
+            headers={'User-Agent': 'Mozilla/5.0'},
+        )
         if response.status_code == httplib.OK:
             return True
         elif response.status_code == httplib.NOT_FOUND:
@@ -235,9 +239,13 @@ class Imdb(Auth):
         if region:
             params.update({'region': region})
 
-        return self._get(urljoin(
-            BASE_URI, '/template/imdb-ios-writable/tv-episodes-v2.jstl/render'
-        ), params=params)
+        return self._get(
+            urljoin(
+                BASE_URI,
+                '/template/imdb-ios-writable/tv-episodes-v2.jstl/render',
+            ),
+            params=params,
+        )
 
     def get_title_top_crew(self, imdb_id):
         """
@@ -249,10 +257,13 @@ class Imdb(Auth):
         logger.info('called get_title_top_crew %s', imdb_id)
         self.validate_imdb_id(imdb_id)
         params = {'tconst': imdb_id}
-        return self._get(urljoin(
-            BASE_URI,
-            '/template/imdb-android-writable/7.3.top-crew.jstl/render'
-        ), params=params)
+        return self._get(
+            urljoin(
+                BASE_URI,
+                '/template/imdb-android-writable/7.3.top-crew.jstl/render',
+            ),
+            params=params,
+        )
 
     @staticmethod
     def _parse_dirty_json(data, query=None):
@@ -281,9 +292,8 @@ class Imdb(Auth):
         Redirection results have no information of use.
         """
         imdb_id = response['data'].get('tconst')
-        if (
-            imdb_id and
-            imdb_id != response['data'].get('news', {}).get('channel')
+        if imdb_id and imdb_id != response['data'].get('news', {}).get(
+            'channel'
         ):
             return True
         return False
@@ -311,9 +321,7 @@ class Imdb(Auth):
         try:
             resp_dict = json.loads(resp_data)
         except ValueError:
-            resp_dict = self._parse_dirty_json(
-                data=resp_data, query=query
-            )
+            resp_dict = self._parse_dirty_json(data=resp_data, query=query)
 
         if resp_dict.get('error'):
             return None
