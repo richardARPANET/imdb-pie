@@ -1,4 +1,4 @@
-requests>=0.10,<3.0.0
+requests>=2.31.0,<3.0.0
 six>=1.0.0,<2.0.0
 wheel>=0.38.0
 boto>=2.48.0
@@ -7,3 +7,4 @@ diskcache>=2.9.0,<3.0.0
 setuptools>=65.5.1
 attrs>=18.1.0,<19.0.0
 trans>=2.1.0,<3.0.0
+certifi>=2023.7.22 # not directly required, pinned by Snyk to avoid a vulnerability
