@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.6.6 (unreleased)
+5.7.0 (unreleased)
 ++++++++++++++++++
 
 - Added Python 3.14 support

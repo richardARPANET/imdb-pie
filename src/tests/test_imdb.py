@@ -74,9 +74,10 @@ def test_title_reviews_non_existant_title(client):
     with pytest.raises(LookupError):
         client.get_title_user_reviews('tt9999999')
 
+
 def test_title_exists(client):
-   result = client.title_exists('tt2322441')
-   assert True is result
+    result = client.title_exists('tt2322441')
+    assert True is result
 
 
 def test_title_exists_non_existant_title(client):
@@ -377,6 +378,7 @@ def test_get_title_credits(client):
     resource = client.get_title_credits(imdb_id)
 
     assert sorted(resource.keys()) == sorted(expected_keys)
+
 
 def test_get_title_credits_with_redirection_result(client):
     redir_imdb_id = 'tt0000021'

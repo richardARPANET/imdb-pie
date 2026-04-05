@@ -48,6 +48,7 @@ _SIMPLE_GET_ENDPOINTS = {
     'get_name_filmography': '/name/{imdb_id}/filmography',
 }
 
+
 class Imdb(Auth):
     def __init__(self, locale=None, exclude_episodes=False, session=None):
         super().__init__()
@@ -325,7 +326,9 @@ class Imdb(Auth):
         self.validate_imdb_id(imdb_id)
         try:
             if imdb_id.startswith('nm'):
-                resource = self._get_resource('/name/{0}/fulldetails'.format(imdb_id))
+                resource = self._get_resource(
+                    '/name/{0}/fulldetails'.format(imdb_id)
+                )
                 returned_id = resource['base'].get('id', '')
                 if returned_id:
                     match = re.search(r'nm\d{7}', returned_id)
@@ -344,7 +347,7 @@ class Imdb(Auth):
                         'tconst': imdb_id,
                         'today': date.today().strftime('%Y-%m-%d'),
                         'region': self.region,
-                    }
+                    },
                 )
                 returned_id = resource.get('id', '')
                 if returned_id:

@@ -19,7 +19,7 @@ from .constants import APP_KEY, HOST, USER_AGENT, BASE_URI
 def _get_credentials():
     url = '{0}/authentication/credentials/temporary/ios82'.format(BASE_URI)
     response = requests.post(
-        url, json={"appKey": APP_KEY}, headers={'User-Agent': USER_AGENT}
+        url, json={'appKey': APP_KEY}, headers={'User-Agent': USER_AGENT}
     )
     response.raise_for_status()
     return json.loads(response.content.decode('utf8'))['resource']
@@ -64,19 +64,30 @@ class Auth(object):
         creds, soon_expires = self._creds_soon_expiring()
         if soon_expires:
             creds = self._set_creds(creds=_get_credentials())
-        credentials = Credentials(access_key=creds['accessKeyId'], secret_key=creds['secretAccessKey'],
-                        token=creds['sessionToken'])
-
+        credentials = Credentials(
+            access_key=creds['accessKeyId'],
+            secret_key=creds['secretAccessKey'],
+            token=creds['sessionToken'],
+        )
 
         parsed_url = urlparse(url_path)
         params = {
             key: val[0] for key, val in parse_qs(parsed_url.query).items()
         }
-        req = requests.Request('GET', f'https://{HOST}{parsed_url.path}', params=params, data='', headers={})
+        req = requests.Request(
+            'GET',
+            f'https://{HOST}{parsed_url.path}',
+            params=params,
+            data='',
+            headers={},
+        )
         prepared_request = req.prepare()
         prepared_request.headers['User-Agent'] = USER_AGENT
-        aws_request = AWSRequest(method=prepared_request.method, url=prepared_request.url, data=prepared_request.body,
-                                 headers=prepared_request.headers)
+        aws_request = AWSRequest(
+            method=prepared_request.method,
+            url=prepared_request.url,
+            data=prepared_request.body,
+            headers=prepared_request.headers,
+        )
         SigV4Auth(credentials, 'imdbapi', 'us-east-1').add_auth(aws_request)
         return aws_request.prepare().headers
-
