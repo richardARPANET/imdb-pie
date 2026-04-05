@@ -6,7 +6,10 @@ Release History
 5.6.6 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Added Python 3.14 support
+- Added support for the new AWS library to handle the authentication
+- Removed unsupported methods that got blocked by the Web Application Firewall (WAF) of the  API.
+- Updated dependencies to latest
 
 
 5.6.5 (2023-04-18)

@@ -1,12 +1,12 @@
 -r requirements.txt
-pytest
-coverage==4.4.2
-flake8
-pep8-naming
-mccabe
-freezegun
-pytest-cov
-codecov
-setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
-brunette>=0.2.8,<1.0.0
-wheel>=0.38.0 # not directly required, pinned by Snyk to avoid a vulnerability
+brunette==0.2.8
+codecov==2.1.13
+coverage==7.13.5
+flake8==7.3.0
+freezegun==1.5.5
+mccabe==0.7.0
+pep8-naming==0.15.1
+pytest-cov==7.1.0
+pytest==9.0.2
+setuptools==82.0.1
+wheel==0.46.3
