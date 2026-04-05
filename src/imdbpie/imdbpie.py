@@ -72,8 +72,8 @@ class Imdb(Auth):
     def get_title(self, imdb_id):
         logger.info('called get_title %s', imdb_id)
         self.validate_imdb_id(imdb_id)
-        # removed due to WAF
-        #self._redirection_title_check(imdb_id)
+        # redirection check using API response
+        self._redirection_title_check(imdb_id)
         try:
             resource = self._get_resource(
                 '/title/{0}/auxiliary'.format(imdb_id)
@@ -94,8 +94,8 @@ class Imdb(Auth):
     def get_title_auxiliary(self, imdb_id):
         logger.info('called get_title_auxiliary %s', imdb_id)
         self.validate_imdb_id(imdb_id)
-        # removed due to WAF
-        #self._redirection_title_check(imdb_id)
+        # redirection check using API response
+        self._redirection_title_check(imdb_id)
         path = '/template/imdb-ios-writable/title-auxiliary-v31.jstl/render'
         try:
             resource = self._get(
@@ -128,33 +128,18 @@ class Imdb(Auth):
         def get(imdb_id):
             logger.info('called %s %s', method, imdb_id)
             self.validate_imdb_id(imdb_id)
-            # removed due to WAF
-            #self._redirection_title_check(imdb_id)
+            self._redirection_title_check(imdb_id)
             return self._get_resource(path.format(imdb_id=imdb_id))
 
         return get
 
-    # removed due to web application firewall not allowing access to web page
-    # this method is not critical to the functioning of the entire package.
-
-    # def title_exists(self, imdb_id):
-    #     self.validate_imdb_id(imdb_id)
-    #     page_url = 'https://www.imdb.com/title/{0}/'.format(imdb_id)
-    #
-    #     response = self.session.get(
-    #         page_url,
-    #         allow_redirects=False,
-    #         headers={'User-Agent': 'Mozilla/5.0'},
-    #     )
-    #     if response.status_code == httplib.OK:
-    #         return True
-    #     elif response.status_code == httplib.NOT_FOUND:
-    #         return False
-    #     elif response.status_code == httplib.MOVED_PERMANENTLY:
-    #         # redirection result
-    #         return False
-    #     else:
-    #         response.raise_for_status()
+    def title_exists(self, imdb_id):
+        self.validate_imdb_id(imdb_id)
+        try:
+            self._get_resource('/title/{0}/auxiliary'.format(imdb_id))
+            return True
+        except LookupError:
+            return False
 
     def _suggest_search(self, query):
         # translates national characters into similar sounding latin characters
@@ -289,19 +274,18 @@ class Imdb(Auth):
         except (AttributeError, TypeError):
             raise ValueError('invalid imdb id')
 
-    #@staticmethod
-    # removed due to WAF
-    # def _is_redirection_result(response):
-    #     """
-    #     Return True if response is that of a redirection else False
-    #     Redirection results have no information of use.
-    #     """
-    #     imdb_id = response['data'].get('tconst')
-    #     if imdb_id and imdb_id != response['data'].get('news', {}).get(
-    #         'channel'
-    #     ):
-    #         return True
-    #     return False
+    @staticmethod
+    def _is_redirection_result(response):
+        """
+        Return True if response is that of a redirection else False
+        Redirection results have no information of use.
+        """
+        imdb_id = response['data'].get('tconst')
+        if imdb_id and imdb_id != response['data'].get('news', {}).get(
+            'channel'
+        ):
+            return True
+        return False
 
     def _get_resource(self, path):
         url = urljoin(BASE_URI, path)
@@ -331,21 +315,48 @@ class Imdb(Auth):
             return None
         return resp_dict
 
-    # removed due to WAF
-    # def _redirection_title_check(self, imdb_id):
-    #     if self.is_redirection_title(imdb_id):
-    #         self._title_not_found(
-    #             msg='{0} is a redirection imdb id'.format(imdb_id)
-    #         )
-    #
-    # def is_redirection_title(self, imdb_id):
-    #     self.validate_imdb_id(imdb_id)
-    #     page_url = 'https://www.imdb.com/title/{0}/'.format(imdb_id)
-    #     response = self.session.get(page_url, allow_redirects=False)
-    #     if response.status_code == httplib.MOVED_PERMANENTLY:
-    #         return True
-    #     else:
-    #         return False
+    def _redirection_title_check(self, imdb_id):
+        if self.is_redirection_title(imdb_id):
+            self._title_not_found(
+                msg='{0} is a redirection imdb id'.format(imdb_id)
+            )
+
+    def is_redirection_title(self, imdb_id):
+        self.validate_imdb_id(imdb_id)
+        try:
+            if imdb_id.startswith('nm'):
+                resource = self._get_resource('/name/{0}/fulldetails'.format(imdb_id))
+                returned_id = resource['base'].get('id', '')
+                if returned_id:
+                    match = re.search(r'nm\d{7}', returned_id)
+                    if match:
+                        actual_id = match.group()
+                        # If the returned ID differs, it's a redirection
+                        return actual_id != imdb_id
+            else:
+                path = (
+                    '/template/imdb-ios-writable/'
+                    'title-auxiliary-v31.jstl/render'
+                )
+                resource = self._get(
+                    url=urljoin(BASE_URI, path),
+                    params={
+                        'tconst': imdb_id,
+                        'today': date.today().strftime('%Y-%m-%d'),
+                        'region': self.region,
+                    }
+                )
+                returned_id = resource.get('id', '')
+                if returned_id:
+                    match = re.search(r'tt\d{7}', returned_id)
+                    if match:
+                        actual_id = match.group()
+                        # If the returned ID differs, it's a redirection
+                        return actual_id != imdb_id
+            return False
+        except LookupError:
+            # If ID doesn't exist at all, it's not a redirection
+            return False
 
     @staticmethod
     def _query_first_alpha_num(query):

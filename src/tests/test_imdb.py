@@ -74,15 +74,14 @@ def test_title_reviews_non_existant_title(client):
     with pytest.raises(LookupError):
         client.get_title_user_reviews('tt9999999')
 
-# removed due to waf issue
-#def test_title_exists(client):
-#    result = client.title_exists('tt2322441')
-#    assert True is result
+def test_title_exists(client):
+   result = client.title_exists('tt2322441')
+   assert True is result
 
 
-# def test_title_exists_non_existant_title(client):
-#     result = client.title_exists('tt0000000')
-#     assert False is result
+def test_title_exists_non_existant_title(client):
+    result = client.title_exists('tt0000000')
+    assert False is result
 
 
 def test_search_for_title_searching_title(client):
@@ -379,21 +378,18 @@ def test_get_title_credits(client):
 
     assert sorted(resource.keys()) == sorted(expected_keys)
 
-# removed due to WAF
-# @pytest.mark.xfail
-# def test_get_title_credits_with_redirection_result(client):
-#     redir_imdb_id = 'tt0000021'
-#
-#     with pytest.raises(LookupError):
-#         client.get_title_credits(redir_imdb_id)
-#
-#
-# @pytest.mark.xfail
-# def test_get_title_redirection_result(client):
-#     redir_imdb_id = 'tt0000021'
-#
-#     with pytest.raises(LookupError):
-#         client.get_title(redir_imdb_id)
+def test_get_title_credits_with_redirection_result(client):
+    redir_imdb_id = 'tt0000021'
+
+    with pytest.raises(LookupError):
+        client.get_title_credits(redir_imdb_id)
+
+
+def test_get_title_redirection_result(client):
+    redir_imdb_id = 'tt0000021'
+
+    with pytest.raises(LookupError):
+        client.get_title(redir_imdb_id)
 
 
 def test_get_title_excludes_episodes(client):

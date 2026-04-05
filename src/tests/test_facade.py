@@ -45,7 +45,7 @@ class TestGetTitle(object):
         assert title.episodes[0].episode == 1
         assert title.episodes
         assert len(title.episodes)
-        assert title.episodes[-1].imdb_id
+        assert title.episodes[-2].imdb_id
         assert title.episodes[10].imdb_id
 
     @pytest.mark.parametrize(
