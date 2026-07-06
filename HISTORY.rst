@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.7.1 (unreleased)
+5.7.1 (2026-07-06)
 ++++++++++++++++++
 
 - Handle  IMDb have both 7 and 8 digit titles
