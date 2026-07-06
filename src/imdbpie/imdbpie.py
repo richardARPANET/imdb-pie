@@ -331,7 +331,7 @@ class Imdb(Auth):
                 )
                 returned_id = resource['base'].get('id', '')
                 if returned_id:
-                    match = re.search(r'nm\d{7}', returned_id)
+                    match = re.search(r'nm\d{7,8}', returned_id)
                     if match:
                         actual_id = match.group()
                         # If the returned ID differs, it's a redirection
@@ -351,7 +351,7 @@ class Imdb(Auth):
                 )
                 returned_id = resource.get('id', '')
                 if returned_id:
-                    match = re.search(r'tt\d{7}', returned_id)
+                    match = re.search(r'tt\d{7,8}', returned_id)
                     if match:
                         actual_id = match.group()
                         # If the returned ID differs, it's a redirection
