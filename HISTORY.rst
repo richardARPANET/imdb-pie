@@ -6,7 +6,7 @@ Release History
 5.7.1 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Handle  IMDb have both 7 and 8 digit titles
 
 
 5.7.0 (2026-04-05)
