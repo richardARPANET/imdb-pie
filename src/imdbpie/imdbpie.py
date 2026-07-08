@@ -269,7 +269,7 @@ class Imdb(Auth):
 
     @staticmethod
     def validate_imdb_id(imdb_id):
-        match_id = r'[a-zA-Z]{2}[0-9]{7}'
+        match_id = r'[a-zA-Z]{2}[0-9]{7,8}'
         try:
             re.match(match_id, imdb_id, re.IGNORECASE).group()
         except (AttributeError, TypeError):
