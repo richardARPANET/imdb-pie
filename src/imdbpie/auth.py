@@ -32,20 +32,23 @@ class Auth(object):
     def __init__(self):
         self._cachedir = tempfile.gettempdir()
 
-    def _get_creds(self):
-        with diskcache_community.Cache(
+    def _cache(self):
+        return diskcache_community.Cache(
             directory=self._cachedir,
             disk=diskcache_community.SafeDisk.with_options(on_error='miss'),
-        ) as cache:
+        )
+
+    def _get_creds(self):
+        with self._cache() as cache:
             return cache.get(self._CREDS_STORAGE_KEY)
 
     def _set_creds(self, creds):
-        with diskcache_community.Cache(directory=self._cachedir) as cache:
+        with self._cache() as cache:
             cache[self._CREDS_STORAGE_KEY] = creds
         return creds
 
     def clear_cached_credentials(self):
-        with diskcache_community.Cache(directory=self._cachedir) as cache:
+        with self._cache() as cache:
             cache.delete(self._CREDS_STORAGE_KEY)
 
     def _creds_soon_expiring(self):
