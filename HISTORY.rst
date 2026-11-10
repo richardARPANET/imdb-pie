@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.7.2 (unreleased)
+5.7.2 (2026-11-10)
 ++++++++++++++++++
 
 - Replaced ``diskcache`` with ``diskcache-community`` and read the cached credentials through its ``SafeDisk``, so a tampered cache entry can no longer run code (CVE-2025-69872).
