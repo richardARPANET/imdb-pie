@@ -17,7 +17,7 @@ from .objects import (
     NameSearchResult,
 )
 
-REGEX_IMDB_ID = re.compile(r'([a-zA-Z]{2}[0-9]{7})')
+REGEX_IMDB_ID = re.compile(r'([a-zA-Z]{2}[0-9]{7,8})')
 
 
 class ImdbFacade(object):
