@@ -59,3 +59,7 @@ exclude = ['tests*']
 [tool.uv]
 package = true
 default-groups = ['dev']
+
+[tool.zest-releaser]
+"prereleaser.middle" = ['release_hooks.uv_lock']
+"postreleaser.middle" = ['release_hooks.uv_lock']
