@@ -18,7 +18,7 @@ To install imdbpie, simply:
 
 .. code:: bash
 
-    pip install imdbpie
+    uv add imdbpie
 
 How to use
 ------------
@@ -34,16 +34,32 @@ Requirements
 
 ::
 
-    1. Python 2 or 3
-    2. See requirements.txt
+    1. Python 3.10 or newer
+    2. Dependencies are declared in pyproject.toml and pinned in uv.lock
+
+Development
+-----------
+
+This project uses `uv <https://docs.astral.sh/uv/>`_ for environments,
+dependencies and locking.
+
+.. code:: bash
+
+    uv sync
 
 Running the tests
 -----------------
 
 .. code:: bash
 
-    pip install -r test_requirements.txt
-    py.test src/tests
+    uv run pytest src/tests
+
+Some tests call the live IMDb API and are marked ``live``. Skip them when
+working offline:
+
+.. code:: bash
+
+    uv run pytest src/tests -m "not live"
 
 .. |PyPI| image:: https://img.shields.io/pypi/v/imdbpie.svg
    :target: https://pypi.python.org/pypi/imdb-pie

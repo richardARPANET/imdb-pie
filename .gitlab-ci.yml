@@ -1,37 +1,7 @@
-before_script:
-  # Install pyenv
-  - apt-get update
-  - apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev
-  - git clone https://github.com/pyenv/pyenv.git ~/.pyenv
-  - export PYENV_ROOT="$HOME/.pyenv"
-  - export PATH="$PYENV_ROOT/bin:$PATH"
-  - eval "$(pyenv init -)"
-  - export CFLAGS=-I/usr/include/openssl
-  - export LDFLAGS=-L/usr/lib
-  # Install tox
-  - pip install tox
+image: ghcr.io/astral-sh/uv:python3.10-bookworm-slim
 
-test:python27:
+test:
   script:
-  - pyenv install 2.7.14
-  - pyenv shell 2.7.14
-  - tox -e py27-normal
-
-test:python34:
-  script:
-  - apt-get install -y libssl1.0-dev
-  - pyenv install 3.4.7
-  - pyenv shell 3.4.7
-  - tox -e py34-normal
-
-test:python35:
-  script:
-  - pyenv install 3.5.4
-  - pyenv shell 3.5.4
-  - tox -e py35-normal
-
-test:python36:
-  script:
-  - pyenv install 3.6.4
-  - pyenv shell 3.6.4
-  - tox -e py36-normal
+    - uv sync --locked
+    - uv run flake8
+    - uv run pytest src/tests

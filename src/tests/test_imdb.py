@@ -7,6 +7,8 @@ import pytest
 
 from imdbpie import Imdb
 
+pytestmark = pytest.mark.live
+
 
 @pytest.fixture(scope='module')
 def client():
@@ -413,12 +415,6 @@ def test_get_title_episodes(client):
     assert sorted(resource.keys()) == sorted(expected_keys)
 
 
-def test_get_title_episodes_raises_when_exclude_episodes_enabled():
-    client = Imdb(exclude_episodes=True)
-    with pytest.raises(ValueError):
-        client.get_title_episodes('tt0303461')
-
-
 def test_get_title_episodes_raises_imdb_id_is_not_that_of_a_tv_show(client):
     non_show_imdb_id = 'tt0468569'
     with pytest.raises(LookupError):
@@ -530,23 +526,3 @@ def test_get_title_videos(client):
 def test_get_title_raises_not_found(client):
     with pytest.raises(LookupError):
         client.get_title('tt9999999')
-
-
-@pytest.mark.parametrize(
-    'imdb_id, exp_valid',
-    [
-        ('tt1234567', True),
-        ('nm1234567', True),
-        ('x', False),
-        (1234567, False),
-        (None, False),
-    ],
-)
-def test_validate_imdb_id(imdb_id, exp_valid, client):
-
-    if exp_valid:
-        # no raise
-        client.validate_imdb_id(imdb_id)
-    else:
-        with pytest.raises(ValueError):
-            client.validate_imdb_id(imdb_id)

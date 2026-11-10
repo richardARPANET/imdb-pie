@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import copy
 import re
 import json
+import time
 from datetime import date
 import tempfile
 import logging
 
-from trans import trans
+from text_unidecode import unidecode
 import requests
 from urllib.parse import urlencode, urljoin, quote
 from http import client as httplib
@@ -44,19 +46,42 @@ _SIMPLE_GET_ENDPOINTS = {
     'get_title_awards': '/title/{imdb_id}/awards',
     'get_title_ratings': '/title/{imdb_id}/ratings',
     'get_title_credits': '/title/{imdb_id}/fullcredits',
+    'get_title_keywords': '/title/{imdb_id}/keywords',
+    'get_title_certificates': '/title/{imdb_id}/certificates',
+    'get_title_business': '/title/{imdb_id}/business',
+    'get_title_watch_options': '/title/{imdb_id}/watchoptions',
+    'get_title_principals': '/title/{imdb_id}/principals',
+    'get_title_filming_locations': '/title/{imdb_id}/filminglocations',
+    'get_title_crazy_credits': '/title/{imdb_id}/crazycredits',
     'get_name': '/name/{imdb_id}/fulldetails',
     'get_name_filmography': '/name/{imdb_id}/filmography',
+    'get_name_known_for': '/name/{imdb_id}/knownfor',
+    'get_name_awards': '/name/{imdb_id}/awards',
+    'get_name_bio': '/name/{imdb_id}/bio',
+    'get_name_trivia': '/name/{imdb_id}/trivia',
+    'get_name_quotes': '/name/{imdb_id}/quotes',
+    'get_name_news': '/name/{imdb_id}/news',
 }
 
 
 class Imdb(Auth):
-    def __init__(self, locale=None, exclude_episodes=False, session=None):
+    CACHE_MAX_ENTRIES = 128
+
+    def __init__(
+        self,
+        locale=None,
+        exclude_episodes=False,
+        session=None,
+        cache_ttl=300,
+    ):
         super().__init__()
         self.locale = locale or 'en_US'
         self.region = self.locale.split('_')[-1].upper()
         self.exclude_episodes = exclude_episodes
         self.session = session or requests.Session()
         self._cachedir = tempfile.gettempdir()
+        self.cache_ttl = cache_ttl
+        self._resource_cache = {}
 
     def __getattr__(self, name):
         if name in _SIMPLE_GET_ENDPOINTS:
@@ -76,7 +101,7 @@ class Imdb(Auth):
         # redirection check using API response
         self._redirection_title_check(imdb_id)
         try:
-            resource = self._get_resource(
+            resource = self._get_resource_cached(
                 '/title/{0}/auxiliary'.format(imdb_id)
             )
         except LookupError:
@@ -92,24 +117,27 @@ class Imdb(Auth):
             )
         return resource
 
+    def _fetch_title_auxiliary(self, imdb_id):
+        path = '/template/imdb-ios-writable/title-auxiliary-v31.jstl/render'
+        return self._get_cached(
+            url=urljoin(BASE_URI, path),
+            params={
+                'inlineBannerAdWeblabOn': 'false',
+                'minwidth': '320',
+                'osVersion': '11.3.0',
+                'region': self.region,
+                'tconst': imdb_id,
+                'today': date.today().strftime('%Y-%m-%d'),
+            },
+        )
+
     def get_title_auxiliary(self, imdb_id):
         logger.info('called get_title_auxiliary %s', imdb_id)
         self.validate_imdb_id(imdb_id)
         # redirection check using API response
         self._redirection_title_check(imdb_id)
-        path = '/template/imdb-ios-writable/title-auxiliary-v31.jstl/render'
         try:
-            resource = self._get(
-                url=urljoin(BASE_URI, path),
-                params={
-                    'inlineBannerAdWeblabOn': 'false',
-                    'minwidth': '320',
-                    'osVersion': '11.3.0',
-                    'region': self.region,
-                    'tconst': imdb_id,
-                    'today': date.today().strftime('%Y-%m-%d'),
-                },
-            )
+            resource = self._fetch_title_auxiliary(imdb_id)
         except LookupError:
             self._title_not_found()
 
@@ -144,7 +172,7 @@ class Imdb(Auth):
 
     def _suggest_search(self, query):
         # translates national characters into similar sounding latin characters
-        cleaned_query = trans(query)
+        cleaned_query = unidecode(query)
         query_encoded = quote(cleaned_query)
         first_alphanum_char = self._query_first_alpha_num(cleaned_query)
         path = '/suggests/{0}/{1}.json'.format(
@@ -292,6 +320,42 @@ class Imdb(Auth):
         url = urljoin(BASE_URI, path)
         return self._get(url=url)['resource']
 
+    def _get_resource_cached(self, path):
+        url = urljoin(BASE_URI, path)
+        return self._get_cached(url=url)['resource']
+
+    def clear_cache(self):
+        """Drop resources cached by this client instance."""
+        self._resource_cache.clear()
+
+    def _evict_cache(self, now):
+        for key, (expires_at, _) in list(self._resource_cache.items()):
+            if expires_at <= now:
+                del self._resource_cache[key]
+        while len(self._resource_cache) >= self.CACHE_MAX_ENTRIES:
+            oldest = next(iter(self._resource_cache))
+            del self._resource_cache[oldest]
+
+    def _get_cached(self, url, params=None):
+        """``_get`` with a ``cache_ttl`` second memory cache."""
+        if not self.cache_ttl:
+            return self._get(url=url, params=params)
+        key = (url, tuple(sorted((params or {}).items())))
+        cached = self._resource_cache.get(key)
+        now = time.monotonic()
+        if cached is not None and cached[0] > now:
+            # Hand out a copy so callers cannot mutate the cached payload.
+            return copy.deepcopy(cached[1])
+        resource = self._get(url=url, params=params)
+        if resource is not None:
+            # Do not cache error responses, they clear up on the next call.
+            self._evict_cache(now)
+            self._resource_cache[key] = (
+                now + self.cache_ttl,
+                copy.deepcopy(resource),
+            )
+        return resource
+
     def _get(self, url, query=None, params=None):
         headers = {'Accept-Language': self.locale}
         if params:
@@ -326,7 +390,7 @@ class Imdb(Auth):
         self.validate_imdb_id(imdb_id)
         try:
             if imdb_id.startswith('nm'):
-                resource = self._get_resource(
+                resource = self._get_resource_cached(
                     '/name/{0}/fulldetails'.format(imdb_id)
                 )
                 returned_id = resource['base'].get('id', '')
@@ -337,18 +401,7 @@ class Imdb(Auth):
                         # If the returned ID differs, it's a redirection
                         return actual_id != imdb_id
             else:
-                path = (
-                    '/template/imdb-ios-writable/'
-                    'title-auxiliary-v31.jstl/render'
-                )
-                resource = self._get(
-                    url=urljoin(BASE_URI, path),
-                    params={
-                        'tconst': imdb_id,
-                        'today': date.today().strftime('%Y-%m-%d'),
-                        'region': self.region,
-                    },
-                )
+                resource = self._fetch_title_auxiliary(imdb_id)
                 returned_id = resource.get('id', '')
                 if returned_id:
                     match = re.search(r'tt\d{7,8}', returned_id)

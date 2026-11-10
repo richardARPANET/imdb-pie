@@ -1,13 +1,12 @@
-sudo: false
 language: python
-python:
-    - 2.7
-    - pypy
-    - 3.4
-    - 3.5
-    - 3.6
 env:
-  - TOXENV=py-normal
-
-install: pip install tox
-script: tox
+    - UV_PYTHON=3.10
+    - UV_PYTHON=3.11
+    - UV_PYTHON=3.12
+    - UV_PYTHON=3.13
+install:
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
+script:
+    - uv sync --locked
+    - uv run flake8
+    - uv run pytest src/tests

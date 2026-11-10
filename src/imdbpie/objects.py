@@ -8,6 +8,55 @@ class Image(object):
     height = attr.ib()
 
 
+@attr.s
+class TitleVideo(object):
+    content_type = attr.ib(default=None)
+    description = attr.ib(default=None)
+    url = attr.ib(default=None)
+    duration_seconds = attr.ib(default=None)
+
+
+@attr.s
+class WatchOption(object):
+    provider = attr.ib()
+    category = attr.ib()
+    url = attr.ib(default=None)
+    provider_id = attr.ib(default=None)
+    notes = attr.ib(default=None)
+
+
+@attr.s
+class TitleBusiness(object):
+    budget = attr.ib(default=None)
+    worldwide_gross = attr.ib(default=None)
+    gross = attr.ib(default=())
+    opening_weekend_gross = attr.ib(default=())
+
+
+@attr.s
+class TitleCertificate(object):
+    country = attr.ib()
+    certificate = attr.ib()
+    attributes = attr.ib(default=())
+
+
+@attr.s
+class FilmingLocation(object):
+    location = attr.ib()
+    attributes = attr.ib(default=())
+    notes = attr.ib(default=())
+
+
+@attr.s
+class Award(object):
+    name = attr.ib()
+    category = attr.ib()
+    year = attr.ib(default=None)
+    won = attr.ib(default=False)
+    event_name = attr.ib(default=None)
+    title_ids = attr.ib(default=())
+
+
 class TitleEpisodes(object):
     def __init__(self, facade, imdb_id):
         self._facade = facade
@@ -53,6 +102,16 @@ class Title(object):
     plot_outline = attr.ib(default=None)
     release_date = attr.ib(default=None)
     runtime = attr.ib(default=None)
+    metacritic = attr.ib(default=None)
+    awards_summary = attr.ib(default=None)
+    spoken_languages = attr.ib(default=())
+    countries = attr.ib(default=())
+    alternate_titles = attr.ib(default=())
+    alternate_titles_count = attr.ib(default=0)
+    top_rank = attr.ib(default=None)
+    trailer = attr.ib(default=None)
+    production_status = attr.ib(default=None)
+    certificate_reason = attr.ib(default=None)
 
     def __repr__(self):
         return 'Title(imdb_id={0}, title={1})'.format(self.imdb_id, self.title)
@@ -97,3 +156,7 @@ class Name(object):
     bios = attr.ib()
     date_of_birth = attr.ib()
     filmography = attr.ib()
+    jobs = attr.ib(default=())
+    known_for = attr.ib(default=())
+    real_name = attr.ib(default=None)
+    height_centimeters = attr.ib(default=None)
