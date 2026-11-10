@@ -6,7 +6,8 @@ Release History
 5.8.1 (unreleased)
 ++++++++++++++++++
 
-- Nothing changed yet.
+- Fixed the ``FACADE.rst`` and ``CLIENT.rst`` links in the README, which returned 404 on PyPI,
+  and pointed the project homepage at GitHub.
 
 
 5.8.0 (2026-11-10)

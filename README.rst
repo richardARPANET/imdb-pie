@@ -25,9 +25,9 @@ How to use
 
 Choose an option:
 
-1. `ImdbPie Facade usage examples <FACADE.rst>`_ (the easy way, returns objects).
+1. `ImdbPie Facade usage examples <https://github.com/richardARPANET/imdb-pie/blob/master/FACADE.rst>`_ (the easy way, returns objects).
 
-2. `ImdbPie Client usage examples <CLIENT.rst>`_ (more low level client API, returns raw dicts).
+2. `ImdbPie Client usage examples <https://github.com/richardARPANET/imdb-pie/blob/master/CLIENT.rst>`_ (more low level client API, returns raw dicts).
 
 Requirements
 ------------
