@@ -3,7 +3,7 @@
 Release History
 ---------------
 
-5.8.0 (unreleased)
+5.8.0 (2026-11-10)
 ++++++++++++++++++
 
 - Added watch options, box office, keywords, certificates, filming locations, principals and
