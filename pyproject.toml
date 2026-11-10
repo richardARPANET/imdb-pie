@@ -4,7 +4,7 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'imdbpie'
-version = '5.8.1.dev0'
+version = '5.8.1'
 description = 'Python IMDB client using the IMDB json web service made available for their iOS app.'
 readme = 'README.rst'
 requires-python = '>=3.10'
