@@ -3,6 +3,25 @@
 Release History
 ---------------
 
+5.8.0 (unreleased)
+++++++++++++++++++
+
+- Added watch options, box office, keywords, certificates, filming locations, principals and
+  crazy credits to the client and facade.
+- Added name known-for, awards, bio, trivia, quotes and news endpoints to the client.
+- ``Title`` now exposes metacritic score, awards summary, spoken languages, countries of origin,
+  alternate titles, top rank, trailer and certificate reason.
+- ``Name`` now exposes jobs, known-for titles, real name and height.
+- Fixed ``KeyError`` in the facade ``get_name`` for people without a birth date, gender or
+  birth place.
+- Fixed ``IndexError`` in facade id parsing, which now raises ``ValueError``.
+- The auxiliary title payload is cached for 300s per client instance, cutting a facade
+  ``get_title`` from 10 HTTP requests to 6. Pass ``cache_ttl=0`` for the old behaviour.
+- Packaging moved to ``pyproject.toml``, managed with uv. ``setup.py``, ``requirements.txt``
+  and ``test_requirements.txt`` are gone, and ``trans`` was replaced with ``text-unidecode``
+  because its sdist cannot be resolved by uv.
+
+
 5.7.3 (unreleased)
 ++++++++++++++++++
 

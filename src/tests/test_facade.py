@@ -12,6 +12,8 @@ from imdbpie.objects import (
     NameSearchResult,
 )
 
+pytestmark = pytest.mark.live
+
 
 @pytest.fixture(scope='module')
 def facade():

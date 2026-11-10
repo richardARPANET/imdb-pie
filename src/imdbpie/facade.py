@@ -7,14 +7,20 @@ from dateutil.parser import parse
 
 from .imdbpie import Imdb
 from .objects import (
-    Title,
-    TitleEpisodes,
-    Name,
-    TitleName,
+    Award,
+    FilmingLocation,
     Image,
+    Name,
+    NameSearchResult,
+    Title,
+    TitleBusiness,
+    TitleCertificate,
+    TitleEpisodes,
+    TitleName,
     TitleRelease,
     TitleSearchResult,
-    NameSearchResult,
+    TitleVideo,
+    WatchOption,
 )
 
 REGEX_IMDB_ID = re.compile(r'([a-zA-Z]{2}[0-9]{7,8})')
@@ -50,11 +56,12 @@ class ImdbFacade(object):
 
     def get_name(self, imdb_id):
         name_data = self._client.get_name(imdb_id=imdb_id)
-        name = name_data['base']['name']
-        imdb_id = self._parse_id(name_data['base']['id'])
+        base = name_data['base']
+        name = base['name']
+        imdb_id = self._parse_id(base['id'])
 
         try:
-            image_data = name_data['base']['image']
+            image_data = base['image']
             image = Image(
                 url=image_data['url'],
                 height=image_data['height'],
@@ -63,17 +70,23 @@ class ImdbFacade(object):
         except KeyError:
             image = None
 
-        gender = name_data['base']['gender'].lower()
-        date_of_birth = parse(name_data['base']['birthDate']).date()
-        birth_place = name_data['base']['birthPlace']
+        gender = (base.get('gender') or '').lower() or None
+        birth_date = base.get('birthDate')
+        date_of_birth = parse(birth_date).date() if birth_date else None
+        birth_place = base.get('birthPlace')
         try:
-            bios = tuple(b['text'] for b in name_data['base']['miniBios'])
+            bios = tuple(b['text'] for b in base['miniBios'])
         except KeyError:
             bios = ()
 
         filmography_data = self._client.get_name_filmography(imdb_id)
         filmography = tuple(
             self._parse_id(f['id']) for f in filmography_data['filmography']
+        )
+        known_for = tuple(
+            self._parse_id(item['id'])
+            for item in (name_data.get('knownFor') or ())
+            if item.get('id')
         )
         return Name(
             name=name,
@@ -84,6 +97,10 @@ class ImdbFacade(object):
             bios=bios,
             image=image,
             filmography=filmography,
+            jobs=tuple(name_data.get('jobs') or ()),
+            known_for=known_for,
+            real_name=base.get('realName'),
+            height_centimeters=base.get('heightCentimeters'),
         )
 
     def search_for_name(self, query):
@@ -173,7 +190,10 @@ class ImdbFacade(object):
         return tuple(credits)
 
     def _parse_id(self, string):
-        return REGEX_IMDB_ID.findall(string)[0]
+        match = REGEX_IMDB_ID.search(string or '')
+        if not match:
+            raise ValueError('invalid imdb id: {0!r}'.format(string))
+        return match.group(1)
 
     def _get_title_data(self, imdb_id):
         base_title_data = self._client.get_title(imdb_id=imdb_id)
@@ -222,7 +242,7 @@ class ImdbFacade(object):
 
         try:
             certification = title_aux_data['certificate']['certificate']
-        except TypeError:
+        except (KeyError, TypeError):
             certification = None
         stars = self._get_stars(title_aux_data['principals'])
         try:
@@ -234,6 +254,8 @@ class ImdbFacade(object):
             )
         except KeyError:
             image = None
+        metacritic_info = title_aux_data.get('metacriticInfo') or {}
+        certificate_data = title_aux_data.get('certificate') or {}
         return (
             dict(
                 imdb_id=imdb_id,
@@ -253,6 +275,156 @@ class ImdbFacade(object):
                 certification=certification,
                 image=image,
                 stars=stars,
+                metacritic=metacritic_info.get('metaScore'),
+                awards_summary=title_aux_data.get('awards'),
+                spoken_languages=tuple(
+                    title_aux_data.get('spokenLanguages') or ()
+                ),
+                countries=tuple(title_aux_data.get('origins') or ()),
+                alternate_titles=tuple(
+                    title_aux_data.get('alternateTitlesSample') or ()
+                ),
+                alternate_titles_count=(
+                    title_aux_data.get('alternateTitlesCount') or 0
+                ),
+                top_rank=title_aux_data.get('topRank'),
+                trailer=self._parse_trailer(title_aux_data.get('videos')),
+                production_status=title_aux_data.get('productionStatus'),
+                certificate_reason=certificate_data.get('ratingReason'),
             ),
             title_aux_data,
         )
+
+    @staticmethod
+    def _parse_trailer(videos_data):
+        trailer = (videos_data or {}).get('mainTrailer')
+        if not trailer:
+            return None
+        url = None
+        for encoding in trailer.get('encodings') or ():
+            if encoding.get('play'):
+                url = encoding['play']
+                break
+        return TitleVideo(
+            content_type=trailer.get('contentType'),
+            description=trailer.get('description'),
+            url=url,
+            duration_seconds=trailer.get('durationSeconds'),
+        )
+
+    def get_title_watch_options(self, imdb_id):
+        data = self._client.get_title_watch_options(imdb_id=imdb_id)
+        options = []
+        for group in data.get('optionGroups') or ():
+            category = (group.get('displayName') or '').lower()
+            for option in group.get('watchOptions') or ():
+                link = option.get('link') or {}
+                provider = option.get('provider') or {}
+                options.append(
+                    WatchOption(
+                        provider=option.get('primaryText'),
+                        category=category,
+                        url=link.get('uri'),
+                        provider_id=provider.get('providerId'),
+                        notes=option.get('secondaryText'),
+                    )
+                )
+        return tuple(options)
+
+    def get_title_business(self, imdb_id):
+        data = self._client.get_title_business(imdb_id=imdb_id)
+        gross = data.get('gross') or {}
+        aggregations = gross.get('aggregations') or []
+        worldwide_gross = None
+        for aggregation in aggregations:
+            if aggregation.get('area') == 'World-wide':
+                worldwide_gross = aggregation.get('total')
+                break
+        opening_weekend = data.get('openingWeekendGross') or {}
+        return TitleBusiness(
+            budget=data.get('budget'),
+            worldwide_gross=worldwide_gross,
+            gross=tuple(gross.get('regional') or ()),
+            opening_weekend_gross=tuple(opening_weekend.get('regional') or ()),
+        )
+
+    def get_title_keywords(self, imdb_id):
+        data = self._client.get_title_keywords(imdb_id=imdb_id)
+        return tuple(data.get('keywords') or ())
+
+    def get_title_certificates(self, imdb_id):
+        data = self._client.get_title_certificates(imdb_id=imdb_id)
+        certificates = []
+        for country, entries in (data.get('certificates') or {}).items():
+            for entry in entries or ():
+                certificates.append(
+                    TitleCertificate(
+                        country=country,
+                        certificate=entry.get('certificate'),
+                        attributes=tuple(entry.get('attributes') or ()),
+                    )
+                )
+        return tuple(certificates)
+
+    def get_title_filming_locations(self, imdb_id):
+        data = self._client.get_title_filming_locations(imdb_id=imdb_id)
+        return tuple(
+            FilmingLocation(
+                location=item.get('location'),
+                attributes=tuple(item.get('attributes') or ()),
+                notes=tuple(item.get('extras') or ()),
+            )
+            for item in (data.get('locations') or ())
+        )
+
+    def get_title_crazy_credits(self, imdb_id):
+        data = self._client.get_title_crazy_credits(imdb_id=imdb_id)
+        return tuple(
+            item['text']
+            for item in (data.get('crazycredits') or ())
+            if item.get('text')
+        )
+
+    def get_title_principals(self, imdb_id):
+        data = self._client.get_title_principals(imdb_id=imdb_id)
+        return tuple(
+            TitleName(
+                name=item.get('name'),
+                category=item.get('category'),
+                imdb_id=(
+                    self._parse_id(item['id']) if item.get('id') else None
+                ),
+                job=item.get('job'),
+                characters=tuple(item.get('characters') or ()),
+            )
+            for item in (data.get('principals') or ())
+        )
+
+    def get_name_known_for(self, imdb_id):
+        data = self._client.get_name_known_for(imdb_id=imdb_id)
+        return tuple(
+            self._parse_id(item['id'])
+            for item in (data.get('knownFor') or ())
+            if item.get('id')
+        )
+
+    def get_name_awards(self, imdb_id):
+        data = self._client.get_name_awards(imdb_id=imdb_id)
+        awards = []
+        for item in data.get('awards') or ():
+            titles = (item.get('nominations') or {}).get('titles') or ()
+            awards.append(
+                Award(
+                    name=item.get('awardName'),
+                    category=item.get('category'),
+                    year=item.get('year'),
+                    won=bool(item.get('isWinner')),
+                    event_name=item.get('eventName'),
+                    title_ids=tuple(
+                        self._parse_id(title['id'])
+                        for title in titles
+                        if title.get('id')
+                    ),
+                )
+            )
+        return tuple(awards)

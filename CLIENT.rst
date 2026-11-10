@@ -9,6 +9,15 @@ Initialise the client
     from imdbpie import Imdb
     imdb = Imdb()
 
+The auxiliary title payload is cached in memory for ``cache_ttl`` seconds
+(default 300) per client instance, which saves repeated requests when the
+facade fetches a title. Pass ``cache_ttl=0`` to disable it, and call
+``imdb.clear_cache()`` to drop anything cached.
+
+.. code:: python
+
+    imdb = Imdb(cache_ttl=0)
+
 Available methods
 ~~~~~~~~~~~~~~~~~
 
@@ -135,4 +144,36 @@ raise ``LookupError``, for any other API status codes > 399 the client will rais
 +----------------------------------------------------------------+-----------------------------------+
 | ``get_title_auxiliary('tt0111161')``                           | Returns a dict containing         |
 |                                                                | auxiliary title information       |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_title_keywords('tt0111161')``                            | Returns a dict containing title   |
+|                                                                | keywords                          |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_title_certificates('tt0111161')``                        | Returns a dict of ratings by      |
+|                                                                | country                           |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_title_business('tt0111161')``                            | Returns a dict containing budget  |
+|                                                                | and gross                         |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_title_watch_options('tt0111161')``                       | Returns a dict of where to watch  |
+|                                                                | it                                |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_title_principals('tt0111161')``                          | Returns a dict of principal cast  |
+|                                                                | and crew                          |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_title_filming_locations('tt0111161')``                   | Returns filming locations         |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_title_crazy_credits('tt0111161')``                       | Returns crazy credits             |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_name_known_for('nm0000151')``                            | Returns the titles a person is    |
+|                                                                | known for                         |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_name_awards('nm0000151')``                               | Returns awards and nominations    |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_name_bio('nm0000151')``                                  | Returns biographical details      |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_name_trivia('nm0000151')``                               | Returns trivia                    |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_name_quotes('nm0000151')``                               | Returns quotes                    |
++----------------------------------------------------------------+-----------------------------------+
+| ``get_name_news('nm0000151')``                                 | Returns news items                |
 +----------------------------------------------------------------+-----------------------------------+

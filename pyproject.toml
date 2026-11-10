@@ -1,0 +1,61 @@
+[build-system]
+requires = ['setuptools>=82.0.1', 'wheel>=0.46.3']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'imdbpie'
+version = '5.7.3.dev0'
+description = 'Python IMDB client using the IMDB json web service made available for their iOS app.'
+readme = 'README.rst'
+requires-python = '>=3.10'
+license = 'Apache-2.0'
+license-files = ['LICENSE']
+authors = [{ name = "Richard O'Dwyer", email = 'richard@richard.do' }]
+dependencies = [
+    'attrs>=26.1.0',
+    'boto>=2.49.0',
+    'botocore>=1.42.83',
+    'diskcache-community>=5.8.3',
+    'python-dateutil>=2.9.0.post0',
+    'requests>=2.33.1',
+    'setuptools>=82.0.1',
+    'text-unidecode>=1.3',
+    'wheel>=0.46.3',
+]
+classifiers = [
+    'Intended Audience :: Developers',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Topic :: Internet :: WWW/HTTP',
+]
+
+[project.urls]
+Homepage = 'https://code.richard.do/richardARPANET/imdb-pie/'
+
+[dependency-groups]
+dev = [
+    'brunette==0.2.8',
+    'codecov==2.1.13',
+    'coverage==7.13.5',
+    'flake8==7.3.0',
+    'freezegun==1.5.5',
+    'mccabe==0.7.0',
+    'pep8-naming==0.15.1',
+    'pytest==9.0.2',
+    'pytest-cov==7.1.0',
+    'responses==0.26.3',
+    'setuptools==82.0.1',
+    'wheel==0.46.3',
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ['src']
+exclude = ['tests*']
+
+[tool.uv]
+package = true
+default-groups = ['dev']
