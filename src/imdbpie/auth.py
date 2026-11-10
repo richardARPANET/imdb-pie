@@ -5,7 +5,7 @@ import json
 import tempfile
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs
-import diskcache
+import diskcache_community
 import requests
 from botocore.auth import SigV4Auth
 from botocore.awsrequest import AWSRequest
@@ -32,17 +32,23 @@ class Auth(object):
     def __init__(self):
         self._cachedir = tempfile.gettempdir()
 
+    def _cache(self):
+        return diskcache_community.Cache(
+            directory=self._cachedir,
+            disk=diskcache_community.SafeDisk.with_options(on_error='miss'),
+        )
+
     def _get_creds(self):
-        with diskcache.Cache(directory=self._cachedir) as cache:
+        with self._cache() as cache:
             return cache.get(self._CREDS_STORAGE_KEY)
 
     def _set_creds(self, creds):
-        with diskcache.Cache(directory=self._cachedir) as cache:
+        with self._cache() as cache:
             cache[self._CREDS_STORAGE_KEY] = creds
         return creds
 
     def clear_cached_credentials(self):
-        with diskcache.Cache(directory=self._cachedir) as cache:
+        with self._cache() as cache:
             cache.delete(self._CREDS_STORAGE_KEY)
 
     def _creds_soon_expiring(self):

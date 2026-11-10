@@ -1,7 +1,21 @@
+import diskcache_community
 import pytest
 from freezegun import freeze_time
 
 from imdbpie.auth import Auth
+
+
+def _planted_creds(marker):
+    open(marker, 'w').close()
+    return {'expirationTimeStamp': '2099-01-01T00:00:00Z'}
+
+
+class _PlantedCreds(object):
+    def __init__(self, marker):
+        self.marker = marker
+
+    def __reduce__(self):
+        return _planted_creds, (self.marker,)
 
 
 @pytest.fixture
@@ -27,3 +41,16 @@ def auth():
 def test_creds_soon_expiring(auth, current_datetime, exp_expired):
     with freeze_time(current_datetime):
         assert auth._creds_soon_expiring()[1] is exp_expired
+
+
+def test_tampered_cached_creds_count_as_missing(tmp_path):
+    marker = tmp_path / 'planted-code-ran'
+    with diskcache_community.Cache(
+        directory=str(tmp_path), disk=diskcache_community.Disk
+    ) as cache:
+        cache[Auth._CREDS_STORAGE_KEY] = _PlantedCreds(str(marker))
+    auth = Auth()
+    auth._cachedir = str(tmp_path)
+
+    assert auth._creds_soon_expiring() == (None, True)
+    assert not marker.exists()
