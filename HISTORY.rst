@@ -7,6 +7,7 @@ Release History
 ++++++++++++++++++
 
 - Replaced ``diskcache`` with ``diskcache-community`` and read the cached credentials through its ``SafeDisk``, so a tampered cache entry can no longer run code (CVE-2025-69872).
+- Accept 8 digit IMDb IDs in ID validation and facade parsing, not just 7 digit ones.
 
 
 5.7.1 (2026-07-06)
