@@ -60,6 +60,9 @@ exclude = ['tests*']
 package = true
 default-groups = ['dev']
 
+# uv.lock records the project's own version, so refresh it as part of the
+# version bump. `middle` runs after the new version is known and before
+# zest.releaser commits.
 [tool.zest-releaser]
-"prereleaser.middle" = ['release_hooks.uv_lock']
-"postreleaser.middle" = ['release_hooks.uv_lock']
+"prereleaser.middle" = ['release_hooks.lock_new_version']
+"postreleaser.middle" = ['release_hooks.lock_dev_version']
