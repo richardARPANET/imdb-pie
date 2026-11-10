@@ -22,12 +22,6 @@ Release History
   because its sdist cannot be resolved by uv.
 
 
-5.7.3 (unreleased)
-++++++++++++++++++
-
-- Nothing changed yet.
-
-
 5.7.2 (2026-11-10)
 ++++++++++++++++++
 
